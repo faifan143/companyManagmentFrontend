@@ -60,6 +60,7 @@ export const loginUser = createAsyncThunk<
 
     Cookies.set("access_token", response.data.access_token);
     Cookies.set("refresh_token", response.data.refresh_token);
+    Cookies.set("is_Authenticated", "true");
 
     return response.data.user;
   } catch (error: any) {

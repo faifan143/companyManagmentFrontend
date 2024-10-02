@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -9,15 +10,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
         foreground: "var(--foreground)",
-        primary: "#17153B", // Dark Blue - RGB(23, 21, 59)
-        secondary: "#2E236C", // Deep Purple - RGB(46, 35, 108)
-        accent: "#433D8B", // Medium Blue - RGB(67, 61, 139)
-        highlight: "#C8ACD6", // Light Lavender - RGB(200, 172, 214)
+        background: "#1A1A2E", // Dark background similar to the board background
+        card: "#2E2E4D", // Card background color
+        textPrimary: "#EDEDED", // Primary text color (whiteish)
+        textSecondary: "#A6A6C3", // Secondary text color (light grayish-blue)
+        accent: "#0098FD", // Accent color similar to the blue buttons
+        low: "#00D68F", // Green tag (Low priority)
+        medium: "#FFAA00", // Yellow tag (Medium priority)
+        high: "#FF3D71", // Red tag (High priority)
+        inputBackground: "#2C2C3E", // Dark input background
+        border: "#3E3E5C", // Border color, slightly lighter than the background
+        shadow: "rgba(0, 0, 0, 0.25)", // Subtle shadow for elements
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: { addUtilities: Function }) {
+      const newUtilities = {
+        ".desktop-grid": {
+          display: "grid",
+          gridTemplateColumns: "repeat(12, 92px)",
+          gap: "16px",
+          width: "fit-content",
+          margin: "auto",
+        },
+        ".mobile-grid": {
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 92px)",
+          gap: "16px",
+          width: "fit-content",
+          margin: "auto",
+        },
+      };
+
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    },
+  ],
 };
 export default config;

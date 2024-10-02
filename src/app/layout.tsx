@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import I18nProvider from "@/components/Providers/I18nProvider";
 import ReduxProvider from "@/components/Providers/ReduxProvider";
+import { QueryProvider } from "@/components/Providers/QueryProvider";
 
 export const metadata: Metadata = {
   title: "Task Manager",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ReduxProvider>
-          <I18nProvider>{children}</I18nProvider>
+          <QueryProvider>
+            <I18nProvider>{children}</I18nProvider>
+          </QueryProvider>
         </ReduxProvider>
       </body>
     </html>

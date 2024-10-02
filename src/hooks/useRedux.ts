@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { useMemo, useCallback } from "react";
@@ -6,7 +8,7 @@ import { AppDispatch, RootState } from "@/state/store";
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-export const useRedux = <TSelected = unknown>(
+export const useRedux = <TSelected = unknown,>(
   selector?: (state: RootState) => TSelected
 ) => {
   const dispatch = useAppDispatch();
@@ -18,8 +20,8 @@ export const useRedux = <TSelected = unknown>(
   const memoizedSelector = useMemo(() => selectedState, [selectedState]);
 
   const dispatchAction = useCallback(
-    <T>(actionCreator: (payload: T) => any, payload: T) => {
-      memoizedDispatch(actionCreator(payload));
+    <T,>(actionCreator: (payload: T) => any, payload: T) => {
+      return memoizedDispatch(actionCreator(payload)); // Return the result of dispatch directly
     },
     [memoizedDispatch]
   );
