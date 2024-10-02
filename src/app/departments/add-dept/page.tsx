@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import Modal from "react-modal";
 import { useQuery } from "@tanstack/react-query";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import { useCreateMutation } from "@/hooks/useCreateMutation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -52,10 +53,6 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     defaultValues: departmentData || {},
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   React.useEffect(() => {
     if (departmentData) {
       reset(departmentData);
@@ -69,59 +66,49 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     message: "",
     severity: "success" as "success" | "info" | "warning" | "error",
   });
+  const endpoint = departmentData
+    ? `http://${baseUrl}/department/updateDepartment/${departmentData.id}`
+    : `http://${baseUrl}/department/create-department`;
+  const {
+    mutate: addDepartment,
+    isPending: isPendingDepartment,
+    isSuccess: isSuccessDepartment,
+    isError: isErrorDepartment,
+    error: errorDepartment,
+  } = useCreateMutation({
+    endpoint: endpoint,
+    onSuccessMessage: "Departments added successfully!",
+    invalidateQueryKeys: ["departments"],
+  });
 
   const onSubmit = async (data: DepartmentFormInputs) => {
-    setError(null);
-    setSuccess(null);
-    setLoading(true);
+    addDepartment({
+      name: data.name,
+      description: data.description,
+      ...(data.parentDepartmentId && {
+        parent_department_id: data.parentDepartmentId,
+      }),
+    });
+    if (isSuccessDepartment) {
+      setSnackbarConfig({
+        open: true,
+        message: departmentData
+          ? "Department updated successfully!"
+          : "Department created successfully!",
+        severity: "success",
+      });
 
-    try {
-      const endpoint = departmentData
-        ? `http://${baseUrl}/department/updateDepartment/${departmentData.id}`
-        : `http://${baseUrl}/department/create-department`;
-
-      const response = await axios["post"](
-        endpoint,
-        {
-          name: data.name,
-          description: data.description,
-          ...(data.parentDepartmentId && {
-            parent_department_id: data.parentDepartmentId,
-          }),
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        setSnackbarConfig({
-          open: true,
-          message: departmentData
-            ? "Department updated successfully!"
-            : "Department created successfully!",
-          severity: "success",
-        });
-
-        reset({
-          id: "",
-          parentDepartmentId: "",
-          description: "",
-          name: "",
-        });
-      }
-    } catch (err: any) {
-      console.error("Failed to create/update the department", err);
-      setError(
-        err.response?.data?.message ||
-          "Failed to create/update the department. Please try again."
-      );
-    } finally {
-      setLoading(false);
-      setInterval(onClose, 3000);
+      reset({
+        id: "",
+        parentDepartmentId: "",
+        description: "",
+        name: "",
+      });
+    } else if (isErrorDepartment) {
+      console.error("Failed to create/update the department", errorDepartment);
     }
+
+    setInterval(onClose, 3000);
   };
 
   const { data: departments } = useQuery({
@@ -218,11 +205,11 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-accent text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              isPendingDepartment ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={isPendingDepartment}
           >
-            {loading
+            {isPendingDepartment
               ? departmentData
                 ? "Updating..."
                 : "Creating..."
@@ -230,8 +217,12 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
               ? "Update Department"
               : "Create Department"}
           </button>
-          {error && <p className="text-high mt-2 text-center">{error}</p>}
-          {success && <p className="text-low mt-2 text-center">{success}</p>}
+          {isErrorDepartment && (
+            <p className="text-high mt-2 text-center">{errorDepartment + ""}</p>
+          )}
+          {isSuccessDepartment && (
+            <p className="text-low mt-2 text-center">Successful</p>
+          )}
         </form>
       </div>
       <CustomizedSnackbars

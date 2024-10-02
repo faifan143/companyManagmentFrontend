@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import CreateTaskStatus from "../task-status/add-task-status/page";
 import CreateTaskType from "../task-type/add-task-type/page";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import { useCreateMutation } from "@/hooks/useCreateMutation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -71,7 +72,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({
     defaultValues: taskData || {},
   });
 
-  const [loading, setLoading] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   // Reset form data when taskData changes
@@ -89,52 +89,46 @@ const CreateTask: React.FC<CreateTaskProps> = ({
     severity: "success" as "success" | "info" | "warning" | "error",
   });
 
-  // Submit handler for form
+  const endpoint = taskData ? `/tasks/update/${taskData.id}` : `/tasks/create`;
+  const {
+    mutate: addTask,
+    isPending,
+    isSuccess,
+    isError,
+    error,
+  } = useCreateMutation({
+    endpoint: endpoint,
+    onSuccessMessage: "Task added successfully!",
+    invalidateQueryKeys: ["tasks"],
+  });
+
   const onSubmit = async (data: TaskFormInputs) => {
     setFeedbackMessage(null);
-    setLoading(true);
+    addTask({
+      ...data,
+      due_date: new Date(data.due_date).toISOString(),
+    });
 
-    try {
-      const endpoint = taskData
-        ? `http://${baseUrl}/tasks/update/${taskData.id}`
-        : `http://${baseUrl}/tasks/create`;
-
-      const response = await axios.post(
-        endpoint,
-        {
-          ...data,
-          due_date: new Date(data.due_date).toISOString(), // Ensure due_date is sent in the correct format
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        setSnackbarConfig({
-          open: true,
-          message: taskData
-            ? "Task updated successfully!"
-            : "Task created successfully!",
-          severity: "success",
-        });
-        reset();
-      }
-    } catch (error: any) {
+    if (isSuccess) {
+      setSnackbarConfig({
+        open: true,
+        message: taskData
+          ? "Task updated successfully!"
+          : "Task created successfully!",
+        severity: "success",
+      });
+      reset();
+    } else if (isError) {
       console.error("Error creating/updating task:", error);
       setSnackbarConfig({
         open: true,
         message:
-          error.response?.data?.message ||
-          "Failed to process the request. Please try again.",
+          error + "" || "Failed to process the request. Please try again.",
         severity: "error",
       });
-    } finally {
-      setLoading(false);
-      setInterval(onClose, 3000);
     }
+
+    setInterval(onClose, 3000);
   };
 
   // Fetch task types
@@ -443,11 +437,11 @@ const CreateTask: React.FC<CreateTaskProps> = ({
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={isPending}
           >
-            {loading
+            {isPending
               ? taskData
                 ? "Updating..."
                 : "Creating..."

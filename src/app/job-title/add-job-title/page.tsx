@@ -13,13 +13,16 @@ import { useQuery } from "@tanstack/react-query";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import ModernCheckbox from "@/components/common/ModernCheckbox";
 import { IGetJobTitle } from "../page";
+import { useCreateMutation } from "@/hooks/useCreateMutation";
 const baseUrl = process.env.BASE_URL || "";
 const schema = yup.object().shape({
   name: yup.string().required("Job title name is required"),
   title: yup.string().required("Title is required"),
   grade_level: yup.string().required("Grade level is required"),
   description: yup.string().required("Description is required"),
-  responsibilities: yup.string().required("Responsibilities are required"),
+  responsibilities: yup.array(
+    yup.string().required("Responsibilities are required")
+  ),
   permissions: yup
     .array(
       yup.object().shape({
@@ -78,15 +81,10 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
         },
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   React.useEffect(() => {
     if (jobTitleData) {
       reset({
         ...jobTitleData,
-        responsibilities: jobTitleData?.responsibilities || [],
         permissions: jobTitleData?.permissions.map((perm) => perm._id),
       });
     } else {
@@ -98,6 +96,21 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
     open: false,
     message: "",
     severity: "success" as "success" | "info" | "warning" | "error",
+  });
+
+  const endpoint = jobTitleData
+    ? `http://${baseUrl}/job-titles/update/${jobTitleData.id}`
+    : `http://${baseUrl}/job-titles/create`;
+  const {
+    mutate: addJobTitle,
+    isPending: isPendingJobTitle,
+    isSuccess: isSuccessJobTitle,
+    isError: isErrorJobTitle,
+    error: errorJobTitle,
+  } = useCreateMutation({
+    endpoint: endpoint,
+    onSuccessMessage: "Job Title added successfully!",
+    invalidateQueryKeys: ["jobTitles"],
   });
 
   // const onSubmit = async (data: JobTitleFormInputs) => {
@@ -161,59 +174,34 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
   const onSubmit = async (data: JobTitleFormInputs) => {
     console.log("Form data before submission:", data); // Debugging line
 
-    setError(null);
-    setSuccess(null);
-    setLoading(true);
+    addJobTitle({
+      ...data,
+      permissions: permissionsSelected,
+    });
 
-    try {
-      const endpoint = jobTitleData
-        ? `http://${baseUrl}/job-titles/update/${jobTitleData.id}`
-        : `http://${baseUrl}/job-titles/create`;
+    if (isSuccessJobTitle) {
+      reset({
+        id: "",
+        name: "",
+        title: "",
+        grade_level: "",
+        description: "",
+        responsibilities: [],
+        permissions: [],
+        department_id: "",
+      });
 
-      const response = await axios.post(
-        endpoint,
-        {
-          ...data,
-          responsibilities: data.responsibilities.toString().split(","),
-          permissions: permissionsSelected,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        reset({
-          id: "",
-          name: "",
-          title: "",
-          grade_level: "",
-          description: "",
-          responsibilities: [],
-          permissions: [],
-          department_id: "",
-        });
-
-        setSnackbarConfig({
-          open: true,
-          message: jobTitleData
-            ? "Job Title updated successfully!"
-            : "Job Title created successfully!",
-          severity: "success",
-        });
-      }
-    } catch (err: any) {
-      console.error("Failed to create/update the job title", err);
-      setError(
-        err.response?.data?.message ||
-          "Failed to create/update the job title. Please try again."
-      );
-    } finally {
-      setLoading(false);
-      setInterval(onClose, 3000);
+      setSnackbarConfig({
+        open: true,
+        message: jobTitleData
+          ? "Job Title updated successfully!"
+          : "Job Title created successfully!",
+        severity: "success",
+      });
+    } else if (isErrorJobTitle) {
+      console.error("Failed to create/update the job title", errorJobTitle);
     }
+    setInterval(onClose, 3000);
   };
 
   const [permissionsOptions, setPermissionsOptions] = useState<
@@ -363,17 +351,15 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
             /> */}
 
             <textarea
-              {...register("responsibilities")}
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.responsibilities ? "border-high" : "border-border"
               }`}
               placeholder="Enter responsibilities (comma-separated)"
               rows={3}
-              onChange={(e) => {
-                const values = e.target.value
-                  .split(",")
-                  .map((item) => item.trim());
-                setValue("responsibilities", values); // use setValue to ensure form value updates
+              onChange={(event) => {
+                const values = event.target.value.split(",");
+                console.log(values);
+                setValue("responsibilities", values);
               }}
             />
 
@@ -439,11 +425,11 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-accent text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              isPendingJobTitle ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={isPendingJobTitle}
           >
-            {loading
+            {isPendingJobTitle
               ? jobTitleData
                 ? "Updating..."
                 : "Creating..."
@@ -451,8 +437,9 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
               ? "Update Job Title"
               : "Create Job Title"}
           </button>
-          {error && <p className="text-high mt-2 text-center">{error}</p>}
-          {success && <p className="text-low mt-2 text-center">{success}</p>}
+          {isErrorJobTitle && (
+            <p className="text-high mt-2 text-center">{errorJobTitle + ""}</p>
+          )}
         </form>
       </div>
 

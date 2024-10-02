@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
 import Modal from "react-modal";
-import Cookies from "js-cookie";
+import { useCreateMutation } from "@/hooks/useCreateMutation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -43,10 +42,6 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
     defaultValues: taskTypeData || {},
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   useEffect(() => {
     if (taskTypeData) {
       reset(taskTypeData);
@@ -55,46 +50,32 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
     }
   }, [taskTypeData, reset]);
 
+  const endpoint = taskTypeData
+    ? `http://${baseUrl}/task-type/update/${taskTypeData.id}`
+    : `http://${baseUrl}/task-type/create`;
+  const {
+    mutate: addTaskType,
+    isPending: isPendingTaskType,
+    isSuccess: isSuccessTaskType,
+    isError: isErrorTaskType,
+    error: errorTaskType,
+  } = useCreateMutation({
+    endpoint: endpoint,
+    onSuccessMessage: "Task Type added successfully!",
+    invalidateQueryKeys: ["taskTypes"],
+  });
+
   const onSubmit = async (data: TaskTypeFormInputs) => {
-    setError(null);
-    setSuccess(null);
-    setLoading(true);
+    addTaskType({
+      name: data.name,
+      description: data.description,
+    });
+    console.log(endpoint);
 
-    try {
-      const endpoint = taskTypeData
-        ? `http://${baseUrl}/task-type/update/${taskTypeData.id}`
-        : `http://${baseUrl}/task-type/create`;
-
-      console.log(endpoint);
-      const response = await axios.post(
-        endpoint,
-        {
-          name: data.name,
-          description: data.description,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        setSuccess(
-          taskTypeData
-            ? "Task Type updated successfully!"
-            : "Task Type created successfully!"
-        );
-        reset({ id: "", name: "", description: "" });
-      }
-    } catch (err: any) {
-      console.error("Failed to create/update the task type", err);
-      setError(
-        err.response?.data?.message ||
-          "Failed to create/update the task type. Please try again."
-      );
-    } finally {
-      setLoading(false);
+    if (isSuccessTaskType) {
+      reset({ id: "", name: "", description: "" });
+    } else if (isErrorTaskType) {
+      console.error("Failed to create/update the task type", errorTaskType);
     }
   };
 
@@ -156,11 +137,11 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              isPendingTaskType ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={isPendingTaskType}
           >
-            {loading
+            {isPendingTaskType
               ? taskTypeData
                 ? "Updating..."
                 : "Creating..."
@@ -168,9 +149,15 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
               ? "Update Task Type"
               : "Create Task Type"}
           </button>
-          {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
-          {success && (
-            <p className="text-green-500 mt-2 text-center">{success}</p>
+          {isErrorTaskType && (
+            <p className="text-red-500 mt-2 text-center">
+              {errorTaskType + ""}
+            </p>
+          )}
+          {isSuccessTaskType && (
+            <p className="text-green-500 mt-2 text-center">
+              Added Successfully
+            </p>
           )}
         </form>
       </div>

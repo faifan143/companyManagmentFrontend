@@ -10,10 +10,10 @@ import Modal from "react-modal";
 import Cookies from "js-cookie";
 import { useQuery } from "@tanstack/react-query";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import { useCreateMutation } from "@/hooks/useCreateMutation";
 
 const baseUrl = process.env.BASE_URL || "";
 
-// Define validation schema
 const schema = yup.object().shape({
   name: yup.string().required("Employee name is required"),
   dob: yup
@@ -81,7 +81,6 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     defaultValues: employeeData || {},
   });
 
-  const [loading, setLoading] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -97,54 +96,50 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     severity: "success" as "success" | "info" | "warning" | "error",
   });
 
+  const endpoint = employeeData
+    ? `http://${baseUrl}/emp/update/${employeeData.id}`
+    : `http://${baseUrl}/emp/create`;
+
+  const {
+    mutate: addEmployee,
+    isPending: isPendingEmployee,
+    isSuccess: isSuccessEmployee,
+    isError: isErrorEmployee,
+    error: errorEmployee,
+  } = useCreateMutation({
+    endpoint: endpoint,
+    onSuccessMessage: "Employee added successfully!",
+    invalidateQueryKeys: ["employees"],
+  });
+
   const onSubmit = async (data: EmployeeFormInputs) => {
     setFeedbackMessage(null);
-    setLoading(true);
-
-    try {
-      const endpoint = employeeData
-        ? `http://${baseUrl}/emp/update/${employeeData.id}`
-        : `http://${baseUrl}/emp/create`;
-
-      const response = await axios.post(
-        endpoint,
-        {
-          name: data.name,
-          dob: data.dob,
-          phone: data.phone,
-          email: data.email,
-          address: data.address,
-          department_id: data.department_id,
-          job_id: data.job_id,
-          password: !employeeData && data.password,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        setSnackbarConfig({
-          open: true,
-          message: employeeData
-            ? "Employee updated successfully!"
-            : "Employee created successfully!",
-          severity: "success",
-        });
-        reset();
-      }
-    } catch (error: any) {
-      console.error("Error creating/updating employee:", error);
+    addEmployee({
+      name: data.name,
+      dob: data.dob,
+      phone: data.phone,
+      email: data.email,
+      address: data.address,
+      department_id: data.department_id,
+      job_id: data.job_id,
+      password: !employeeData && data.password,
+    });
+    if (isSuccessEmployee) {
+      setSnackbarConfig({
+        open: true,
+        message: employeeData
+          ? "Employee updated successfully!"
+          : "Employee created successfully!",
+        severity: "success",
+      });
+      reset();
+    } else if (isErrorEmployee) {
+      console.error("Error creating/updating employee:", errorEmployee);
       setFeedbackMessage(
-        error.response?.data?.message ||
-          "Failed to process the request. Please try again."
+        errorEmployee + "" || "Failed to process the request. Please try again."
       );
-    } finally {
-      setLoading(false);
-      setInterval(onClose, 3000);
     }
+    setInterval(onClose, 3000);
   };
 
   const { data: departments } = useQuery({
@@ -163,7 +158,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   });
 
   const { data: jobs } = useQuery({
-    queryKey: ["jobs"],
+    queryKey: ["jobTitles"],
     queryFn: async () => {
       const response = await axios.get(
         `http://${baseUrl}/job-titles/get-job-titles`,
@@ -351,11 +346,11 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              isPendingEmployee ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={isPendingEmployee}
           >
-            {loading
+            {isPendingEmployee
               ? employeeData
                 ? "Updating..."
                 : "Creating..."

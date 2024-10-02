@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
 import Modal from "react-modal";
-import Cookies from "js-cookie";
+import { useCreateMutation } from "@/hooks/useCreateMutation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -43,10 +42,6 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
     defaultValues: taskStatusData || {},
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   useEffect(() => {
     if (taskStatusData) {
       reset(taskStatusData);
@@ -55,45 +50,30 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
     }
   }, [taskStatusData, reset]);
 
+  const endpoint = taskStatusData
+    ? `http://${baseUrl}/task-status/update/${taskStatusData.id}`
+    : `http://${baseUrl}/task-status/create`;
+  const {
+    mutate: addTaskStatus,
+    isPending: isPendingTaskStatus,
+    isSuccess: isSuccessTaskStatus,
+    isError: isErrorTaskStatus,
+    error: errorTaskStatus,
+  } = useCreateMutation({
+    endpoint: endpoint,
+    onSuccessMessage: "Task Status added successfully!",
+    invalidateQueryKeys: ["taskStatuses"],
+  });
+
   const onSubmit = async (data: TaskStatusFormInputs) => {
-    setError(null);
-    setSuccess(null);
-    setLoading(true);
-
-    try {
-      const endpoint = taskStatusData
-        ? `http://${baseUrl}/task-status/update/${taskStatusData.id}`
-        : `http://${baseUrl}/task-status/create`;
-
-      const response = await axios.post(
-        endpoint,
-        {
-          name: data.name,
-          description: data.description,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        setSuccess(
-          taskStatusData
-            ? "Task Status updated successfully!"
-            : "Task Status created successfully!"
-        );
-        reset({ id: "", name: "", description: "" });
-      }
-    } catch (err: any) {
-      console.error("Failed to create/update the task status", err);
-      setError(
-        err.response?.data?.message ||
-          "Failed to create/update the task status. Please try again."
-      );
-    } finally {
-      setLoading(false);
+    addTaskStatus({
+      name: data.name,
+      description: data.description,
+    });
+    if (isSuccessTaskStatus) {
+      reset({ id: "", name: "", description: "" });
+    } else if (isErrorTaskStatus) {
+      console.error("Failed to create/update the task status", errorTaskStatus);
     }
   };
 
@@ -155,11 +135,11 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              isPendingTaskStatus ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={isPendingTaskStatus}
           >
-            {loading
+            {isPendingTaskStatus
               ? taskStatusData
                 ? "Updating..."
                 : "Creating..."
@@ -167,9 +147,15 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
               ? "Update Task Status"
               : "Create Task Status"}
           </button>
-          {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
-          {success && (
-            <p className="text-green-500 mt-2 text-center">{success}</p>
+          {isErrorTaskStatus && (
+            <p className="text-red-500 mt-2 text-center">
+              {errorTaskStatus + ""}
+            </p>
+          )}
+          {isSuccessTaskStatus && (
+            <p className="text-green-500 mt-2 text-center">
+              Added Successfully
+            </p>
           )}
         </form>
       </div>
