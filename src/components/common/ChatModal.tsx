@@ -31,7 +31,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     selectedFiles,
     handleFileChange: handleImageChange,
     uploadFiles,
-  } = useFileUpload(`http://${process.env.BASE_URL}/upload`);
+  } = useFileUpload(`https://${process.env.BASE_URL}/upload`);
   const { selector } = useRedux((state) => state.user);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   const fetchInitialMessages = async () => {
     try {
       const response = await axios.get(
-        `http://${process.env.BASE_URL}/internal-communications/chats`,
+        `https://${process.env.BASE_URL}/internal-communications/chats`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("access_token")}`,

@@ -8,7 +8,7 @@ import { CircularProgress } from "@mui/material";
 
 const fetchEmployees = async (): Promise<IEmployee[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/emp/get-all-emps`,
+    `https://${process.env.BASE_URL}/emp/get-all-emps`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -50,7 +50,7 @@ const EmployeesContent = () => {
 
   const handleDeleteClick = async (id: string) => {
     try {
-      await axios.delete(`http://${process.env.BASE_URL}/emp/delete/${id}`, {
+      await axios.delete(`https://${process.env.BASE_URL}/emp/delete/${id}`, {
         headers: {
           Authorization: "Bearer " + Cookies.get("access_token"),
         },

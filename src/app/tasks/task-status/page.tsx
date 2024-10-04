@@ -16,7 +16,7 @@ interface ITaskStatus {
 
 const fetchTaskStatuses = async (): Promise<ITaskStatus[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/task-status/find-all`,
+    `https://${process.env.BASE_URL}/task-status/find-all`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -65,7 +65,7 @@ const TaskStatusesView: React.FC = () => {
   const handleDeleteClick = async (id: string) => {
     try {
       await axios.delete(
-        `http://${process.env.BASE_URL}/task-status/delete/${id}`,
+        `https://${process.env.BASE_URL}/task-status/delete/${id}`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),

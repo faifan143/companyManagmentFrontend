@@ -20,7 +20,7 @@ interface TasksState {
 
 const fetchTaskStatuses = async (): Promise<ITaskStatus[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/task-status/find-all`,
+    `https://${process.env.BASE_URL}/task-status/find-all`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -52,7 +52,7 @@ const categorizeTasks = (tasks: ITask[], statuses: ITaskStatus[]) => {
 const updateTaskStatus = async (taskId: string, newStatus: string) => {
   try {
     await axios.post(
-      `http://${process.env.BASE_URL}/tasks/update/${taskId}`,
+      `https://${process.env.BASE_URL}/tasks/update/${taskId}`,
       { status: newStatus },
       {
         headers: {
@@ -67,7 +67,7 @@ const updateTaskStatus = async (taskId: string, newStatus: string) => {
 
 const fetchTasks = async (): Promise<ITask[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/tasks/get-tasks`,
+    `https://${process.env.BASE_URL}/tasks/get-tasks`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),

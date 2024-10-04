@@ -34,7 +34,7 @@ export interface IGetJobTitle {
 
 const fetchJobTitles = async (): Promise<IGetJobTitle[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/job-titles/get-job-titles`,
+    `https://${process.env.BASE_URL}/job-titles/get-job-titles`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),

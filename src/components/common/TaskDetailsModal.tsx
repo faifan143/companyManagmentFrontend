@@ -49,7 +49,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     const fetchComments = async () => {
       try {
         const response = await axios.get(
-          `http://${process.env.BASE_URL}/comment/${taskData!.id}`,
+          `https://${process.env.BASE_URL}/comment/${taskData!.id}`,
           {
             headers: {
               Authorization: "Bearer " + Cookies.get("access_token"),
@@ -89,7 +89,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
         // Make a POST request to the API endpoint to submit the comment
         const response = await axios.post(
-          `http://${process.env.BASE_URL}/comment`,
+          `https://${process.env.BASE_URL}/comment`,
           {
             content: comment,
             taskId: taskData?.id,

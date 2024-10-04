@@ -99,8 +99,8 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
   });
 
   const endpoint = jobTitleData
-    ? `http://${baseUrl}/job-titles/update/${jobTitleData.id}`
-    : `http://${baseUrl}/job-titles/create`;
+    ? `/job-titles/update/${jobTitleData.id}`
+    : `/job-titles/create`;
   const {
     mutate: addJobTitle,
     isPending: isPendingJobTitle,
@@ -122,8 +122,8 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
 
   //   try {
   //     const endpoint = jobTitleData
-  //       ? `http://${baseUrl}/job-titles/update/${jobTitleData.id}`
-  //       : `http://${baseUrl}/job-titles/create`;
+  //       ? `https://${baseUrl}/job-titles/update/${jobTitleData.id}`
+  //       : `https://${baseUrl}/job-titles/create`;
 
   //     const response = await axios.post(
   //       endpoint,
@@ -178,7 +178,10 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
       ...data,
       permissions: permissionsSelected,
     });
+    setInterval(onClose, 3000);
+  };
 
+  useEffect(() => {
     if (isSuccessJobTitle) {
       reset({
         id: "",
@@ -201,8 +204,7 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
     } else if (isErrorJobTitle) {
       console.error("Failed to create/update the job title", errorJobTitle);
     }
-    setInterval(onClose, 3000);
-  };
+  }, [errorJobTitle, isErrorJobTitle, isSuccessJobTitle, jobTitleData, reset]);
 
   const [permissionsOptions, setPermissionsOptions] = useState<
     { label: string; value: string }[]
@@ -213,7 +215,7 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
     queryKey: ["departments"],
     queryFn: async () => {
       const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
+        `https://${baseUrl}/department/get-departments`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -227,7 +229,7 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
     queryKey: ["permissions"],
     queryFn: async () => {
       const response = await axios.get(
-        `http://${baseUrl}/permissions/all-permissions`
+        `https://${baseUrl}/permissions/all-permissions`
       );
       return response.data;
     },
@@ -240,7 +242,7 @@ const CreateJobTitle: React.FC<CreateJobTitleProps> = ({
     const fetchPermissions = async () => {
       try {
         const response = await axios.get(
-          `http://${baseUrl}/permissions/all-permissions`
+          `https://${baseUrl}/permissions/all-permissions`
         );
 
         const options = response.data.map((permission: any) => ({

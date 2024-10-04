@@ -16,7 +16,7 @@ interface ITaskType {
 
 const fetchTaskTypes = async (): Promise<ITaskType[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/task-type/find-all`,
+    `https://${process.env.BASE_URL}/task-type/find-all`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -63,7 +63,7 @@ const TaskTypesView: React.FC = () => {
 
   //   const handleDeleteClick = async (id: string) => {
   //     try {
-  //       await axios.delete(`http://${process.env.BASE_URL}/tasks/delete/${id}`, {
+  //       await axios.delete(`https://${process.env.BASE_URL}/tasks/delete/${id}`, {
   //         headers: {
   //           Authorization: "Bearer " + Cookies.get("access_token"),
   //         },

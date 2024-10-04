@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 const URL =
   process.env.NODE_ENV === "production"
     ? undefined
-    : `http://${process.env.BASE_URL}`;
+    : `https://${process.env.BASE_URL}`;
 
 export const socket = io(URL, {
   extraHeaders: {

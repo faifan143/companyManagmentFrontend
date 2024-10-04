@@ -8,8 +8,6 @@ import * as yup from "yup";
 import Modal from "react-modal";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 
-const baseUrl = process.env.BASE_URL || "";
-
 const schema = yup.object().shape({
   name: yup.string().required("Task type name is required"),
   description: yup.string().required("Description is required"),
@@ -51,8 +49,8 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
   }, [taskTypeData, reset]);
 
   const endpoint = taskTypeData
-    ? `http://${baseUrl}/task-type/update/${taskTypeData.id}`
-    : `http://${baseUrl}/task-type/create`;
+    ? `/task-type/update/${taskTypeData.id}`
+    : `/task-type/create`;
   const {
     mutate: addTaskType,
     isPending: isPendingTaskType,
@@ -71,13 +69,15 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
       description: data.description,
     });
     console.log(endpoint);
+  };
 
+  useEffect(() => {
     if (isSuccessTaskType) {
       reset({ id: "", name: "", description: "" });
     } else if (isErrorTaskType) {
       console.error("Failed to create/update the task type", errorTaskType);
     }
-  };
+  }, [errorTaskType, isErrorTaskType, isSuccessTaskType, reset]);
 
   return (
     <Modal

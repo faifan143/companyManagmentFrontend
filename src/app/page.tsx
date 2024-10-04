@@ -84,7 +84,7 @@ const Login: React.FC = () => {
   const handlePasswordChange = async (data: ChangePasswordFormInputs) => {
     try {
       const response = await axios.post(
-        `http://${process.env.BASE_URL}/emp/change-password/${empId}`,
+        `https://${process.env.BASE_URL}/emp/change-password/${empId}`,
         { newPassword: data.newPassword }
       );
       console.log(response.data);

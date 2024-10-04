@@ -36,7 +36,7 @@ interface ITask {
 // Fetch tasks from API
 const fetchTasks = async (): Promise<ITask[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/tasks/get-tasks`,
+    `https://${process.env.BASE_URL}/tasks/get-tasks`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -82,7 +82,7 @@ const TasksView: React.FC = () => {
   // Handle Delete
   const handleDeleteClick = async (id: string) => {
     try {
-      await axios.delete(`http://${process.env.BASE_URL}/tasks/delete/${id}`, {
+      await axios.delete(`https://${process.env.BASE_URL}/tasks/delete/${id}`, {
         headers: {
           Authorization: "Bearer " + Cookies.get("access_token"),
         },

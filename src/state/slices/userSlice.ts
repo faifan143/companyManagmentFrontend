@@ -51,7 +51,7 @@ export const loginUser = createAsyncThunk<
 >("user/loginUser", async (userData, { rejectWithValue }) => {
   try {
     const response = await axios.post(
-      `http://${process.env.BASE_URL}/auth/login`,
+      `https://${process.env.BASE_URL}/auth/login`,
       userData,
       {
         withCredentials: true,

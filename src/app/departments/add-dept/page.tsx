@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -67,8 +67,8 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     severity: "success" as "success" | "info" | "warning" | "error",
   });
   const endpoint = departmentData
-    ? `http://${baseUrl}/department/updateDepartment/${departmentData.id}`
-    : `http://${baseUrl}/department/create-department`;
+    ? `/department/updateDepartment/${departmentData.id}`
+    : `/department/create-department`;
   const {
     mutate: addDepartment,
     isPending: isPendingDepartment,
@@ -89,6 +89,11 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
         parent_department_id: data.parentDepartmentId,
       }),
     });
+
+    setInterval(onClose, 3000);
+  };
+
+  useEffect(() => {
     if (isSuccessDepartment) {
       setSnackbarConfig({
         open: true,
@@ -107,15 +112,18 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     } else if (isErrorDepartment) {
       console.error("Failed to create/update the department", errorDepartment);
     }
-
-    setInterval(onClose, 3000);
-  };
-
+  }, [
+    departmentData,
+    errorDepartment,
+    isErrorDepartment,
+    isSuccessDepartment,
+    reset,
+  ]);
   const { data: departments } = useQuery({
     queryKey: ["departments"],
     queryFn: async () => {
       const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
+        `https://${baseUrl}/department/get-departments`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),

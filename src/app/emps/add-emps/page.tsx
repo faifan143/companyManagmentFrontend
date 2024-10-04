@@ -90,6 +90,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       reset();
     }
   }, [employeeData, reset]);
+
   const [snackbarConfig, setSnackbarConfig] = useState({
     open: false,
     message: "",
@@ -97,8 +98,8 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   });
 
   const endpoint = employeeData
-    ? `http://${baseUrl}/emp/update/${employeeData.id}`
-    : `http://${baseUrl}/emp/create`;
+    ? `/emp/update/${employeeData.id}`
+    : `/emp/create`;
 
   const {
     mutate: addEmployee,
@@ -112,18 +113,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     invalidateQueryKeys: ["employees"],
   });
 
-  const onSubmit = async (data: EmployeeFormInputs) => {
-    setFeedbackMessage(null);
-    addEmployee({
-      name: data.name,
-      dob: data.dob,
-      phone: data.phone,
-      email: data.email,
-      address: data.address,
-      department_id: data.department_id,
-      job_id: data.job_id,
-      password: !employeeData && data.password,
-    });
+  useEffect(() => {
     if (isSuccessEmployee) {
       setSnackbarConfig({
         open: true,
@@ -139,6 +129,21 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
         errorEmployee + "" || "Failed to process the request. Please try again."
       );
     }
+  }, [employeeData, errorEmployee, isErrorEmployee, isSuccessEmployee, reset]);
+
+  const onSubmit = async (data: EmployeeFormInputs) => {
+    setFeedbackMessage(null);
+    addEmployee({
+      name: data.name,
+      dob: data.dob,
+      phone: data.phone,
+      email: data.email,
+      address: data.address,
+      department_id: data.department_id,
+      job_id: data.job_id,
+      password: !employeeData && data.password,
+    });
+
     setInterval(onClose, 3000);
   };
 
@@ -146,7 +151,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     queryKey: ["departments"],
     queryFn: async () => {
       const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
+        `https://${baseUrl}/department/get-departments`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -161,7 +166,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     queryKey: ["jobTitles"],
     queryFn: async () => {
       const response = await axios.get(
-        `http://${baseUrl}/job-titles/get-job-titles`,
+        `https://${baseUrl}/job-titles/get-job-titles`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),

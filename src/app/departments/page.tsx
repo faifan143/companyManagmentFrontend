@@ -25,7 +25,7 @@ const getParentDepartmentName = (
 
 const fetchDepartments = async (): Promise<Department[]> => {
   const response = await axios.get(
-    `http://${process.env.BASE_URL}/department/get-departments`,
+    `https://${process.env.BASE_URL}/department/get-departments`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -63,7 +63,6 @@ const DepartmentsView: React.FC = () => {
       </div>
     );
   }
-
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
