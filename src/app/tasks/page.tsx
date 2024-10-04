@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CreateTask, { TaskFormInputs } from "./add-task/page"; // Adjust the import path as needed
+import CreateTask, { TaskFormInputs } from "../../components/common/CreateTask"; // Adjust the import path as needed
 
 interface ITask {
   id: string;

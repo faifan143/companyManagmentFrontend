@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CreateJobTitle from "./add-job-title/page";
+import CreateJobTitle from "../../components/common/CreateJobTitle";
 
 export interface IGetDepartment {
   id: string;

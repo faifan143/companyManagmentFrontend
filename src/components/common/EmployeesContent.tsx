@@ -1,4 +1,6 @@
-import CreateEmployee, { EmployeeFormInputs } from "@/app/emps/add-emps/page";
+import CreateEmployee, {
+  EmployeeFormInputs,
+} from "@/components/common/CreateEmployee";
 import { IEmployee } from "@/app/emps/page";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";

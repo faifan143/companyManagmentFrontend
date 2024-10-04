@@ -5,7 +5,7 @@ import ITask from "@/types/Task.type";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useQuery } from "@tanstack/react-query";
-import CreateTask from "@/app/tasks/add-task/page";
+import CreateTask from "@/components/common/CreateTask";
 import { CircularProgress } from "@mui/material";
 
 interface ITaskStatus {

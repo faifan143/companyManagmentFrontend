@@ -6,7 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CreateEmployee, { EmployeeFormInputs } from "./add-emps/page";
+import CreateEmployee, {
+  EmployeeFormInputs,
+} from "../../components/common/CreateEmployee";
 
 interface IDepartment {
   id: string;

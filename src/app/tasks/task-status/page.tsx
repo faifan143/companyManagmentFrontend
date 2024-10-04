@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CreateTaskStatus from "./add-task-status/page";
+import CreateTaskStatus from "../../../components/common/CreateTaskStatus";
 
 interface ITaskStatus {
   id: string;

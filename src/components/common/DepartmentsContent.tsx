@@ -1,4 +1,4 @@
-import CreateDepartment from "@/app/departments/add-dept/page";
+import CreateDepartment from "@/components/common/CreateDepartment";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useState } from "react";

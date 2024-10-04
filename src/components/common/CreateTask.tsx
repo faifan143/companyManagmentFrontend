@@ -9,8 +9,8 @@ import axios from "axios";
 import Modal from "react-modal";
 import Cookies from "js-cookie";
 import { useQuery } from "@tanstack/react-query";
-import CreateTaskStatus from "../task-status/add-task-status/page";
-import CreateTaskType from "../task-type/add-task-type/page";
+import CreateTaskType from "./CreateTaskType";
+import CreateTaskStatus from "./CreateTaskStatus";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 

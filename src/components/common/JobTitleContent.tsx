@@ -1,4 +1,4 @@
-import CreateJobTitle from "@/app/job-title/add-job-title/page";
+import CreateJobTitle from "@/components/common/CreateJobTitle";
 import { IGetJobTitle } from "@/app/job-title/page";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";

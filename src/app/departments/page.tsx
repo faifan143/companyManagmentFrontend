@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import CreateDepartment from "./add-dept/page";
+import CreateDepartment from "../../components/common/CreateDepartment";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 

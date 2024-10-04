@@ -1,9 +1,9 @@
 "use client";
 
-import CreateDepartment from "@/app/departments/add-dept/page";
-import CreateEmployee from "@/app/emps/add-emps/page";
-import CreateJobTitle from "@/app/job-title/add-job-title/page";
-import CreateTask from "@/app/tasks/add-task/page";
+import CreateDepartment from "@/components/common/CreateDepartment";
+import CreateEmployee from "@/components/common/CreateEmployee";
+import CreateJobTitle from "@/components/common/CreateJobTitle";
+import CreateTask from "@/components/common/CreateTask";
 import { useRedux } from "@/hooks/useRedux";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { FaPlus } from "react-icons/fa";

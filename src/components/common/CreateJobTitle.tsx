@@ -12,7 +12,7 @@ import Modal from "react-modal";
 import { useQuery } from "@tanstack/react-query";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import ModernCheckbox from "@/components/common/ModernCheckbox";
-import { IGetJobTitle } from "../page";
+import { IGetJobTitle } from "../../app/job-title/page";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 const baseUrl = process.env.BASE_URL || "";
 const schema = yup.object().shape({
