@@ -79,7 +79,7 @@ const Page = () => {
         />
         <button
           onClick={sendMessage}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+          className="px-4 py-2 bg-[#1b1a40] text-white rounded-md"
         >
           Send
         </button>

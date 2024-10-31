@@ -151,7 +151,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     queryKey: ["departments"],
     queryFn: async () => {
       const response = await axios.get(
-        `https://${baseUrl}/department/get-departments`,
+        `http://${baseUrl}/department/get-departments`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -166,7 +166,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     queryKey: ["jobTitles"],
     queryFn: async () => {
       const response = await axios.get(
-        `https://${baseUrl}/job-titles/get-job-titles`,
+        `http://${baseUrl}/job-titles/get-job-titles`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -330,6 +330,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
               {errors.department_id.message}
             </p>
           )}
+
           <select
             {...register("job_id")}
             className={`w-full px-4 py-2 mt-1 rounded-lg border ${

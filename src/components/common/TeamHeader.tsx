@@ -1,9 +1,5 @@
 "use client";
 
-import CreateDepartment from "@/components/common/CreateDepartment";
-import CreateEmployee from "@/components/common/CreateEmployee";
-import CreateJobTitle from "@/components/common/CreateJobTitle";
-import CreateTask from "@/components/common/CreateTask";
 import { useRedux } from "@/hooks/useRedux";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { FaPlus } from "react-icons/fa";
@@ -30,10 +26,6 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isEmpModalOpen, setIsEmpModalOpen] = useState(false);
-  const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
-  const [isJobModalOpen, setIsJobModalOpen] = useState(false);
 
   const { selector } = useRedux((state) => state.user);
 
@@ -41,7 +33,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
     <div className="flex justify-between items-center py-4 bg-white  w-full">
       {/* Left Section: Title */}
       <h1 className="text-xl font-bold text-gray-800">
-        {selector.userInfo?.job.department.name ?? title}
+        {selector.userInfo?.department.name ?? title}
       </h1>
 
       {/* Right Section: Add Member, Avatars, and All Tasks */}
@@ -49,10 +41,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         <div className="flex items-center space-x-4">
           {/* Add a Member Button */}
           {currentContent == "Departments" ? (
-            <button
-              className="flex items-center text-blue-500 font-medium"
-              onClick={() => setIsDeptModalOpen(true)}
-            >
+            <button className="flex items-center text-[#1b1a40] font-medium">
               <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
                 <FaPlus />
               </div>
@@ -61,30 +50,21 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
               </span>
             </button>
           ) : currentContent == "Job Titles" ? (
-            <button
-              className="flex items-center text-blue-500 font-medium"
-              onClick={() => setIsJobModalOpen(true)}
-            >
+            <button className="flex items-center text-[#1b1a40] font-medium">
               <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
                 <FaPlus />
               </div>
               <span className="ml-2 text-black font-bold">Add a job title</span>
             </button>
           ) : currentContent == "Employees" ? (
-            <button
-              className="flex items-center text-blue-500 font-medium"
-              onClick={() => setIsEmpModalOpen(true)}
-            >
+            <button className="flex items-center text-[#1b1a40] font-medium">
               <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
                 <FaPlus />
               </div>
               <span className="ml-2 text-black font-bold">Add a member</span>
             </button>
           ) : (
-            <button
-              className="flex items-center text-blue-500 font-medium"
-              onClick={() => setIsTaskModalOpen(true)}
-            >
+            <button className="flex items-center text-[#1b1a40] font-medium">
               <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
                 <FaPlus />
               </div>
@@ -114,7 +94,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
           </div>
           <div className="relative">
             <button
-              className="px-4 py-1 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition flex items-center"
+              className="px-4 py-1 bg-[#1b1a40] text-white rounded-lg font-medium hover:bg-blue-600 transition flex items-center"
               onClick={toggleDropdown}
             >
               {currentContent} <FiChevronDown className="ml-1" />
@@ -166,27 +146,6 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
           </div>
         </div>
       }
-
-      <CreateTask
-        isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        taskData={null}
-      />
-      <CreateEmployee
-        isOpen={isEmpModalOpen}
-        onClose={() => setIsEmpModalOpen(false)}
-        employeeData={null}
-      />
-      <CreateDepartment
-        isOpen={isDeptModalOpen}
-        onClose={() => setIsDeptModalOpen(false)}
-        departmentData={null}
-      />
-      <CreateJobTitle
-        isOpen={isJobModalOpen}
-        onClose={() => setIsJobModalOpen(false)}
-        jobTitleData={null}
-      />
     </div>
   );
 };

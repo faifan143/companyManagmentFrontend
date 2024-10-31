@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+// TasksContent.tsx
+"use client";
+
+import { useEffect, useState } from "react";
 import TaskColumn from "@/components/common/TaskColumn";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import ITask from "@/types/Task.type";
@@ -17,18 +20,6 @@ interface ITaskStatus {
 interface TasksState {
   [key: string]: ITask[];
 }
-
-const fetchTaskStatuses = async (): Promise<ITaskStatus[]> => {
-  const response = await axios.get(
-    `https://${process.env.BASE_URL}/task-status/find-all`,
-    {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("access_token"),
-      },
-    }
-  );
-  return response.data.data;
-};
 
 const categorizeTasks = (tasks: ITask[], statuses: ITaskStatus[]) => {
   const categorizedTasks: TasksState = {};
@@ -52,7 +43,7 @@ const categorizeTasks = (tasks: ITask[], statuses: ITaskStatus[]) => {
 const updateTaskStatus = async (taskId: string, newStatus: string) => {
   try {
     await axios.post(
-      `https://${process.env.BASE_URL}/tasks/update/${taskId}`,
+      `http://${process.env.BASE_URL}/tasks/update/${taskId}`,
       { status: newStatus },
       {
         headers: {
@@ -65,30 +56,42 @@ const updateTaskStatus = async (taskId: string, newStatus: string) => {
   }
 };
 
-const fetchTasks = async (): Promise<ITask[]> => {
-  const response = await axios.get(
-    `https://${process.env.BASE_URL}/tasks/get-tasks`,
-    {
+const TasksContent = ({ selectedOption }: { selectedOption: string }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const fetchTasks = async (): Promise<ITask[]> => {
+    const endpoint = `http://${process.env.BASE_URL}/tasks/${selectedOption}`;
+
+    const response = await axios.get(endpoint, {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
       },
-    }
-  );
-  return response.data.data;
-};
+    });
 
-const TasksContent = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    console.log("fetched tasks : ", response.data);
+
+    return response.data.data;
+  };
 
   const { data: statuses, isLoading: isLoadingStatuses } = useQuery<
     ITaskStatus[]
   >({
     queryKey: ["taskStatuses"],
-    queryFn: fetchTaskStatuses,
+    queryFn: async () => {
+      const response = await axios.get(
+        `http://${process.env.BASE_URL}/task-status/find-all`,
+        {
+          headers: {
+            Authorization: "Bearer " + Cookies.get("access_token"),
+          },
+        }
+      );
+      return response.data.data;
+    },
   });
 
   const { data: tasksData, isLoading: isLoadingTasks } = useQuery<ITask[]>({
-    queryKey: ["tasks"],
+    queryKey: ["tasks", selectedOption],
     queryFn: fetchTasks,
   });
 
@@ -165,17 +168,16 @@ const TasksContent = () => {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-        {statuses &&
-          statuses.map((status) => (
-            <TaskColumn
-              key={status.id}
-              columnId={status.id}
-              title={status.name}
-              taskCount={tasks[status.id]?.length || 0}
-              tasks={tasks[status.id] || []}
-              setIsModalOpen={setIsModalOpen}
-            />
-          ))}
+        {statuses?.map((status) => (
+          <TaskColumn
+            key={status.id}
+            columnId={status.id}
+            title={status.name}
+            taskCount={tasks[status.id]?.length || 0}
+            tasks={tasks[status.id] || []}
+            setIsModalOpen={setIsModalOpen}
+          />
+        ))}
       </DragDropContext>
       <CreateTask
         isOpen={isModalOpen}

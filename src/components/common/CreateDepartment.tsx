@@ -123,7 +123,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     queryKey: ["departments"],
     queryFn: async () => {
       const response = await axios.get(
-        `https://${baseUrl}/department/get-departments`,
+        `http://${baseUrl}/department/get-departments`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -212,7 +212,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
 
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-accent text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
               isPendingDepartment ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingDepartment}

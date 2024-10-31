@@ -1,53 +1,50 @@
-import CreateEmployee, {
-  EmployeeFormInputs,
-} from "@/components/common/CreateEmployee";
-import { IEmployee } from "@/app/emps/page";
+// EmployeesContent.tsx
+"use client";
+
+import { EmployeeType } from "@/types/EmployeeType.type";
+import { useRolePermissions } from "@/utils/check_permissions";
+import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useState } from "react";
 import Cookies from "js-cookie";
-import { CircularProgress } from "@mui/material";
+import { useRouter } from "next/navigation";
 
-const fetchEmployees = async (): Promise<IEmployee[]> => {
-  const response = await axios.get(
-    `https://${process.env.BASE_URL}/emp/get-all-emps`,
-    {
+interface EmployeesContentProps {
+  selectedOption: string;
+}
+
+const EmployeesContent: React.FC<EmployeesContentProps> = ({
+  selectedOption,
+}) => {
+  const isAdmin = useRolePermissions("admin");
+
+  const fetchEmployees = async (): Promise<EmployeeType[]> => {
+    const endpoint = `http://${process.env.BASE_URL}/emp/${selectedOption}`;
+
+    const response = await axios.get(endpoint, {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
       },
-    }
-  );
-  return response.data;
-};
+    });
 
-const EmployeesContent = () => {
+    console.log("employees : ", response.data);
+
+    return response.data;
+  };
+
   const {
     data: employees,
-    refetch,
     isLoading,
-  } = useQuery<IEmployee[]>({
-    queryKey: ["employees"],
+    refetch,
+  } = useQuery<EmployeeType[]>({
+    queryKey: ["employees", selectedOption],
     queryFn: fetchEmployees,
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<EmployeeFormInputs | null>(null);
-
-  const handleEditClick = (employee: IEmployee) => {
-    const transformedData: EmployeeFormInputs = {
-      id: employee.id,
-      name: employee.name,
-      dob: employee.dob,
-      phone: employee.phone,
-      email: employee.email,
-      address: employee.address,
-      password: "",
-      department_id: employee.job.department.id, // Extract ID
-      job_id: employee.job.id, // Extract ID
-    };
-
-    setEditData(transformedData); // Pass transformed data
-    setIsModalOpen(true);
+  const router = useRouter();
+  const handleEditClick = (editData: EmployeeType) => {
+    sessionStorage.setItem("employeeData", JSON.stringify(editData));
+    router.push("/employees/add-employee");
   };
 
   const handleDeleteClick = async (id: string) => {
@@ -62,6 +59,7 @@ const EmployeesContent = () => {
       console.error("Error deleting employee:", error);
     }
   };
+
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
@@ -76,61 +74,62 @@ const EmployeesContent = () => {
       </div>
     );
   }
+
   return (
-    <>
-      <div className="bg-[#f0f4f9] rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12 ">
-        {employees && employees.length > 0 ? (
-          <div className="overflow-x-auto rounded-lg shadow-md">
-            <table className="min-w-full bg-white rounded-lg shadow-md">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    Name
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    DOB
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    Phone
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    Email
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    Address
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    Department
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
-                    Job
-                  </th>
-                  <th className="text-blue-500  text-center py-3 px-4 uppercase font-semibold text-sm">
+    <div className="bg-[#f0f4f9] rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12 ">
+      {employees && employees.length > 0 ? (
+        <div className="overflow-x-auto rounded-lg shadow-md">
+          <table className="min-w-full bg-white rounded-lg shadow-md">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  Name
+                </th>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  DOB
+                </th>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  Phone
+                </th>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  Email
+                </th>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  Address
+                </th>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  Department
+                </th>
+                <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
+                  Job
+                </th>
+                {isAdmin && (
+                  <th className="text-[#1b1a40]  text-center py-3 px-4 uppercase font-semibold text-sm">
                     Actions
                   </th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map((employee) => (
-                  <tr
-                    key={employee.id}
-                    className="hover:bg-gray-100 transition-colors"
-                  >
-                    <td className="text-center  py-3 px-4">{employee.name}</td>
-                    <td className="text-center  py-3 px-4">
-                      {new Date(employee.dob).toLocaleDateString()}
-                    </td>
-                    <td className="text-center  py-3 px-4">{employee.phone}</td>
-                    <td className="text-center  py-3 px-4">{employee.email}</td>
-                    <td className="text-center  py-3 px-4">
-                      {employee.address}
-                    </td>
-                    <td className="text-center  py-3 px-4">
-                      {employee.job.department.name}
-                    </td>
-                    <td className="text-center  py-3 px-4">
-                      {employee.job.title}
-                    </td>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {employees.map((employee) => (
+                <tr
+                  key={employee.id}
+                  className="hover:bg-gray-100 transition-colors"
+                >
+                  <td className="text-center  py-3 px-4">{employee.name}</td>
+                  <td className="text-center  py-3 px-4">
+                    {new Date(employee.dob).toLocaleDateString()}
+                  </td>
+                  <td className="text-center  py-3 px-4">{employee.phone}</td>
+                  <td className="text-center  py-3 px-4">{employee.email}</td>
+                  <td className="text-center  py-3 px-4">{employee.address}</td>
+                  <td className="text-center  py-3 px-4">
+                    {employee.job.department}
+                  </td>
+                  <td className="text-center  py-3 px-4">
+                    {employee.job.title}
+                  </td>
+                  {isAdmin && (
                     <td className="text-center  py-3 px-4 flex space-x-2">
                       <div
                         onClick={() => handleEditClick(employee)}
@@ -145,22 +144,16 @@ const EmployeesContent = () => {
                         delete
                       </div>
                     </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-center text-gray-600 mt-4">No employees found.</p>
-        )}
-      </div>
-
-      <CreateEmployee
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        employeeData={editData} // Pass editData correctly
-      />
-    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="text-center text-gray-600 mt-4">No employees found.</p>
+      )}
+    </div>
   );
 };
 

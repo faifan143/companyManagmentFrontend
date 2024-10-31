@@ -1,0 +1,80 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface LegalDocument {
+  name: string;
+  validity: string;
+  file: string;
+}
+
+interface Certification {
+  certificate_name: string;
+  date: string;
+  grade: string;
+  file: string;
+}
+
+interface Allowance {
+  allowance_type: string;
+  amount: number;
+}
+
+interface Incentive {
+  description: string;
+  amount: number;
+}
+
+interface BankAccount {
+  bank_name: string;
+  account_number: string;
+}
+
+interface Category {
+  id: string;
+  description: string;
+  name: string;
+  required_education: string;
+  required_skills: string[];
+  required_experience: string;
+}
+
+interface Job {
+  id: string;
+  name: string;
+  title: string;
+  grade_level: string;
+  description: string;
+  responsibilities: string[];
+  permissions: string[];
+  accessibleDepartments: string[];
+  is_manager: boolean;
+  department: string;
+  category: Category;
+}
+
+interface Department {
+  name: string;
+  id: string;
+}
+
+export interface EmployeeType {
+  id: string;
+  name: string;
+  national_id: string;
+  dob: string;
+  gender: string;
+  marital_status: string;
+  phone: string;
+  email: string;
+  address: string;
+  emergency_contact: string;
+  legal_documents: LegalDocument[];
+  certifications: Certification[];
+  employment_date: string;
+  department?: Department;
+  job: Job;
+  job_tasks: string;
+  base_salary: number;
+  allowances: Allowance[];
+  incentives: Incentive[];
+  bank_accounts: BankAccount[];
+  evaluations: any[];
+}

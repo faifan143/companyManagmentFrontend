@@ -49,7 +49,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     const fetchComments = async () => {
       try {
         const response = await axios.get(
-          `https://${process.env.BASE_URL}/comment/${taskData!.id}`,
+          `http://${process.env.BASE_URL}/comment/${taskData!.id}`,
           {
             headers: {
               Authorization: "Bearer " + Cookies.get("access_token"),
@@ -89,7 +89,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
         // Make a POST request to the API endpoint to submit the comment
         const response = await axios.post(
-          `https://${process.env.BASE_URL}/comment`,
+          `http://${process.env.BASE_URL}/comment`,
           {
             content: comment,
             taskId: taskData?.id,
@@ -151,7 +151,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         {/* Task Details Header */}
         <div className="flex justify-between items-center my-5">
           <div className="flex items-center space-x-2">
-            <span className="text-blue-500 text-lg font-bold">
+            <span className="text-[#1b1a40] text-lg font-bold">
               Task Details
             </span>
           </div>
@@ -181,7 +181,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           <label className="font-bold mb-2 block">Members</label>
           <div className="flex items-center space-x-2 mt-2">
             {taskData.emp ? (
-              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#1b1a40] text-white flex items-center justify-center text-sm font-bold">
                 {taskData.emp.name.charAt(0).toUpperCase()}
               </div>
             ) : (
@@ -194,7 +194,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             <div className="w-8 h-8 rounded-full bg-green-300 text-white flex items-center justify-center text-sm font-bold">
               MK
             </div>
-            <button className="w-8 h-8 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-sm font-bold">
+            <button className="w-8 h-8 rounded-full bg-blue-100 text-[#1b1a40] flex items-center justify-center text-sm font-bold">
               +
             </button>
           </div>
@@ -258,7 +258,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 //             href={file}
                 //             target="_blank"
                 //             rel="noopener noreferrer"
-                //             className="text-blue-500 underline"
+                //             className="text-[#1b1a40] underline"
                 //           >
                 //             View attachment
                 //           </a>
@@ -268,7 +268,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 //   )}
                 // </div>
                 <div key={index} className="flex mb-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center mr-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-[#1b1a40] text-white rounded-full flex items-center justify-center mr-4">
                     {comment.author.name.slice(0, 1)}
                   </div>
                   <div>
@@ -338,7 +338,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
               <button
                 onClick={handleSendComment}
-                className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center"
+                className="bg-[#1b1a40] text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center"
               >
                 <FaPaperPlane className="mr-1" /> Send
               </button>

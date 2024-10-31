@@ -16,7 +16,7 @@ interface ITaskType {
 
 const fetchTaskTypes = async (): Promise<ITaskType[]> => {
   const response = await axios.get(
-    `https://${process.env.BASE_URL}/task-type/find-all`,
+    `http://${process.env.BASE_URL}/task-type/find-all`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -63,7 +63,7 @@ const TaskTypesView: React.FC = () => {
 
   //   const handleDeleteClick = async (id: string) => {
   //     try {
-  //       await axios.delete(`https://${process.env.BASE_URL}/tasks/delete/${id}`, {
+  //       await axios.delete(`http://${process.env.BASE_URL}/tasks/delete/${id}`, {
   //         headers: {
   //           Authorization: "Bearer " + Cookies.get("access_token"),
   //         },
@@ -105,7 +105,7 @@ const TaskTypesView: React.FC = () => {
                   <td className="py-3 px-4">{taskType.description}</td>
                   <td className="py-3 px-4 flex space-x-2">
                     <EditIcon
-                      className="cursor-pointer text-blue-500"
+                      className="cursor-pointer text-[#1b1a40]"
                       onClick={() => handleEditClick(taskType)}
                     />
                     <DeleteIcon className="cursor-pointer text-red-500" />
@@ -120,7 +120,7 @@ const TaskTypesView: React.FC = () => {
       )}
       <div className="flex justify-center mt-6">
         <button
-          className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+          className="bg-[#413d99] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
           onClick={() => {
             setEditData(null);
             setIsModalOpen(true);

@@ -16,7 +16,7 @@ const config: Config = {
         textPrimary: "#EDEDED", // Primary text color (whiteish)
         textSecondary: "#A6A6C3", // Secondary text color (light grayish-blue)
         accent: "#0098FD", // Accent color similar to the blue buttons
-        low: "#00D68F", // Green tag (Low priority)
+        low: "#1b1a40", // Green tag (Low priority)
         medium: "#FFAA00", // Yellow tag (Medium priority)
         high: "#FF3D71", // Red tag (High priority)
         inputBackground: "#2C2C3E", // Dark input background

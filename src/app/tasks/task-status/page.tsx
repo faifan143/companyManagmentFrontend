@@ -16,7 +16,7 @@ interface ITaskStatus {
 
 const fetchTaskStatuses = async (): Promise<ITaskStatus[]> => {
   const response = await axios.get(
-    `https://${process.env.BASE_URL}/task-status/find-all`,
+    `http://${process.env.BASE_URL}/task-status/find-all`,
     {
       headers: {
         Authorization: "Bearer " + Cookies.get("access_token"),
@@ -65,7 +65,7 @@ const TaskStatusesView: React.FC = () => {
   const handleDeleteClick = async (id: string) => {
     try {
       await axios.delete(
-        `https://${process.env.BASE_URL}/task-status/delete/${id}`,
+        `http://${process.env.BASE_URL}/task-status/delete/${id}`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -107,7 +107,7 @@ const TaskStatusesView: React.FC = () => {
                   <td className="py-3 px-4">{taskStatus.description}</td>
                   <td className="py-3 px-4 flex space-x-2">
                     <EditIcon
-                      className="cursor-pointer text-blue-500"
+                      className="cursor-pointer text-[#1b1a40]"
                       onClick={() => handleEditClick(taskStatus)}
                     />
                     <DeleteIcon
@@ -127,7 +127,7 @@ const TaskStatusesView: React.FC = () => {
       )}
       <div className="flex justify-center mt-6">
         <button
-          className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+          className="bg-[#413d99] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
           onClick={() => {
             setEditData(null);
             setIsModalOpen(true);

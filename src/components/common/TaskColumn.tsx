@@ -29,7 +29,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
           {/* Column Header */}
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-            <div className="bg-white text-blue-500 px-2 rounded-xl w-10 text-center shadow-md py-0.5 text-sm font-bold">
+            <div className="bg-white text-[#1b1a40] px-2 rounded-xl w-10 text-center shadow-md py-0.5 text-sm font-bold">
               {taskCount}
             </div>
           </div>

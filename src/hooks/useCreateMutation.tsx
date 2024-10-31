@@ -40,7 +40,7 @@ export const useCreateMutation = <
   const queryClient = useQueryClient();
 
   const mutationFunction = async (data: TInput) => {
-    const response = await axios.post(`https://${baseUrl}${endpoint}`, data, {
+    const response = await axios.post(`http://${baseUrl}${endpoint}`, data, {
       headers: {
         Authorization: `Bearer ${Cookies.get("access_token")}`,
       },

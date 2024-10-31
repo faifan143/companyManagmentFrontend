@@ -137,14 +137,11 @@ const CreateTask: React.FC<CreateTaskProps> = ({
   const { data: taskTypes } = useQuery({
     queryKey: ["taskTypes"],
     queryFn: async () => {
-      const response = await axios.get(
-        `https://${baseUrl}/task-type/find-all`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
+      const response = await axios.get(`http://${baseUrl}/task-type/find-all`, {
+        headers: {
+          Authorization: "Bearer " + Cookies.get("access_token"),
+        },
+      });
       return response.data.data;
     },
   });
@@ -155,7 +152,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
     queryKey: ["taskStatuses"],
     queryFn: async () => {
       const response = await axios.get(
-        `https://${baseUrl}/task-status/find-all`,
+        `http://${baseUrl}/task-status/find-all`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -171,7 +168,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
     queryKey: ["departments"],
     queryFn: async () => {
       const response = await axios.get(
-        `https://${baseUrl}/department/get-departments`,
+        `http://${baseUrl}/department/get-departments`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("access_token"),
@@ -186,7 +183,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
   const { data: employees } = useQuery({
     queryKey: ["employees"],
     queryFn: async () => {
-      const response = await axios.get(`https://${baseUrl}/emp/get-all-emps`, {
+      const response = await axios.get(`http://${baseUrl}/emp/get-all-emps`, {
         headers: {
           Authorization: "Bearer " + Cookies.get("access_token"),
         },

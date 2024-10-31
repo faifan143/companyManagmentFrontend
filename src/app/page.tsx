@@ -84,7 +84,7 @@ const Login: React.FC = () => {
   const handlePasswordChange = async (data: ChangePasswordFormInputs) => {
     try {
       const response = await axios.post(
-        `https://${process.env.BASE_URL}/emp/change-password/${empId}`,
+        `http://${process.env.BASE_URL}/auth/change-password/${empId}`,
         { newPassword: data.newPassword }
       );
       console.log(response.data);
@@ -104,9 +104,12 @@ const Login: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-white">
       {/* Login Form */}
       <div className="backdrop-blur-md bg-gray-200 p-10 rounded-xl shadow-xl max-w-sm w-full">
-        <h1 className="text-center text-2xl text-blue-500 font-bold mb-6">
-          Login
+        <h1 className="text-center text-2xl text-[#1b1a40] font-bold mb-6">
+          Company Managment System
         </h1>
+        {/* <h2 className="text-center text-xl text-[#1b1a40] font-bold mb-6">
+          Login
+        </h2> */}
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           {/* Email Input */}
           <div>
@@ -115,7 +118,7 @@ const Login: React.FC = () => {
               type="email"
               {...register("email")}
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.email ? "border-red-600" : "border-blue-500"
+                errors.email ? "border-red-600" : "border-[#1b1a40]"
               }`}
               placeholder="Enter your email"
             />
@@ -132,7 +135,7 @@ const Login: React.FC = () => {
               type="password"
               {...register("password")}
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.password ? "border-red-600" : "border-blue-500"
+                errors.password ? "border-red-600" : "border-[#1b1a40]"
               }`}
               placeholder="Enter your password"
             />
@@ -145,7 +148,7 @@ const Login: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-accent text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-[#1b1a40] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}
@@ -176,7 +179,7 @@ const Login: React.FC = () => {
                 className={`w-full px-4 py-2 mt-1 rounded-lg    focus:outline-none focus:ring-2 focus:ring-accent border ${
                   changePasswordErrors.newPassword
                     ? "border-red-600"
-                    : "border-blue-500"
+                    : "border-[#1b1a40]"
                 }`}
                 placeholder="Enter new password"
               />
@@ -196,7 +199,7 @@ const Login: React.FC = () => {
                 className={`w-full px-4 py-2 mt-1 rounded-lg    focus:outline-none focus:ring-2 focus:ring-accent border ${
                   changePasswordErrors.confirmPassword
                     ? "border-red-600"
-                    : "border-blue-500"
+                    : "border-[#1b1a40]"
                 }`}
                 placeholder="Confirm new password"
               />
@@ -208,7 +211,7 @@ const Login: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-2 mt-4 bg-accent text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200"
+              className="w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200"
             >
               Change Password
             </button>

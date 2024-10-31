@@ -31,7 +31,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     selectedFiles,
     handleFileChange: handleImageChange,
     uploadFiles,
-  } = useFileUpload(`https://${process.env.BASE_URL}/upload`);
+  } = useFileUpload(`http://${process.env.BASE_URL}/upload`);
   const { selector } = useRedux((state) => state.user);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   const fetchInitialMessages = async () => {
     try {
       const response = await axios.get(
-        `https://${process.env.BASE_URL}/internal-communications/chats`,
+        `http://${process.env.BASE_URL}/internal-communications/chats`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("access_token")}`,
@@ -82,8 +82,8 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
 
       const newMessage: ChatMessage = {
         emp: "ME",
-        sender_Id: selector.userInfo!._id,
-        department: selector.userInfo!.job.department.name,
+        sender_Id: selector.userInfo!.id,
+        department: selector.userInfo!.department.name,
         message: newComment,
         date: new Date(),
         files: fileURLs, // Attach uploaded files URLs
@@ -108,9 +108,9 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
       className="fixed right-0 top-0 flex items-center justify-center w-[450px]  p-4 h-full"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
     >
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full relative h-full">
+    {selector.userInfo && selector.userInfo.department &&  <div className="bg-white p-6 rounded-lg shadow-lg w-full relative h-full">
         <h2 className="text-xl  text-right font-bold mb-4">
-          محادثة {selector.userInfo?.job.department.name}
+          محادثة {selector.userInfo?.department.name}
         </h2>
         <div
           className="overflow-y-auto pb-10"
@@ -122,7 +122,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
         >
           {messages.map((message, index) => (
             <div key={index} className="flex mb-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center mr-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#1b1a40] text-white rounded-full flex items-center justify-center mr-4">
                 {message.emp.charAt(0)}
               </div>
               <div>
@@ -177,12 +177,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
 
           <button
             onClick={handleSendMessage}
-            className="bg-blue-500 p-2 rounded-md text-white"
+            className="bg-[#1b1a40] p-2 rounded-md text-white"
           >
             <FaPaperPlane />
           </button>
         </div>
-      </div>
+      </div>}
     </Modal>
   );
 };
