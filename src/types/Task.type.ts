@@ -46,3 +46,75 @@ export default interface ITask {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface TaskFormInputs {
+  id: string;
+  name: string;
+  description: string;
+  task_type: string;
+  priority: number;
+  emp?: string;
+  department_id?: string;
+  status: string;
+  due_date: string;
+  files?: string[];
+  isRecurring?: boolean;
+  intervalInDays?: number;
+  end_date?: string;
+}
+
+export interface ITaskStatus {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface ITaskType {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface TaskFormInputs {
+  id: string;
+  name: string;
+  description: string;
+  task_type: string;
+  priority: number;
+  emp?: string;
+  department_id?: string;
+  status: string;
+  due_date: string;
+  files?: string[];
+}
+
+// Props for the CreateTask component
+export interface CreateTaskProps {
+  isOpen: boolean;
+  onClose: () => void;
+  taskData?: TaskFormInputs | null;
+}
+
+export interface TaskStatusFormInputs {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface CreateTaskStatusProps {
+  isOpen: boolean;
+  onClose: () => void;
+  taskStatusData?: TaskStatusFormInputs | null;
+}
+
+export interface TaskTypeFormInputs {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface CreateTaskTypeProps {
+  isOpen: boolean;
+  onClose: () => void;
+  taskTypeData?: TaskTypeFormInputs | null;
+}

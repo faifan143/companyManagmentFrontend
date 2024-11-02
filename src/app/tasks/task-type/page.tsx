@@ -1,41 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import Cookies from "js-cookie";
-import EditIcon from "@mui/icons-material/Edit";
+import useCustomQuery from "@/hooks/useCustomQuery";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import React, { useState } from "react";
 import CreateTaskType from "../../../components/common/CreateTaskType";
-
-interface ITaskType {
-  id: string;
-  name: string;
-  description: string;
-}
-
-const fetchTaskTypes = async (): Promise<ITaskType[]> => {
-  const response = await axios.get(
-    `http://${process.env.BASE_URL}/task-type/find-all`,
-    {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("access_token"),
-      },
-    }
-  );
-  return response.data.data;
-};
+import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import { ITaskType } from "@/types/Task.type";
 
 const TaskTypesView: React.FC = () => {
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
   const {
     data: taskTypes,
     isLoading,
     error,
-  } = useQuery<ITaskType[]>({
+  } = useCustomQuery<ITaskType[]>({
     queryKey: ["taskTypes"],
-    queryFn: fetchTaskTypes,
+    url: `http://${process.env.BASE_URL}/task-type/find-all`,
+    setSnackbarConfig,
+    nestedData: true,
   });
-  console.log(taskTypes);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<ITaskType | null>(null);
@@ -60,21 +48,6 @@ const TaskTypesView: React.FC = () => {
     setEditData(taskType);
     setIsModalOpen(true);
   };
-
-  //   const handleDeleteClick = async (id: string) => {
-  //     try {
-  //       await axios.delete(`http://${process.env.BASE_URL}/tasks/delete/${id}`, {
-  //         headers: {
-  //           Authorization: "Bearer " + Cookies.get("access_token"),
-  //         },
-  //       });
-  //       alert("Task type deleted successfully!");
-  //       refetch(); // Refresh the data after deletion
-  //     } catch (error) {
-  //       console.error("Error deleting task type:", error);
-  //       alert("Failed to delete task type.");
-  //     }
-  //   };
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
@@ -134,6 +107,13 @@ const TaskTypesView: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         taskTypeData={editData}
+      />
+
+      <CustomizedSnackbars
+        open={snackbarConfig.open}
+        message={snackbarConfig.message}
+        severity={snackbarConfig.severity}
+        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
       />
     </div>
   );

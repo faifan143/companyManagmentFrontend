@@ -4,169 +4,16 @@
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import GridContainer from "@/components/common/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import { JobTitleType } from "@/types/JobTitle.type";
+import { addEmpSchema } from "@/schemas/employee.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
-import * as yup from "yup";
+import { useFieldArray, useForm } from "react-hook-form";
+import { EmployeeFormInputs } from "@/types/EmployeeType.type";
 
 const baseUrl = process.env.BASE_URL || "";
-
-// Schema Validation with Yup
-const schema = yup.object().shape({
-  id: yup.string().optional(),
-  name: yup.string().required("Employee name is required"),
-  national_id: yup.string().required("National Id is required"),
-  //
-  gender: yup.string().required("Gender is required"),
-  marital_status: yup.string().required("Marital status is required"),
-  address: yup.string().required("Address is required"),
-  employment_date: yup
-    .string()
-    .required("Employment date is required")
-    .matches(
-      /^\d{4}-\d{2}-\d{2}$/,
-      "Employment date must be in YYYY-MM-DD format"
-    ),
-  base_salary: yup.number().required("Base salary is required"),
-
-  //
-  dob: yup
-    .string()
-    .required("Date of birth is required")
-    .matches(
-      /^\d{4}-\d{2}-\d{2}$/,
-      "Date of birth must be in YYYY-MM-DD format"
-    ),
-  phone: yup.string().required("Phone number is required"),
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Invalid email format"),
-  password: yup.string().required("password is required"),
-  department_id: yup.string().required("Department ID is required"),
-  job_id: yup.string().required("Job ID is required"),
-  job_tasks: yup.string().required("Job tasks is required"),
-  emergency_contact: yup.string().required("emergency contact is required"),
-
-  legal_documents: yup
-    .array()
-    .of(
-      yup.object().shape({
-        name: yup.string().required("Document name is required"),
-        validity: yup.string().nullable(), // No validation for date format
-        file: yup.string().nullable(), // File is optional
-      })
-    )
-    .optional(),
-
-  certifications: yup
-    .array()
-    .of(
-      yup.object().shape({
-        certificate_name: yup.string().required("Certificate name is required"),
-        date: yup.string().nullable(), // No validation for date format
-        grade: yup.string().required("Grade is required"),
-        file: yup.string().nullable(), // File is optional
-      })
-    )
-    .optional(),
-
-  allowances: yup
-    .array()
-    .of(
-      yup.object().shape({
-        allowance_type: yup.string().required("Allowance type is required"),
-        amount: yup
-          .number()
-          .required("Allowance amount is required")
-          .positive("Amount must be a positive number"),
-      })
-    )
-    .optional(),
-
-  incentives: yup
-    .array()
-    .of(
-      yup.object().shape({
-        description: yup.string().required("Incentive description is required"),
-        amount: yup
-          .number()
-          .required("Incentive amount is required")
-          .positive("Amount must be a positive number"),
-      })
-    )
-    .optional(),
-
-  bank_accounts: yup
-    .array()
-    .of(
-      yup.object().shape({
-        bank_name: yup.string().required("Bank name is required"),
-        account_number: yup
-          .string()
-          .required("Account number is required")
-          .matches(/^\d+$/, "Account number must contain only digits"),
-      })
-    )
-    .optional(),
-
-  evaluations: yup
-    .array()
-    .of(
-      yup.object().shape({
-        evaluation_type: yup.string().required("Evaluation type is required"),
-        description: yup
-          .string()
-          .required("Evaluation description is required"),
-        plan: yup.string().required("Plan is required"),
-      })
-    )
-    .optional(),
-});
-
-interface IDepartment {
-  id: string;
-  name: string;
-}
-
-interface IJob {
-  id: string;
-  title: string;
-}
-
-export interface EmployeeFormInputs {
-  id?: string;
-  name: string;
-  national_id: string;
-  dob: string;
-  phone: string;
-  email: string;
-  password: string;
-  gender: string;
-  marital_status: string;
-  address: string;
-  employment_date: string;
-  base_salary: number;
-  emergency_contact: string;
-
-  department_id: string;
-  job_id: string;
-  job_tasks: string;
-  legal_documents: { name: string; validity: string; file: string | null }[];
-  certifications: {
-    certificate_name: string;
-    date: string;
-    grade: string;
-    file: string | null;
-  }[];
-  allowances: { allowance_type: string; amount: number }[];
-  incentives: { description: string; amount: number }[];
-  bank_accounts: { bank_name: string; account_number: string }[];
-  evaluations: { evaluation_type: string; description: string; plan: string }[];
-}
 
 const AddEmp: React.FC = () => {
   const [employeeData, setEmployeeData] = useState<any | null>(null);
@@ -180,7 +27,7 @@ const AddEmp: React.FC = () => {
     setValue,
     getValues,
   } = useForm<EmployeeFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addEmpSchema) as any,
     defaultValues: employeeData || {},
   });
 
@@ -201,6 +48,16 @@ const AddEmp: React.FC = () => {
     open: false,
     message: "",
     severity: "success" as "success" | "info" | "warning" | "error",
+  });
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
+    queryKey: ["departments"],
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
+  });
+  const { data: jobs } = useCustomQuery<JobTitleType[]>({
+    queryKey: ["jobTitles"],
+    url: `http://${baseUrl}/job-titles/get-job-titles`,
+    setSnackbarConfig,
   });
 
   const endpoint = employeeData
@@ -295,7 +152,6 @@ const AddEmp: React.FC = () => {
     name: "bank_accounts",
   });
 
-  // Evaluations Field Array
   const {
     fields: evaluationsFields,
     append: appendEvaluation,
@@ -305,7 +161,6 @@ const AddEmp: React.FC = () => {
     name: "evaluations",
   });
 
-  // Handle file change
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     index: number,
@@ -325,33 +180,6 @@ const AddEmp: React.FC = () => {
       }
     }
   };
-
-  // Fetch departments and jobs
-  const { data: departments } = useQuery({
-    queryKey: ["departments"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
-        {
-          headers: { Authorization: "Bearer " + Cookies.get("access_token") },
-        }
-      );
-      return response.data;
-    },
-  });
-
-  const { data: jobs } = useQuery({
-    queryKey: ["jobTitles"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/job-titles/get-job-titles`,
-        {
-          headers: { Authorization: "Bearer " + Cookies.get("access_token") },
-        }
-      );
-      return response.data;
-    },
-  });
 
   return (
     <GridContainer>
@@ -617,7 +445,7 @@ const AddEmp: React.FC = () => {
             >
               <option value="">Select a department</option>
               {departments &&
-                departments.map((dept: IDepartment) => (
+                departments.map((dept) => (
                   <option key={dept.id} value={dept.id}>
                     {dept.name}
                   </option>
@@ -643,7 +471,7 @@ const AddEmp: React.FC = () => {
             >
               <option value="">Select a job title</option>
               {jobs &&
-                jobs.map((job: IJob) => (
+                jobs.map((job) => (
                   <option key={job.id} value={job.id}>
                     {job.title}
                   </option>

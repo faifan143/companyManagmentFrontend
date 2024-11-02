@@ -5,65 +5,19 @@ import { XIcon } from "@/assets";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import GridContainer from "@/components/common/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import {
+  DepartmentFormInputs,
+  DepartmentType,
+} from "@/types/DepartmentType.type";
+import { JobCategoryType } from "@/types/JobTitle.type";
+import { addDeptSchema } from "@/schemas/department.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import * as yup from "yup";
 
 const baseUrl = process.env.BASE_URL || "";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Department name is required"),
-  description: yup.string().optional(),
-  goal: yup.string().required("Goal is required"),
-  category: yup.string().required("Category is required"),
-  mainTasks: yup.string().required("Main tasks are required"),
-  parentDepartmentId: yup.string().nullable().default(undefined),
-  numericOwners: yup.array().of(
-    yup.object().shape({
-      category: yup.string(),
-      count: yup.number(),
-    })
-  ),
-  supportingFiles: yup.array().of(yup.mixed()).notRequired(),
-  requiredReports: yup.array().of(
-    yup.object().shape({
-      name: yup.string(),
-      templateFile: yup.string(),
-    })
-  ),
-  developmentPrograms: yup.array().of(
-    yup.object().shape({
-      programName: yup.string(),
-      objective: yup.string(),
-      notes: yup.string(),
-      programFile: yup.string(),
-    })
-  ),
-});
-
-interface DepartmentFormInputs {
-  id: string;
-  name: string;
-  description: string;
-  goal: string;
-  category: string;
-  mainTasks: string;
-  parentDepartmentId?: string;
-  numericOwners: { category: string; count: number }[];
-  supportingFiles: string[]; // File type here
-  requiredReports: { name: string; templateFile: string }[];
-  developmentPrograms: {
-    programName: string;
-    objective: string;
-    notes?: string;
-    programFile: string;
-  }[];
-}
 
 const AddDept: React.FC = () => {
   const [departmentData, setDepartmentData] = useState<any | null>(null);
@@ -76,16 +30,11 @@ const AddDept: React.FC = () => {
     reset,
     handleSubmit,
   } = useForm<DepartmentFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addDeptSchema) as any,
     defaultValues: {},
   });
 
   useEffect(() => {
-    console.log(errors);
-  }, [errors]);
-
-  useEffect(() => {
-    // Retrieve the data from session storage
     const storedData = sessionStorage.getItem("departmentData");
     if (storedData) {
       const parsedData = JSON.parse(storedData);
@@ -121,7 +70,6 @@ const AddDept: React.FC = () => {
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  // Handle multiple file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -129,8 +77,6 @@ const AddDept: React.FC = () => {
       setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
     }
   };
-
-  // Remove a selected file
   const handleRemoveFile = (index: number) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
@@ -153,6 +99,17 @@ const AddDept: React.FC = () => {
     ? `/department/updateDepartment/${departmentData.id}`
     : `/department/create-department`;
 
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
+    queryKey: ["departments"],
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
+  });
+  const { data: categories } = useCustomQuery<JobCategoryType[]>({
+    queryKey: ["categories"],
+    url: `http://${baseUrl}/job-categories`,
+    setSnackbarConfig,
+  });
+
   const {
     mutate: addDepartment,
     isPending: isPendingDepartment,
@@ -164,23 +121,16 @@ const AddDept: React.FC = () => {
     onSuccessMessage: "Departments added successfully!",
     invalidateQueryKeys: ["departments"],
   });
-
   const handleManualSubmit = async () => {
-    const data = getValues(); // Manually get form values
-
-    // Set file names in supportingFiles
+    const data = getValues();
     data.supportingFiles = selectedFiles.map((fil) => fil.name);
-
     console.log("Form data with files:", data);
-
-    // Proceed with submission if valid
     addDepartment(data);
   };
 
   useEffect(() => {
     if (isSuccessDepartment) {
       sessionStorage.clear();
-
       setSnackbarConfig({
         open: true,
         message: departmentData
@@ -188,7 +138,6 @@ const AddDept: React.FC = () => {
           : "Department created successfully!",
         severity: "success",
       });
-
       reset({
         id: "",
         parentDepartmentId: "",
@@ -198,11 +147,11 @@ const AddDept: React.FC = () => {
         category: "",
         mainTasks: "",
         numericOwners: [],
-        supportingFiles: [], // Reset supporting files
+        supportingFiles: [],
         requiredReports: [],
         developmentPrograms: [],
       });
-      setSelectedFiles([]); // Clear file selection
+      setSelectedFiles([]);
     } else if (isErrorDepartment) {
       console.error("Failed to create/update the department", errorDepartment);
     }
@@ -214,26 +163,12 @@ const AddDept: React.FC = () => {
     reset,
   ]);
 
-  const { data: departments } = useQuery({
-    queryKey: ["departments"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
-  });
-
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [requiredCategoryOptions, setRequiredCategoryOptions] = useState<
     string[]
   >(["primary-department", "secondary-department", "sub-department"]);
+
   const handleAddCategory = () => {
     if (newCategory.trim() !== "") {
       // Add the new Category to the dropdown options
@@ -248,23 +183,11 @@ const AddDept: React.FC = () => {
     }
   };
 
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const response = await axios.get(`http://${baseUrl}/job-categories`, {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("access_token"),
-        },
-      });
-      return response.data;
-    },
-  });
-
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
   useEffect(() => {
     if (categories) {
-      setAvailableCategories(categories.map((category: any) => category.name)); // Set available categories
+      setAvailableCategories(categories.map((category: any) => category.name));
     }
   }, [categories]);
 

@@ -5,53 +5,22 @@ import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import GridContainer from "@/components/common/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
 
-import Select from "react-select"; // Importing React Select
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import {
+  EditJobTitleType,
+  JobCategoryType,
+  JobTitleFormInputs,
+  JobTitleType,
+} from "@/types/JobTitle.type";
 import { permissionsArray } from "@/utils/all_permissions";
-import { EditJobTitleType, JobTitleType } from "@/types/JobTitle.type";
+import Select from "react-select"; // Importing React Select
+import { addTitleSchema } from "@/schemas/job.schema";
 
 const baseUrl = process.env.BASE_URL || "";
-const schema = yup.object().shape({
-  name: yup.string().required("Job title name is required"),
-  title: yup.string().required("Title is required"),
-  grade_level: yup.string().required("Grade level is required"),
-  description: yup.string().required("Description is required"),
-  responsibilities: yup
-    .array(yup.string().required("Responsibilities are required"))
-    .required(),
-  permissions: yup
-    .array(yup.string().required("Each permission must be a string"))
-    .required("Permissions are required"),
-
-  department_id: yup.string().required("Department ID is required"),
-  category: yup.string().required("Job Category is required"),
-  is_manager: yup.boolean().notRequired(),
-  accessibleDepartments: yup.array(yup.string()).nullable(),
-  accessibleEmps: yup.array(yup.string()).nullable(),
-  accessibleJobTitles: yup.array(yup.string()).nullable(),
-});
-
-interface JobTitleFormInputs {
-  id?: string;
-  name: string;
-  title: string;
-  grade_level: string;
-  description: string;
-  responsibilities: string[];
-  permissions: string[];
-  department_id: string;
-  category: string;
-  is_manager: boolean;
-  accessibleDepartments?: string[] | null;
-  accessibleEmps?: string[] | null;
-  accessibleJobTitles?: string[] | null;
-}
 
 const permissionsOptions = permissionsArray.map((permission) => ({
   value: permission,
@@ -77,7 +46,7 @@ const AddJobTitle: React.FC = () => {
     reset,
     setValue,
   } = useForm<JobTitleFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addTitleSchema) as any,
     defaultValues: jobTitleData || {
       name: "",
       title: "",
@@ -200,30 +169,15 @@ const AddJobTitle: React.FC = () => {
     }
   }, [errorJobTitle, isErrorJobTitle, isSuccessJobTitle, jobTitleData, reset]);
 
-  const { data: departments } = useQuery({
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
   });
-  const { data: categories } = useQuery({
+  const { data: categories } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["categories"],
-    queryFn: async () => {
-      const response = await axios.get(`http://${baseUrl}/job-categories`, {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("access_token"),
-        },
-      });
-      return response.data;
-    },
+    url: `http://${baseUrl}/job-categories`,
+    setSnackbarConfig,
   });
 
   useEffect(() => {

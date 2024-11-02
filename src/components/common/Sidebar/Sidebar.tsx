@@ -8,12 +8,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { ChatsIcon } from "@/assets";
 import ChatModal from "../ChatModal";
-interface SidebarProps {
+
+const Sidebar = ({
+  isExpanded,
+  setIsExpanded,
+}: {
   isExpanded: boolean;
   setIsExpanded: Dispatch<SetStateAction<boolean>>;
-}
-
-const Sidebar = ({ isExpanded, setIsExpanded }: SidebarProps) => {
+}) => {
   const userPermissions = useSelector(
     (state: RootState) => state.user.userInfo?.job.permissions
   );
@@ -34,11 +36,13 @@ const Sidebar = ({ isExpanded, setIsExpanded }: SidebarProps) => {
   };
 
   // Filter items based on user permissions
-  const visibleItems = userPermissions? sidebarItems.filter((item) =>
-    item.requiredPermissions.every((permission) =>
-      userPermissions!.includes(permission)
-    )
-  ) : [];
+  const visibleItems = userPermissions
+    ? sidebarItems.filter((item) =>
+        item.requiredPermissions.every((permission) =>
+          userPermissions!.includes(permission)
+        )
+      )
+    : [];
 
   return (
     <div

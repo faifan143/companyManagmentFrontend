@@ -1,18 +1,6 @@
 import { socket } from "@/socket";
+import { SocketEvent, UseChat } from "@/types/Chat.type";
 import { useEffect, useState, useRef } from "react";
-
-interface SocketEvent {
-  message: string;
-  files?: string[];
-}
-
-interface UseChat {
-  isConnected: boolean;
-  chatEvents: SocketEvent[];
-  sendMessage: (message: string) => void;
-  connect: () => void;
-  disconnect: () => void;
-}
 
 const useChat = (): UseChat => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);

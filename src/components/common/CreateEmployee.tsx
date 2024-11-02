@@ -1,70 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import axios from "axios";
-import Modal from "react-modal";
-import Cookies from "js-cookie";
-import { useQuery } from "@tanstack/react-query";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import { JobTitleType } from "@/types/JobTitle.type";
+import { addEmpPopupSchema } from "@/schemas/employee.schema";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import Modal from "react-modal";
+import {
+  CreateEmployeeProps,
+  EmployeeFormInputs,
+} from "@/types/EmployeeType.type";
 
 const baseUrl = process.env.BASE_URL || "";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Employee name is required"),
-  dob: yup
-    .date()
-    .required("Date of birth is required")
-    .typeError("Invalid date format"),
-  phone: yup.string().required("Phone number is required"),
-  password: yup.string(),
-  email: yup
-    .string()
-    .required("Email is required")
-    .email("Invalid email format"),
-  address: yup.string().required("Address is required"),
-  department_id: yup.string().required("Department ID is required"),
-  job_id: yup.string().required("Job ID is required"),
-});
-
-interface IDepartment {
-  id: string;
-  name: string;
-  description: string;
-  parent_department_id: IDepartment | null;
-}
-
-interface IJob {
-  id: string;
-  title: string;
-  grade_level: string;
-  description: string;
-  responsibilities: string[];
-  permissions: string[];
-  department: IDepartment;
-}
-
-export interface EmployeeFormInputs {
-  id?: string;
-  name: string;
-  dob: string;
-  phone: string;
-  email: string;
-  password: string;
-  address: string;
-  department_id: string;
-  job_id: string;
-}
-
-interface CreateEmployeeProps {
-  isOpen: boolean;
-  onClose: () => void;
-  employeeData?: EmployeeFormInputs | null;
-}
 
 const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   isOpen,
@@ -77,7 +29,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     formState: { errors },
     reset,
   } = useForm<EmployeeFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addEmpPopupSchema) as any,
     defaultValues: employeeData || {},
   });
 
@@ -147,34 +99,15 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     setInterval(onClose, 3000);
   };
 
-  const { data: departments } = useQuery({
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
   });
-
-  const { data: jobs } = useQuery({
+  const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/job-titles/get-job-titles`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
+    url: `http://${baseUrl}/job-titles/get-job-titles`,
+    setSnackbarConfig,
   });
 
   return (
@@ -319,7 +252,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           >
             <option value="">Select a department</option>
             {departments &&
-              departments.map((dept: IDepartment) => (
+              departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.name}
                 </option>
@@ -339,7 +272,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           >
             <option value="">Select a job title</option>
             {jobs &&
-              jobs.map((job: IJob) => (
+              jobs.map((job) => (
                 <option key={job.id} value={job.id}>
                   {job.title}
                 </option>

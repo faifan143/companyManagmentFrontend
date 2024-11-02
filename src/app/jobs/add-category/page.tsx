@@ -4,32 +4,12 @@
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import GridContainer from "@/components/common/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { addCategorySchema } from "@/schemas/job.schema";
+import { JobCategoryFormInputs } from "@/types/JobCategory.type";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import Cookies from "js-cookie";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Category name is required"),
-  description: yup.string().required("Description is required"),
-  required_education: yup.string().required("Required education is required"),
-  required_experience: yup.string().required("Required experience is required"),
-  required_skills: yup
-    .array(yup.string().required("Skill is required"))
-    .min(1, "At least one skill is required"),
-});
-
-interface JobCategoryFormInputs {
-  id: string;
-  name: string;
-  description: string;
-  required_education: string;
-  required_experience: string;
-  required_skills: string[];
-}
 
 const AddJobCategory: React.FC = () => {
   const [requiredEducationOptions, setRequiredEducationOptions] = useState<
@@ -44,20 +24,16 @@ const AddJobCategory: React.FC = () => {
 
   const [isAddingExperience, setIsAddingExperience] = useState(false);
   const [newExperience, setNewExperience] = useState("");
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
 
-  const { data: education_experience } = useQuery({
+  const { data: education_experience } = useCustomQuery<any>({
     queryKey: ["education_experience"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${process.env.BASE_URL}/job-categories/unique/education-experience`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
+    url: `http://${process.env.BASE_URL}/job-categories/unique/education-experience`,
+    setSnackbarConfig,
   });
 
   const {
@@ -67,7 +43,7 @@ const AddJobCategory: React.FC = () => {
     reset,
     setValue,
   } = useForm<JobCategoryFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addCategorySchema) as any,
     defaultValues: {
       id: "",
       name: "",
@@ -90,12 +66,6 @@ const AddJobCategory: React.FC = () => {
   useEffect(() => {
     reset();
   }, [reset]);
-
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
 
   const endpoint = `/job-categories`;
 

@@ -1,42 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import axios from "axios";
-import { useState } from "react";
-import Cookies from "js-cookie";
-import Modal from "react-modal";
-import { useQuery } from "@tanstack/react-query";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import {
+  CreateDepartmentProps,
+  DepartmentFormInputs,
+  DepartmentType,
+} from "@/types/DepartmentType.type";
+import { addDeptPopupSchema } from "@/schemas/department.schema";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import Modal from "react-modal";
 
 const baseUrl = process.env.BASE_URL || "";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Department name is required"),
-  description: yup.string().required("Description is required"),
-  parentDepartmentId: yup
-    .string()
-    .transform((value) => (value === "" ? undefined : value))
-    .nullable()
-    .default(undefined),
-});
-
-interface DepartmentFormInputs {
-  id: string;
-  name: string;
-  description: string;
-  parentDepartmentId?: string;
-}
-
-interface CreateDepartmentProps {
-  isOpen: boolean;
-  onClose: () => void;
-  departmentData?: DepartmentFormInputs | null;
-}
 
 const CreateDepartment: React.FC<CreateDepartmentProps> = ({
   isOpen,
@@ -49,7 +28,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     formState: { errors },
     reset,
   } = useForm<DepartmentFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addDeptPopupSchema) as any,
     defaultValues: departmentData || {},
   });
 
@@ -119,20 +98,12 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     isSuccessDepartment,
     reset,
   ]);
-  const { data: departments } = useQuery({
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
   });
+
   return (
     <Modal
       isOpen={isOpen}

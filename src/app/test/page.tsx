@@ -1,12 +1,8 @@
 "use client";
 
 import { socket } from "@/socket";
+import { SocketEvent } from "@/types/Chat.type";
 import React, { useEffect, useState, useRef } from "react";
-
-interface SocketEvent {
-  message: string;
-  files?: string[];
-}
 
 const Page = () => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);

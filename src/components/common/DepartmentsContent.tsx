@@ -1,10 +1,10 @@
+import useCustomQuery from "@/hooks/useCustomQuery";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { useRolePermissions } from "@/utils/check_permissions";
 import { CircularProgress } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import CustomizedSnackbars from "./CustomizedSnackbars";
 
 const getParentDepartmentName = (
   department: DepartmentType | null | undefined
@@ -14,25 +14,21 @@ const getParentDepartmentName = (
   return `${department.name}`;
 };
 
-const fetchDepartments = async (type: string): Promise<DepartmentType[]> => {
-  const url =
-    type === "view"
-      ? `http://${process.env.BASE_URL}/department/view`
-      : `http://${process.env.BASE_URL}/department/get-departments`;
-
-  const response = await axios.get(url, {
-    headers: {
-      Authorization: "Bearer " + Cookies.get("access_token"),
-    },
-  });
-  return response.data;
-};
-
 const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
-  const { data, isLoading } = useQuery<DepartmentType[]>({
-    queryKey: ["departments", selectedOption],
-    queryFn: () => fetchDepartments(selectedOption),
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
   });
+  const { data, isLoading } = useCustomQuery<DepartmentType[]>({
+    queryKey: ["departments", selectedOption],
+    url:
+      selectedOption === "view"
+        ? `http://${process.env.BASE_URL}/department/view`
+        : `http://${process.env.BASE_URL}/department/get-departments`,
+    setSnackbarConfig,
+  });
+
   const isAdmin = useRolePermissions("admin");
 
   const router = useRouter();
@@ -115,6 +111,12 @@ const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
           </tbody>
         </table>
       </div>
+      <CustomizedSnackbars
+        open={snackbarConfig.open}
+        message={snackbarConfig.message}
+        severity={snackbarConfig.severity}
+        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 };

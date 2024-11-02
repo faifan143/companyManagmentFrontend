@@ -1,44 +1,34 @@
 // EmployeesContent.tsx
 "use client";
 
+import useCustomQuery from "@/hooks/useCustomQuery";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import { useRolePermissions } from "@/utils/check_permissions";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import CustomizedSnackbars from "./CustomizedSnackbars";
 
-interface EmployeesContentProps {
+const EmployeesContent: React.FC<{
   selectedOption: string;
-}
-
-const EmployeesContent: React.FC<EmployeesContentProps> = ({
-  selectedOption,
-}) => {
+}> = ({ selectedOption }) => {
   const isAdmin = useRolePermissions("admin");
-
-  const fetchEmployees = async (): Promise<EmployeeType[]> => {
-    const endpoint = `http://${process.env.BASE_URL}/emp/${selectedOption}`;
-
-    const response = await axios.get(endpoint, {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("access_token"),
-      },
-    });
-
-    console.log("employees : ", response.data);
-
-    return response.data;
-  };
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
 
   const {
     data: employees,
     isLoading,
     refetch,
-  } = useQuery<EmployeeType[]>({
+  } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees", selectedOption],
-    queryFn: fetchEmployees,
+    url: `http://${process.env.BASE_URL}/emp/${selectedOption}`,
+    setSnackbarConfig,
   });
 
   const router = useRouter();
@@ -153,6 +143,13 @@ const EmployeesContent: React.FC<EmployeesContentProps> = ({
       ) : (
         <p className="text-center text-gray-600 mt-4">No employees found.</p>
       )}
+
+      <CustomizedSnackbars
+        open={snackbarConfig.open}
+        message={snackbarConfig.message}
+        severity={snackbarConfig.severity}
+        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 };

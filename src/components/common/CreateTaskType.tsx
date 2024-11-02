@@ -1,29 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useCreateMutation } from "@/hooks/useCreateMutation";
+import { addTaskTypeSchema } from "@/schemas/task.schema";
+import { CreateTaskTypeProps, TaskTypeFormInputs } from "@/types/Task.type";
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import Modal from "react-modal";
-import { useCreateMutation } from "@/hooks/useCreateMutation";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Task type name is required"),
-  description: yup.string().required("Description is required"),
-});
-
-interface TaskTypeFormInputs {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface CreateTaskTypeProps {
-  isOpen: boolean;
-  onClose: () => void;
-  taskTypeData?: TaskTypeFormInputs | null;
-}
 
 const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
   isOpen,
@@ -36,7 +20,7 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
     formState: { errors },
     reset,
   } = useForm<TaskTypeFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addTaskTypeSchema) as any,
     defaultValues: taskTypeData || {},
   });
 

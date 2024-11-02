@@ -2,17 +2,7 @@ import React, { useState } from "react";
 import { FaRegCommentDots, FaPaperclip } from "react-icons/fa";
 import { Draggable } from "react-beautiful-dnd";
 import TaskDetailsModal from "./TaskDetailsModal";
-import ITask from "@/types/Task.type";
-
-interface TaskCardProps {
-  taskId: string;
-  index: number;
-  title: string;
-  commentsCount: number;
-  attachmentsCount: number;
-  priority: string;
-  task: ITask;
-}
+import { TaskCardProps } from "@/types/components/TaskCard.type";
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {

@@ -6,64 +6,15 @@ import CreateTaskType from "@/components/common/CreateTaskType";
 import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
 import GridContainer from "@/components/common/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import { EmployeeType } from "@/types/EmployeeType.type";
+import { addTaskSchema } from "@/schemas/task.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
+import { TaskFormInputs } from "@/types/Task.type";
 const baseUrl = process.env.BASE_URL || "";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Task name is required"),
-  description: yup.string().required("Description is required"),
-  task_type: yup.string().required("Task type is required"),
-  priority: yup
-    .number()
-    .required("Priority is required")
-    .typeError("Priority must be a number"),
-  emp: yup.string().nullable(),
-  department_id: yup.string().nullable(),
-  status: yup.string().required("Task status is required"),
-  due_date: yup
-    .date()
-    .required("Due date is required")
-    .typeError("Invalid date format"),
-  files: yup.array().of(yup.string()),
-  isRecurring: yup.boolean(),
-  intervalInDays: yup.number().when("isRecurring", {
-    is: true,
-    then: (schema) =>
-      schema
-        .required("Interval in days is required")
-        .min(1, "Interval must be at least 1 day"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  end_date: yup.date().when("isRecurring", {
-    is: true,
-    then: (schema) =>
-      schema.required("End date is required").typeError("Invalid date format"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-});
-
-// Define the form input types
-export interface TaskFormInputs {
-  id: string;
-  name: string;
-  description: string;
-  task_type: string;
-  priority: number;
-  emp?: string;
-  department_id?: string;
-  status: string;
-  due_date: string;
-  files?: string[];
-  isRecurring?: boolean;
-  intervalInDays?: number;
-  end_date?: string;
-}
 
 const AddTask: React.FC = () => {
   // React Hook Form setup
@@ -74,7 +25,7 @@ const AddTask: React.FC = () => {
     reset,
     watch,
   } = useForm<TaskFormInputs>({
-    resolver: yupResolver(schema) as any,
+    resolver: yupResolver(addTaskSchema) as any,
     defaultValues: {},
   });
 
@@ -138,78 +89,41 @@ const AddTask: React.FC = () => {
     }
   }, [error, isError, isSuccess, reset]);
 
-  // Fetch task types
-  const { data: taskTypes } = useQuery({
+  const { data: taskTypes } = useCustomQuery<any[]>({
     queryKey: ["taskTypes"],
-    queryFn: async () => {
-      const response = await axios.get(`http://${baseUrl}/task-type/find-all`, {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("access_token"),
-        },
-      });
-      return response.data.data;
-    },
+    url: `http://${baseUrl}/task-type/find-all`,
+    setSnackbarConfig,
+    nestedData: true,
   });
 
-  console.log(taskTypes);
-  // Fetch task statuses
-  const { data: taskStatuses } = useQuery({
+  const { data: taskStatuses } = useCustomQuery<any[]>({
     queryKey: ["taskStatuses"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/task-status/find-all`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data.data;
-    },
+    url: `http://${baseUrl}/task-status/find-all`,
+    setSnackbarConfig,
+    nestedData: true,
   });
 
-  // Fetch departments
-  const { data: departments } = useQuery({
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    queryFn: async () => {
-      const response = await axios.get(
-        `http://${baseUrl}/department/get-departments`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      return response.data;
-    },
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
   });
-
-  // Fetch employees
-  const { data: employees } = useQuery({
+  const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
-    queryFn: async () => {
-      const response = await axios.get(`http://${baseUrl}/emp/get-all-emps`, {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("access_token"),
-        },
-      });
-      return response.data;
-    },
+    url: `http://${baseUrl}/emp/get-all-emps`,
+    setSnackbarConfig,
   });
 
-  // Manage disabled state for employee and department fields
   const [isEmployeeDisabled, setIsEmployeeDisabled] = useState(false);
   const [isDepartmentDisabled, setIsDepartmentDisabled] = useState(false);
 
   useEffect(() => {
-    // Disable department field when an employee is selected
     if (selectedEmployee) {
       setIsDepartmentDisabled(true);
     } else {
       setIsDepartmentDisabled(false);
     }
 
-    // Disable employee field when a department is selected
     if (selectedDepartment) {
       setIsEmployeeDisabled(true);
     } else {

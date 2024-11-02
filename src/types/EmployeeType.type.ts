@@ -78,3 +78,40 @@ export interface EmployeeType {
   bank_accounts: BankAccount[];
   evaluations: any[];
 }
+
+export interface EmployeeFormInputs {
+  id?: string;
+  name: string;
+  national_id: string;
+  dob: string;
+  phone: string;
+  email: string;
+  password: string;
+  gender: string;
+  marital_status: string;
+  address: string;
+  employment_date: string;
+  base_salary: number;
+  emergency_contact: string;
+
+  department_id: string;
+  job_id: string;
+  job_tasks: string;
+  legal_documents: { name: string; validity: string; file: string | null }[];
+  certifications: {
+    certificate_name: string;
+    date: string;
+    grade: string;
+    file: string | null;
+  }[];
+  allowances: { allowance_type: string; amount: number }[];
+  incentives: { description: string; amount: number }[];
+  bank_accounts: { bank_name: string; account_number: string }[];
+  evaluations: { evaluation_type: string; description: string; plan: string }[];
+}
+
+export interface CreateEmployeeProps {
+  isOpen: boolean;
+  onClose: () => void;
+  employeeData?: EmployeeFormInputs | null;
+}

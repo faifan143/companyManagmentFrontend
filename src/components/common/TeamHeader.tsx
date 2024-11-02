@@ -1,19 +1,10 @@
 "use client";
 
 import { useRedux } from "@/hooks/useRedux";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { TeamHeaderProps } from "@/types/components/TeamHeader.type";
+import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
-
-interface TeamHeaderProps {
-  title: string;
-  members: { name: string; color?: string }[];
-  totalMembers: number;
-  currentContent: "All Tasks" | "Departments" | "Employees" | "Job Titles";
-  setCurrentContent: Dispatch<
-    SetStateAction<"All Tasks" | "Departments" | "Employees" | "Job Titles">
-  >;
-}
 
 const TeamHeader: React.FC<TeamHeaderProps> = ({
   title,

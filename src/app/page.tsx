@@ -4,44 +4,13 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useRedux } from "../hooks/useRedux";
 import { loginUser } from "@/state/slices/userSlice";
 import { useRouter } from "next/navigation";
 import Modal from "react-modal";
 import axios from "axios";
-
-const schema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  password: yup
-    .string()
-    .min(3, "Password must be at least 6 characters")
-    .required("Password is required"),
-});
-
-const changePasswordSchema = yup.object().shape({
-  newPassword: yup
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("New password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("newPassword"), undefined], "Passwords must match")
-    .required("Confirm password is required"),
-});
-
-interface LoginFormInputs {
-  email: string;
-  password: string;
-}
-
-interface ChangePasswordFormInputs {
-  newPassword: string;
-  confirmPassword: string;
-}
+import { changePasswordSchema, loginSchema } from "@/schemas/login.schema";
+import { ChangePasswordFormInputs, LoginFormInputs } from "@/types/login.type";
 
 const Login: React.FC = () => {
   const { dispatchAction, selector } = useRedux((state) => state.user);
@@ -56,7 +25,7 @@ const Login: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(loginSchema),
   });
 
   const {

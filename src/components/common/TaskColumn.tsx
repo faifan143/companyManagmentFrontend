@@ -1,15 +1,7 @@
-import React, { Dispatch, SetStateAction } from "react";
-import TaskCard from "./TaskCard";
+import React from "react";
 import { Droppable } from "react-beautiful-dnd";
-import ITask from "@/types/Task.type";
-
-interface TaskColumnProps {
-  columnId: string;
-  title: string;
-  taskCount: number;
-  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  tasks: ITask[];
-}
+import TaskCard from "./TaskCard";
+import { TaskColumnProps } from "@/types/components/TaskColumn.type";
 
 const TaskColumn: React.FC<TaskColumnProps> = ({
   columnId,

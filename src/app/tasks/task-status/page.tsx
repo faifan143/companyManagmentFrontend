@@ -1,41 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import Cookies from "js-cookie";
-import EditIcon from "@mui/icons-material/Edit";
+import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import useCustomQuery from "@/hooks/useCustomQuery";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import axios from "axios";
+import Cookies from "js-cookie";
+import React, { useState } from "react";
 import CreateTaskStatus from "../../../components/common/CreateTaskStatus";
-
-interface ITaskStatus {
-  id: string;
-  name: string;
-  description: string;
-}
-
-const fetchTaskStatuses = async (): Promise<ITaskStatus[]> => {
-  const response = await axios.get(
-    `http://${process.env.BASE_URL}/task-status/find-all`,
-    {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("access_token"),
-      },
-    }
-  );
-  return response.data.data;
-};
+import { ITaskStatus } from "@/types/Task.type";
 
 const TaskStatusesView: React.FC = () => {
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
   const {
     data: taskStatuses,
     isLoading,
     error,
     refetch,
-  } = useQuery<ITaskStatus[]>({
+  } = useCustomQuery<ITaskStatus[]>({
     queryKey: ["taskStatuses"],
-    queryFn: fetchTaskStatuses,
+    url: `http://${process.env.BASE_URL}/task-status/find-all`,
+    setSnackbarConfig,
+    nestedData: true,
   });
+
   console.log(taskStatuses);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -141,6 +133,13 @@ const TaskStatusesView: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         taskStatusData={editData}
+      />
+
+      <CustomizedSnackbars
+        open={snackbarConfig.open}
+        message={snackbarConfig.message}
+        severity={snackbarConfig.severity}
+        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
       />
     </div>
   );

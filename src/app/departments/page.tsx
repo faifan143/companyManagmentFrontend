@@ -6,17 +6,11 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import CreateDepartment from "../../components/common/CreateDepartment";
 import { usePermissions, useRolePermissions } from "@/utils/check_permissions";
-
-interface Department {
-  id: string;
-  name: string;
-  description: string;
-  parent_department_id?: Department | null;
-}
+import { DepartmentType } from "@/types/DepartmentType.type";
 
 const DepartmentsView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<Department | null>(null);
+  const [editData, setEditData] = useState<DepartmentType | null>(null);
   const [selectedOption, setSelectedOption] = useState("get-departments");
   const router = useRouter();
   const isAdmin = useRolePermissions("admin");

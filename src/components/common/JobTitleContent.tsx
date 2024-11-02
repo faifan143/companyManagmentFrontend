@@ -1,44 +1,36 @@
+import useCustomQuery from "@/hooks/useCustomQuery";
 import { JobTitleType } from "@/types/JobTitle.type";
 import { useRolePermissions } from "@/utils/check_permissions";
 import {
+  Button,
   CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Button,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-const fetchJobTitles = async (type: string): Promise<JobTitleType[]> => {
-  const url =
-    type === "view"
-      ? `http://${process.env.BASE_URL}/job-titles/view`
-      : `http://${process.env.BASE_URL}/job-titles/get-job-titles`;
-
-  const response = await axios.get(url, {
-    headers: {
-      Authorization: "Bearer " + Cookies.get("access_token"),
-    },
-  });
-
-  return response.data;
-};
+import CustomizedSnackbars from "./CustomizedSnackbars";
 
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const isAdmin = useRolePermissions("admin");
-
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
   const {
     data: jobs,
     isLoading,
     error,
-  } = useQuery<JobTitleType[]>({
+  } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles", selectedOption],
-    queryFn: () => fetchJobTitles(selectedOption),
+    url:
+      selectedOption === "view"
+        ? `http://${process.env.BASE_URL}/job-titles/view`
+        : `http://${process.env.BASE_URL}/job-titles/get-job-titles`,
+    setSnackbarConfig,
   });
 
   const router = useRouter();
@@ -217,6 +209,13 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <CustomizedSnackbars
+        open={snackbarConfig.open}
+        message={snackbarConfig.message}
+        severity={snackbarConfig.severity}
+        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 };

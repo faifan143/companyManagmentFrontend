@@ -1,13 +1,7 @@
 import * as React from "react";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-
-interface CustomizedSnackbarsProps {
-  open: boolean;
-  message: string;
-  severity: "success" | "error" | "warning" | "info";
-  onClose: () => void;
-}
+import { CustomizedSnackbarsProps } from "@/types/Snackbar.type";
 
 const CustomizedSnackbars: React.FC<CustomizedSnackbarsProps> = ({
   open,

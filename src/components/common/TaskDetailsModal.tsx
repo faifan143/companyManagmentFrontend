@@ -1,20 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import Modal from "react-modal";
-import ITask from "@/types/Task.type";
-import { FaTimes, FaPaperclip, FaPaperPlane } from "react-icons/fa";
+import {
+  TaskDetailsModalProps,
+  Comment,
+} from "@/types/components/TaskDetailsModal.type";
 import axios from "axios";
 import Cookies from "js-cookie";
-
-interface Comment {
-  id: string;
-  content: string;
-  files: string[];
-  createdAt: string;
-  author: {
-    id: string;
-    name: string;
-  };
-}
+import React, { useEffect, useRef, useState } from "react";
+import { FaPaperclip, FaPaperPlane, FaTimes } from "react-icons/fa";
+import Modal from "react-modal";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -27,12 +19,6 @@ const formatDate = (dateString: string) => {
     hour12: true,
   });
 };
-
-interface TaskDetailsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  taskData: ITask | null;
-}
 
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   isOpen,

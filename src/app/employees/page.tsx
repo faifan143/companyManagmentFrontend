@@ -5,10 +5,9 @@ import EmployeesContent from "@/components/common/EmployeesContent";
 import GridContainer from "@/components/common/GridContainer";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import CreateEmployee, {
-  EmployeeFormInputs,
-} from "../../components/common/CreateEmployee";
 import { usePermissions, useRolePermissions } from "@/utils/check_permissions";
+import { EmployeeFormInputs } from "@/types/EmployeeType.type";
+import CreateEmployee from "@/components/common/CreateEmployee";
 
 const EmployeesView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
