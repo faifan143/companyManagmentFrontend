@@ -56,3 +56,14 @@ export interface JobTitleFormInputs {
   accessibleEmps?: string[] | null;
   accessibleJobTitles?: string[] | null;
 }
+
+export interface HandlePermissionsChangeParams {
+  selectedOptions: Array<{ value: string; label: string }>;
+  setPermissionsSelected: (permissions: string[]) => void;
+  setSpecificDept: (specificDept: string[]) => void;
+  specificDept: string[];
+  setSpecificEmp: (specificEmp: string[]) => void;
+  specificEmp: string[];
+  setSpecificJobTitle: (specificJobTitle: string[]) => void;
+  specificJobTitle: string[];
+}

@@ -2,8 +2,8 @@
 
 import { XIcon } from "@/assets";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
-import GridContainer from "@/components/common/GridContainer";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import {
@@ -16,11 +16,33 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import {
+  handleAddCategory,
+  handleAddNumericOwner,
+  handleFileChange,
+  handleManualSubmit,
+  handleRemoveFile,
+} from "@/services/department.service";
+import getErrorMessages from "@/utils/handleErrorMessages";
+import useQueryPageData from "@/hooks/useQueryPageData";
+import { useTranslation } from "react-i18next";
 
 const baseUrl = process.env.BASE_URL || "";
 
 const AddDept: React.FC = () => {
-  const [departmentData, setDepartmentData] = useState<any | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [requiredCategoryOptions, setRequiredCategoryOptions] = useState<
+    string[]
+  >(["primary-department", "secondary-department", "sub-department"]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+
   const {
     register,
     getValues,
@@ -33,15 +55,9 @@ const AddDept: React.FC = () => {
     resolver: yupResolver(addDeptSchema) as any,
     defaultValues: {},
   });
-
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("departmentData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setDepartmentData(parsedData);
-      reset(parsedData);
-    }
-  }, [reset]);
+  const { t } = useTranslation();
+  const departmentData = useQueryPageData<DepartmentFormInputs>(reset);
+  console.log(departmentData);
 
   const {
     fields: numericOwnersFields,
@@ -68,37 +84,6 @@ const AddDept: React.FC = () => {
     name: "developmentPrograms",
   });
 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files);
-      setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    }
-  };
-  const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
-
-  useEffect(() => {
-    if (departmentData) {
-      reset(departmentData);
-    } else {
-      reset();
-    }
-  }, [departmentData, reset]);
-
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
-
-  const endpoint = departmentData
-    ? `/department/updateDepartment/${departmentData.id}`
-    : `/department/create-department`;
-
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
     url: `http://${baseUrl}/department/get-departments`,
@@ -117,27 +102,13 @@ const AddDept: React.FC = () => {
     isError: isErrorDepartment,
     error: errorDepartment,
   } = useCreateMutation({
-    endpoint: endpoint,
+    endpoint: departmentData
+      ? `/department/updateDepartment/${departmentData.id}`
+      : `/department/create-department`,
     onSuccessMessage: "Departments added successfully!",
     invalidateQueryKeys: ["departments"],
-  });
-  const handleManualSubmit = async () => {
-    const data = getValues();
-    data.supportingFiles = selectedFiles.map((fil) => fil.name);
-    console.log("Form data with files:", data);
-    addDepartment(data);
-  };
-
-  useEffect(() => {
-    if (isSuccessDepartment) {
-      sessionStorage.clear();
-      setSnackbarConfig({
-        open: true,
-        message: departmentData
-          ? "Department updated successfully!"
-          : "Department created successfully!",
-        severity: "success",
-      });
+    setSnackbarConfig,
+    onSuccessFn: () => {
       reset({
         id: "",
         parentDepartmentId: "",
@@ -152,78 +123,66 @@ const AddDept: React.FC = () => {
         developmentPrograms: [],
       });
       setSelectedFiles([]);
-    } else if (isErrorDepartment) {
-      console.error("Failed to create/update the department", errorDepartment);
-    }
-  }, [
-    departmentData,
-    errorDepartment,
-    isErrorDepartment,
-    isSuccessDepartment,
-    reset,
-  ]);
-
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
-  const [requiredCategoryOptions, setRequiredCategoryOptions] = useState<
-    string[]
-  >(["primary-department", "secondary-department", "sub-department"]);
-
-  const handleAddCategory = () => {
-    if (newCategory.trim() !== "") {
-      // Add the new Category to the dropdown options
-      setRequiredCategoryOptions((prevOptions) => [
-        ...prevOptions,
-        newCategory,
-      ]);
-      // Set the new value as selected
-      setValue("category", newCategory);
-      setIsAddingCategory(false);
-      setNewCategory("");
-    }
-  };
-
-  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+    },
+  });
 
   useEffect(() => {
     if (categories) {
-      setAvailableCategories(categories.map((category: any) => category.name));
+      setAvailableCategories(categories.map((category) => category.name));
     }
   }, [categories]);
 
-  const handleAddNumericOwner = () => {
-    appendNumericOwner({ category: "", count: 1 });
-  };
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      getErrorMessages({ errors, setSnackbarConfig });
+    }
+  }, [errors, setSnackbarConfig]);
+  useEffect(() => {
+    if (departmentData) {
+      reset(departmentData);
+    } else {
+      reset();
+    }
+  }, [departmentData, reset, categories]);
 
   return (
     <GridContainer>
       <div className="bg-white p-8 rounded-xl shadow-lg  w-full relative col-span-full">
         <h1 className=" text-2xl  font-bold mb-6">
-          {departmentData ? "Update Department" : "Create Department"}
+          {departmentData ? t("Update Department") : t("Create Department")}
         </h1>
-        <form className="space-y-4" onSubmit={handleSubmit(handleManualSubmit)}>
+        <form
+          className="space-y-4"
+          onSubmit={handleSubmit(() =>
+            handleManualSubmit({
+              getValues,
+              selectedFiles,
+              addDepartment,
+            })
+          )}
+        >
           <div className="flex gap-5 items-center justify-between">
             <div>
               <label className="block  text-sm font-medium">
-                Department Name
+                {t("Department Name")}
               </label>
               <input
                 type="text"
                 {...register("name")}
                 className="w-full px-4 py-2 mt-1 rounded-lg border"
-                placeholder="Enter department name"
+                placeholder={t("Enter department name")}
               />
               {errors.name && (
                 <p className="text-high mt-1 text-sm">{errors.name.message}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium">Goal</label>
+              <label className="block text-sm font-medium">{t("Goal")}</label>
               <input
                 type="text"
                 {...register("goal")}
                 className="w-full px-4 py-2 mt-1 rounded-lg border"
-                placeholder="Enter department goal"
+                placeholder={t("Enter department goal")}
               />
               {errors.goal && (
                 <p className="text-high mt-1 text-sm">{errors.goal.message}</p>
@@ -231,7 +190,9 @@ const AddDept: React.FC = () => {
             </div>
             {/* Category Field */}
             <div>
-              <label className="block text-sm font-medium">Category</label>
+              <label className="block text-sm font-medium">
+                {t("Category")}
+              </label>
               <div className="flex gap-2 items-center">
                 <select
                   {...register("category")}
@@ -239,7 +200,7 @@ const AddDept: React.FC = () => {
                     errors.category ? "border-high" : "border-border"
                   }`}
                 >
-                  <option value="">Select Category</option>
+                  <option value="">{t("Select Category")}</option>
                   {requiredCategoryOptions.map((category, index) => (
                     <option key={index} value={category}>
                       {category}
@@ -258,16 +219,24 @@ const AddDept: React.FC = () => {
                   <input
                     type="text"
                     className="w-full px-4 py-2 rounded-lg border"
-                    placeholder="Enter new Category"
+                    placeholder={t("Enter new Category")}
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                   />
                   <button
                     type="button"
-                    onClick={handleAddCategory}
+                    onClick={() => {
+                      handleAddCategory(
+                        newCategory,
+                        setNewCategory,
+                        setRequiredCategoryOptions,
+                        setIsAddingCategory,
+                        setValue
+                      );
+                    }}
                     className="bg-blue-500 text-white rounded-md px-4 py-2"
                   >
-                    Add
+                    {t("Add")}
                   </button>
                 </div>
               )}
@@ -279,11 +248,13 @@ const AddDept: React.FC = () => {
             </div>
             {/*  */}
             <div>
-              <label className="block text-sm font-medium">Main Tasks</label>
+              <label className="block text-sm font-medium">
+                {t("Main Tasks")}
+              </label>
               <textarea
                 {...register("mainTasks")}
                 className="w-full px-4 py-2 mt-1 rounded-lg border"
-                placeholder="Enter main tasks"
+                placeholder={t("Enter main tasks")}
                 rows={1}
               />
               {errors.mainTasks && (
@@ -296,13 +267,13 @@ const AddDept: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium">
-              Parent Department (Optional)
+              {t("Parent Department (Optional)")}
             </label>
             <select
               {...register("parentDepartmentId")}
               className="w-full px-4 py-2 mt-1 rounded-lg shadow-md"
             >
-              <option value="">Select a parent department</option>
+              <option value="">{t("Select a parent department")}</option>
               {departments &&
                 departments.map((dept: any) => (
                   <option key={dept.id} value={dept.id}>
@@ -319,7 +290,9 @@ const AddDept: React.FC = () => {
 
           {/* Numeric Owners Section */}
           <div>
-            <label className="block text-sm font-medium">Numeric Owners</label>
+            <label className="block text-sm font-medium">
+              {t("Numeric Owners")}
+            </label>
             {numericOwnersFields.map((field, index) => (
               <div key={field.id} className="flex gap-4 items-center">
                 <select
@@ -330,12 +303,12 @@ const AddDept: React.FC = () => {
                       : "border-border"
                   }`}
                 >
-                  <option value="">Select a Job Category</option>
+                  <option value="">{t("Select a Job Category")}</option>
                   {availableCategories.map((category, i) => (
                     <option
                       key={i}
                       value={category}
-                      onClick={handleAddNumericOwner}
+                      onClick={() => handleAddNumericOwner(appendNumericOwner)}
                     >
                       {category}
                     </option>
@@ -349,7 +322,7 @@ const AddDept: React.FC = () => {
                 <input
                   type="number"
                   {...register(`numericOwners.${index}.count` as const)}
-                  placeholder="Count"
+                  placeholder={t("Count")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <Image
@@ -367,20 +340,22 @@ const AddDept: React.FC = () => {
               onClick={() => appendNumericOwner({ count: 1, category: "" })}
               className="text-sm text-blue-500"
             >
-              Add Numeric Owner
+              {t("Add Numeric Owner")}
             </button>
           </div>
 
           {/* Supporting Files Section */}
           <div>
-            <div className="block text-sm font-medium">Supporting Files</div>
+            <div className="block text-sm font-medium">
+              {t("Supporting Files")}
+            </div>
 
             <input
               hidden
               id="file-id"
               type="file"
               multiple // Allow multiple files
-              onChange={handleFileChange} // Handle file selection
+              onChange={(e) => handleFileChange(e, setSelectedFiles)} // Handle file selection
               className="w-full px-4 py-2 mt-1 rounded-lg"
             />
             {/* Display selected file names */}
@@ -393,7 +368,7 @@ const AddDept: React.FC = () => {
                   width={20}
                   height={20}
                   className="cursor-pointer p-1 shadow-md rounded-md text-red-500"
-                  onClick={() => handleRemoveFile(index)} // Remove selected file
+                  onClick={() => handleRemoveFile(index, setSelectedFiles)} // Remove selected file
                 />
               </div>
             ))}
@@ -402,26 +377,26 @@ const AddDept: React.FC = () => {
               htmlFor="file-id"
               className="text-sm text-blue-500 cursor-pointer"
             >
-              Attach Supporting File
+              {t("Attach Supporting File")}
             </label>
           </div>
 
           {/* Required Reports Section */}
           <div>
             <label className="block text-sm font-medium">
-              Required Reports
+              {t("Required Reports")}
             </label>
             {requiredReportsFields.map((field, index) => (
               <div key={field.id} className="flex gap-4 items-center">
                 <input
                   type="text"
                   {...register(`requiredReports.${index}.name` as const)}
-                  placeholder="Report Name"
+                  placeholder={t("Report Name")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
                   type="file"
-                  placeholder="Template File"
+                  placeholder={t("Template File")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                   onChange={(e) => {
                     const file = e.target.files?.[0]; // Get the selected file
@@ -450,14 +425,14 @@ const AddDept: React.FC = () => {
               }
               className="text-sm text-blue-500"
             >
-              Add Required Report
+              {t("Add Required Report")}
             </button>
           </div>
 
           {/* Development Programs Section */}
           <div>
             <label className="block text-sm font-medium">
-              Development Programs
+              {t("Development Programs")}
             </label>
             {developmentProgramsFields.map((field, index) => (
               <div key={field.id} className="flex gap-4 items-center">
@@ -466,7 +441,7 @@ const AddDept: React.FC = () => {
                   {...register(
                     `developmentPrograms.${index}.programName` as const
                   )}
-                  placeholder="Program Name"
+                  placeholder={t("Program Name")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
@@ -474,13 +449,13 @@ const AddDept: React.FC = () => {
                   {...register(
                     `developmentPrograms.${index}.objective` as const
                   )}
-                  placeholder="Objective"
+                  placeholder={t("Objective")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
 
                 <input
                   type="file"
-                  placeholder="Program File"
+                  placeholder={t("Program File")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                   onChange={(e) => {
                     const file = e.target.files?.[0]; // Get the selected file
@@ -495,7 +470,7 @@ const AddDept: React.FC = () => {
 
                 <textarea
                   {...register(`developmentPrograms.${index}.notes` as const)}
-                  placeholder="Notes"
+                  placeholder={t("Notes")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                   rows={1}
                 />
@@ -521,7 +496,7 @@ const AddDept: React.FC = () => {
               }
               className="text-sm text-blue-500"
             >
-              Add Development Program
+              {t("Add Development Program")}
             </button>
           </div>
 
@@ -534,11 +509,11 @@ const AddDept: React.FC = () => {
           >
             {isPendingDepartment
               ? departmentData
-                ? "Updating..."
-                : "Creating..."
+                ? t("Updating...")
+                : t("Creating...")
               : departmentData
-              ? "Update Department"
-              : "Create Department"}
+              ? t("Update Department")
+              : t("Create Department")}
           </button>
           {isErrorDepartment && (
             <p className="text-high mt-2 text-center">{errorDepartment + ""}</p>

@@ -1,3 +1,5 @@
+import { UseFormGetValues } from "react-hook-form";
+
 export interface DepartmentType {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface DepartmentType {
   goal: string;
   category: string;
   mainTasks: string;
-  parentDepartmentId?: string;
+  parent_department?: DepartmentType;
   numericOwners: { category: string; count: number }[];
   supportingFiles: string[];
   requiredReports: { name: string; templateFile: string }[];
@@ -26,7 +28,7 @@ export interface DepartmentFormInputs {
   mainTasks: string;
   parentDepartmentId?: string;
   numericOwners: { category: string; count: number }[];
-  supportingFiles: string[]; // File type here
+  supportingFiles: string[];
   requiredReports: { name: string; templateFile: string }[];
   developmentPrograms: {
     programName: string;
@@ -36,15 +38,19 @@ export interface DepartmentFormInputs {
   }[];
 }
 
-export interface DepartmentFormInputs {
-  id: string;
-  name: string;
-  description: string;
-  parentDepartmentId?: string;
-}
-
 export interface CreateDepartmentProps {
   isOpen: boolean;
   onClose: () => void;
   departmentData?: DepartmentFormInputs | null;
+}
+
+export interface SnackbarConfig {
+  open: boolean;
+  message: string;
+  severity: "success" | "info" | "warning" | "error";
+}
+export interface HandleManualSubmitOptions {
+  getValues: UseFormGetValues<DepartmentFormInputs>;
+  selectedFiles: File[];
+  addDepartment: (data: DepartmentFormInputs) => void;
 }

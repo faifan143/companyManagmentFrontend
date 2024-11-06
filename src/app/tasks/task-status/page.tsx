@@ -1,14 +1,16 @@
 "use client";
 
-import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import { ITaskStatus } from "@/types/Task.type";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import axios from "axios";
-import Cookies from "js-cookie";
 import React, { useState } from "react";
-import CreateTaskStatus from "../../../components/common/CreateTaskStatus";
-import { ITaskStatus } from "@/types/Task.type";
+import CreateTaskStatus from "../../../components/common/molcules/CreateTaskStatus";
+import {
+  handleDeleteStatusClick,
+  handleEditStatusClick,
+} from "@/services/task.service";
 
 const TaskStatusesView: React.FC = () => {
   const [snackbarConfig, setSnackbarConfig] = useState({
@@ -16,6 +18,9 @@ const TaskStatusesView: React.FC = () => {
     message: "",
     severity: "success" as "success" | "info" | "warning" | "error",
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState<ITaskStatus | null>(null);
+
   const {
     data: taskStatuses,
     isLoading,
@@ -27,11 +32,6 @@ const TaskStatusesView: React.FC = () => {
     setSnackbarConfig,
     nestedData: true,
   });
-
-  console.log(taskStatuses);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<ITaskStatus | null>(null);
 
   if (isLoading) {
     return (
@@ -48,27 +48,6 @@ const TaskStatusesView: React.FC = () => {
       </div>
     );
   }
-
-  const handleEditClick = (taskStatus: ITaskStatus) => {
-    setEditData(taskStatus);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteClick = async (id: string) => {
-    try {
-      await axios.delete(
-        `http://${process.env.BASE_URL}/task-status/delete/${id}`,
-        {
-          headers: {
-            Authorization: "Bearer " + Cookies.get("access_token"),
-          },
-        }
-      );
-      refetch(); // Refresh the data after deletion
-    } catch (error) {
-      console.error("Error deleting task status:", error);
-    }
-  };
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
@@ -100,11 +79,22 @@ const TaskStatusesView: React.FC = () => {
                   <td className="py-3 px-4 flex space-x-2">
                     <EditIcon
                       className="cursor-pointer text-[#1b1a40]"
-                      onClick={() => handleEditClick(taskStatus)}
+                      onClick={() =>
+                        handleEditStatusClick({
+                          taskStatus,
+                          setEditData,
+                          setIsModalOpen,
+                        })
+                      }
                     />
                     <DeleteIcon
                       className="cursor-pointer text-red-500"
-                      onClick={() => handleDeleteClick(taskStatus.id)}
+                      onClick={() =>
+                        handleDeleteStatusClick({
+                          id: taskStatus.id,
+                          refetch,
+                        })
+                      }
                     />
                   </td>
                 </tr>

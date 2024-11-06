@@ -1,7 +1,7 @@
 "use client";
 
-import GridContainer from "@/components/common/GridContainer";
-import TasksContent from "@/components/common/TasksContent";
+import GridContainer from "@/components/common/atoms/GridContainer";
+import TasksContent from "@/components/common/organisms/TasksContent";
 
 const Home = () => {
   return (

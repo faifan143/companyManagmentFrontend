@@ -1,3 +1,6 @@
+import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+import { Dispatch, SetStateAction } from "react";
+
 export default interface ITask {
   id: string;
   name: string;
@@ -117,4 +120,22 @@ export interface CreateTaskTypeProps {
   isOpen: boolean;
   onClose: () => void;
   taskTypeData?: TaskTypeFormInputs | null;
+}
+
+export interface HandleEditTypeClickProps {
+  taskType: ITaskType;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+  setEditData: Dispatch<SetStateAction<ITaskType | null>>;
+}
+export interface HandleEditStatusClickProps {
+  taskStatus: ITaskStatus;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+  setEditData: Dispatch<SetStateAction<ITaskStatus | null>>;
+}
+
+export interface HandleDeleteStatusClick {
+  id: string;
+  refetch: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<ITaskStatus[], Error>>;
 }

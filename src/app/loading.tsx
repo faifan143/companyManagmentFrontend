@@ -1,4 +1,4 @@
-import PageSpinner from "@/components/common/PageSpinner";
+import PageSpinner from "@/components/common/atoms/PageSpinner";
 import React from "react";
 
 const loading = () => {

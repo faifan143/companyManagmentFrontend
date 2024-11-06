@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
-import GridContainer from "@/components/common/GridContainer";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { addCategorySchema } from "@/schemas/job.schema";
+import {
+  addEducationService,
+  addExperienceService,
+} from "@/services/job.service";
 import { JobCategoryFormInputs } from "@/types/JobCategory.type";
+import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 const AddJobCategory: React.FC = () => {
   const [requiredEducationOptions, setRequiredEducationOptions] = useState<
@@ -18,10 +24,8 @@ const AddJobCategory: React.FC = () => {
   const [requiredExperienceOptions, setRequiredExperienceOptions] = useState<
     string[]
   >([]);
-
   const [isAddingEducation, setIsAddingEducation] = useState(false);
   const [newEducation, setNewEducation] = useState("");
-
   const [isAddingExperience, setIsAddingExperience] = useState(false);
   const [newExperience, setNewExperience] = useState("");
   const [snackbarConfig, setSnackbarConfig] = useState({
@@ -29,12 +33,7 @@ const AddJobCategory: React.FC = () => {
     message: "",
     severity: "success" as "success" | "info" | "warning" | "error",
   });
-
-  const { data: education_experience } = useCustomQuery<any>({
-    queryKey: ["education_experience"],
-    url: `http://${process.env.BASE_URL}/job-categories/unique/education-experience`,
-    setSnackbarConfig,
-  });
+  const { t } = useTranslation();
 
   const {
     register,
@@ -54,40 +53,23 @@ const AddJobCategory: React.FC = () => {
     },
   });
 
-  useEffect(() => {
-    if (education_experience) {
-      setRequiredEducationOptions(education_experience.requiredEducation || []);
-      setRequiredExperienceOptions(
-        education_experience.requiredExperience || []
-      );
-    }
-  }, [education_experience]);
-
-  useEffect(() => {
-    reset();
-  }, [reset]);
-
-  const endpoint = `/job-categories`;
+  const { data: education_experience } = useCustomQuery<any>({
+    queryKey: ["education_experience"],
+    url: `http://${process.env.BASE_URL}/job-categories/unique/education-experience`,
+    setSnackbarConfig,
+  });
 
   const {
     mutate: addJobCategory,
     isPending: isPendingJobCategory,
-    isSuccess: isSuccessJobCategory,
     isError: isErrorJobCategory,
     error: errorJobCategory,
   } = useCreateMutation({
-    endpoint: endpoint,
-    onSuccessMessage: "Job Category added successfully!",
+    endpoint: `/job-categories`,
+    onSuccessMessage: t("Job Category added successfully!"),
     invalidateQueryKeys: ["jobCategories"],
-  });
-
-  const onSubmit = async (data: JobCategoryFormInputs) => {
-    console.log("Form data before submission:", data);
-    addJobCategory(data);
-  };
-
-  useEffect(() => {
-    if (isSuccessJobCategory) {
+    setSnackbarConfig,
+    onSuccessFn: () => {
       reset({
         name: "",
         description: "",
@@ -98,62 +80,51 @@ const AddJobCategory: React.FC = () => {
 
       setSnackbarConfig({
         open: true,
-        message: "Job Category created successfully!",
+        message: t("Job Category created successfully!"),
         severity: "success",
       });
-    } else if (isErrorJobCategory) {
-      console.error(
-        "Failed to create/update the job category",
-        errorJobCategory
+    },
+  });
+
+  useEffect(() => {
+    if (education_experience) {
+      setRequiredEducationOptions(education_experience.requiredEducation || []);
+      setRequiredExperienceOptions(
+        education_experience.requiredExperience || []
       );
     }
-  }, [errorJobCategory, isErrorJobCategory, isSuccessJobCategory, reset]);
+  }, [education_experience]);
 
-  const handleAddEducation = () => {
-    if (newEducation.trim() !== "") {
-      // Add the new education to the dropdown options
-      setRequiredEducationOptions((prevOptions) => [
-        ...prevOptions,
-        newEducation,
-      ]);
-      // Set the new value as selected
-      setValue("required_education", newEducation);
-      setIsAddingEducation(false);
-      setNewEducation("");
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      getErrorMessages({ errors, setSnackbarConfig });
     }
-  };
-
-  const handleAddExperience = () => {
-    if (newExperience.trim() !== "") {
-      // Add the new experience to the dropdown options
-      setRequiredExperienceOptions((prevOptions) => [
-        ...prevOptions,
-        newExperience,
-      ]);
-      // Set the new value as selected
-      setValue("required_experience", newExperience);
-      setIsAddingExperience(false);
-      setNewExperience("");
-    }
-  };
+  }, [errors, setSnackbarConfig]);
 
   return (
     <GridContainer>
       <div className="bg-white p-8 rounded-xl shadow-lg col-span-12 w-full relative">
         <h1 className="text-center text-2xl font-bold mb-6">
-          {"Create Job Category"}
+          {t("Create Job Category")}
         </h1>
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="space-y-4"
+          onSubmit={handleSubmit(async (data: JobCategoryFormInputs) => {
+            addJobCategory(data);
+          })}
+        >
           {/* Name Field */}
           <div>
-            <label className="block text-sm font-medium">Category Name</label>
+            <label className="block text-sm font-medium">
+              {t("Category Name")}
+            </label>
             <input
               type="text"
               {...register("name")}
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.name ? "border-high" : "border-border"
               }`}
-              placeholder="Enter category name"
+              placeholder={t("Enter category name")}
             />
             {errors.name && (
               <p className="text-high mt-1 text-sm">{errors.name.message}</p>
@@ -162,13 +133,15 @@ const AddJobCategory: React.FC = () => {
 
           {/* Description Field */}
           <div>
-            <label className="block text-sm font-medium">Description</label>
+            <label className="block text-sm font-medium">
+              {t("Description")}
+            </label>
             <textarea
               {...register("description")}
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.description ? "border-high" : "border-border"
               }`}
-              placeholder="Enter category description"
+              placeholder={t("Enter category description")}
               rows={4}
             />
             {errors.description && (
@@ -181,7 +154,7 @@ const AddJobCategory: React.FC = () => {
           {/* Required Education Field */}
           <div>
             <label className="block text-sm font-medium">
-              Required Education
+              {t("Required Education")}
             </label>
             <div className="flex gap-2 items-center">
               <select
@@ -190,7 +163,7 @@ const AddJobCategory: React.FC = () => {
                   errors.required_education ? "border-high" : "border-border"
                 }`}
               >
-                <option value="">Select Required Education</option>
+                <option value="">{t("Select Required Education")}</option>
                 {requiredEducationOptions.map((education, index) => (
                   <option key={index} value={education}>
                     {education}
@@ -209,16 +182,24 @@ const AddJobCategory: React.FC = () => {
                 <input
                   type="text"
                   className="w-full px-4 py-2 rounded-lg border"
-                  placeholder="Enter new education"
+                  placeholder={t("Enter new education")}
                   value={newEducation}
                   onChange={(e) => setNewEducation(e.target.value)}
                 />
                 <button
                   type="button"
-                  onClick={handleAddEducation}
+                  onClick={() =>
+                    addEducationService({
+                      newEducation,
+                      setIsAddingEducation,
+                      setNewEducation,
+                      setRequiredEducationOptions,
+                      setValue,
+                    })
+                  }
                   className="bg-blue-500 text-white rounded-md px-4 py-2"
                 >
-                  Add
+                  {t("Add")}
                 </button>
               </div>
             )}
@@ -232,7 +213,7 @@ const AddJobCategory: React.FC = () => {
           {/* Required Experience Field */}
           <div>
             <label className="block text-sm font-medium">
-              Required Experience
+              {t("Required Experience")}
             </label>
             <div className="flex gap-2 items-center">
               <select
@@ -241,7 +222,7 @@ const AddJobCategory: React.FC = () => {
                   errors.required_experience ? "border-high" : "border-border"
                 }`}
               >
-                <option value="">Select Required Experience</option>
+                <option value="">{t("Select Required Experience")}</option>
                 {requiredExperienceOptions.map((experience, index) => (
                   <option key={index} value={experience}>
                     {experience}
@@ -260,16 +241,24 @@ const AddJobCategory: React.FC = () => {
                 <input
                   type="text"
                   className="w-full px-4 py-2 rounded-lg border"
-                  placeholder="Enter new experience"
+                  placeholder={t("Enter new experience")}
                   value={newExperience}
                   onChange={(e) => setNewExperience(e.target.value)}
                 />
                 <button
                   type="button"
-                  onClick={handleAddExperience}
+                  onClick={() =>
+                    addExperienceService({
+                      newExperience,
+                      setIsAddingExperience,
+                      setNewExperience,
+                      setRequiredExperienceOptions,
+                      setValue,
+                    })
+                  }
                   className="bg-blue-500 text-white rounded-md px-4 py-2"
                 >
-                  Add
+                  {t("Add")}
                 </button>
               </div>
             )}
@@ -282,12 +271,14 @@ const AddJobCategory: React.FC = () => {
 
           {/* Required Skills Field */}
           <div>
-            <label className="block text-sm font-medium">Required Skills</label>
+            <label className="block text-sm font-medium">
+              {t("Required Skills")}
+            </label>
             <textarea
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.required_skills ? "border-high" : "border-border"
               }`}
-              placeholder="Enter required skills (comma-separated)"
+              placeholder={t("Enter required skills (comma-separated)")}
               rows={3}
               onChange={(event) => {
                 const values = event.target.value
@@ -311,7 +302,7 @@ const AddJobCategory: React.FC = () => {
             }`}
             disabled={isPendingJobCategory}
           >
-            {isPendingJobCategory ? "Creating..." : "Create Job Category"}
+            {isPendingJobCategory ? t("Creating...") : t("Create Job Category")}
           </button>
           {isErrorJobCategory && (
             <p className="text-high mt-2 text-center">

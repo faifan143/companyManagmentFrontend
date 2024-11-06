@@ -1,3 +1,5 @@
+import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface LegalDocument {
   name: string;
@@ -114,4 +116,22 @@ export interface CreateEmployeeProps {
   isOpen: boolean;
   onClose: () => void;
   employeeData?: EmployeeFormInputs | null;
+}
+
+export interface SnackbarConfig {
+  open: boolean;
+  message: string;
+  severity: "success" | "info" | "warning" | "error";
+}
+
+export interface HandleSubmitOptions {
+  data: EmployeeFormInputs;
+  addEmployee: (data: EmployeeFormInputs) => void;
+}
+
+export interface HandleDeleteEmployeeClick {
+  id: string;
+  refetch: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<EmployeeType[], Error>>;
 }

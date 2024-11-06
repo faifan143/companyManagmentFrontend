@@ -17,7 +17,7 @@ export const addDeptSchema = yup.object().shape({
   requiredReports: yup.array().of(
     yup.object().shape({
       name: yup.string(),
-      templateFile: yup.string(),
+      templateFile: yup.string().required("Template file is required"),
     })
   ),
   developmentPrograms: yup.array().of(
@@ -25,7 +25,7 @@ export const addDeptSchema = yup.object().shape({
       programName: yup.string(),
       objective: yup.string(),
       notes: yup.string(),
-      programFile: yup.string(),
+      programFile: yup.string().required("Program file is required"),
     })
   ),
 });

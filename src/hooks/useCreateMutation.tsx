@@ -7,6 +7,8 @@ import {
 } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { Dispatch, SetStateAction } from "react";
+import { useTranslation } from "react-i18next";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -20,6 +22,14 @@ interface UseCreateMutationParams<
   endpoint: string;
   onSuccessMessage?: string;
   invalidateQueryKeys?: string[];
+  setSnackbarConfig: Dispatch<
+    SetStateAction<{
+      open: boolean;
+      message: string;
+      severity: "success" | "info" | "warning" | "error";
+    }>
+  >;
+  onSuccessFn?: () => void;
   options?: UseMutationOptions<TResponse, unknown, TInput, unknown>;
 }
 
@@ -30,6 +40,8 @@ export const useCreateMutation = <
   endpoint,
   onSuccessMessage,
   invalidateQueryKeys = [],
+  setSnackbarConfig,
+  onSuccessFn,
   options,
 }: UseCreateMutationParams<TInput, TResponse>): UseMutationResult<
   TResponse,
@@ -47,6 +59,7 @@ export const useCreateMutation = <
     });
     return response.data;
   };
+  const { t } = useTranslation();
 
   return useMutation<TResponse, unknown, TInput>({
     mutationFn: mutationFunction,
@@ -54,14 +67,24 @@ export const useCreateMutation = <
       if (onSuccessMessage) {
         console.log(onSuccessMessage, data);
       }
-
+      setSnackbarConfig({
+        open: true,
+        message: onSuccessMessage || t("Successful"),
+        severity: "success",
+      });
+      onSuccessFn && onSuccessFn();
       invalidateQueryKeys.forEach((key) => {
         //@ts-ignore
         queryClient.invalidateQueries(key);
       });
     },
     onError: (error: unknown) => {
-      console.error("Error during the create/add request:", error);
+      console.error(t("Error during the create/add request:"), error);
+      setSnackbarConfig({
+        open: true,
+        message: `${t("Error")}: ${error || t("An error occurred")}`,
+        severity: "error",
+      });
     },
     ...options,
   });

@@ -1,13 +1,15 @@
 // src/app/layout.tsx
 "use client";
 
+import Header from "@/components/common/molcules/Header";
+import Sidebar from "@/components/common/molcules/Sidebar/Sidebar";
 import LayoutProviders from "@/components/Providers/LayoutProviders";
+import useLanguage from "@/hooks/useLanguage";
 import Cookies from "js-cookie";
 import { redirect, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Sidebar from "@/components/common/Sidebar/Sidebar";
-import Header from "@/components/common/Header";
+import { Suspense, useEffect, useState } from "react";
 import "./globals.css";
+import PageSpinner from "@/components/common/atoms/PageSpinner";
 
 export default function RootLayout({
   children,
@@ -18,6 +20,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const { getDir } = useLanguage();
 
   useEffect(() => {
     const checkAuthState = () => {
@@ -44,8 +47,6 @@ export default function RootLayout({
     }
   }, [isAuthenticated, pathname]);
 
-
-
   useEffect(() => {
     if (isAuthenticated) {
       const storedTab = localStorage.getItem("selectedTab");
@@ -57,6 +58,10 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <title>Company Management System</title>
+        <link rel="icon" href="" />
+      </head>
       <body className="h-[100dvh] w-full">
         <div className="flex h-full w-full">
           <LayoutProviders>
@@ -68,12 +73,13 @@ export default function RootLayout({
             )}
 
             <div
+              dir={getDir()}
               className={`transition-all duration-300 py-5 ${
                 isSidebarExpanded ? "ml-[400px]" : "ml-[100px]"
               } w-full`}
             >
               {isAuthenticated && <Header />}
-              {children}
+              <Suspense fallback={<PageSpinner />}>{children}</Suspense>
             </div>
           </LayoutProviders>
         </div>

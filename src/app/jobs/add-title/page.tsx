@@ -1,24 +1,27 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 "use client";
 
-import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
-import GridContainer from "@/components/common/GridContainer";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import useCustomQuery from "@/hooks/useCustomQuery";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import {
-  EditJobTitleType,
-  JobCategoryType,
-  JobTitleFormInputs,
-  JobTitleType,
-} from "@/types/JobTitle.type";
-import { permissionsArray } from "@/utils/all_permissions";
-import Select from "react-select"; // Importing React Select
+import useQueryPageData from "@/hooks/useQueryPageData";
 import { addTitleSchema } from "@/schemas/job.schema";
+import {
+  getDepartmentOptions,
+  handlePermissionsChange,
+} from "@/services/job.service";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import { JobCategoryType, JobTitleFormInputs } from "@/types/JobTitle.type";
+import { permissionsArray } from "@/utils/all_permissions";
+import getErrorMessages from "@/utils/handleErrorMessages";
+import Select from "react-select";
+import { useTranslation } from "react-i18next";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -29,16 +32,19 @@ const permissionsOptions = permissionsArray.map((permission) => ({
 
 const AddJobTitle: React.FC = () => {
   const [permissionsMode, setPermissionsMode] = useState("default");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedDept, setSelectedDept] = useState("");
   const [permissionsSelected, setPermissionsSelected] = useState<string[]>([]);
   const [specificDept, setSpecificDept] = useState<string[]>([]);
   const [specificEmp, setSpecificEmp] = useState<string[]>([]);
   const [specificJobTitle, setSpecificJobTitle] = useState<string[]>([]);
-
-  const [jobTitleData, setJobTitleData] = useState<EditJobTitleType | null>(
-    null
-  );
   const [isManager, setIsManager] = useState(false);
-
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -46,8 +52,8 @@ const AddJobTitle: React.FC = () => {
     reset,
     setValue,
   } = useForm<JobTitleFormInputs>({
-    resolver: yupResolver(addTitleSchema) as any,
-    defaultValues: jobTitleData || {
+    resolver: yupResolver(addTitleSchema),
+    defaultValues: {
       name: "",
       title: "",
       grade_level: "",
@@ -62,85 +68,32 @@ const AddJobTitle: React.FC = () => {
       accessibleJobTitles: [],
     },
   });
-  useEffect(() => {
-    console.log("Validation errors:", errors);
-  }, [errors]);
+  const jobTitleData = useQueryPageData<JobTitleFormInputs>(reset);
 
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("jobData");
-    if (storedData) {
-      const parsedData: JobTitleType = JSON.parse(storedData);
-
-      const formData: EditJobTitleType = {
-        ...parsedData,
-        department_id: parsedData.department.id,
-        category: parsedData.category.id,
-      };
-
-      setJobTitleData(formData);
-      reset(formData);
-
-      // Initialize multi-select values and other specific fields
-      setPermissionsSelected(parsedData.permissions || []);
-      setIsManager(parsedData.is_manager);
-    }
-  }, [reset]);
-
-  // ///////////////////////////////////
-
-  React.useEffect(() => {
-    if (jobTitleData) {
-      reset(jobTitleData);
-    } else {
-      reset();
-    }
-  }, [jobTitleData, reset]);
-
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
+  const { data: departments } = useCustomQuery<DepartmentType[]>({
+    queryKey: ["departments"],
+    url: `http://${baseUrl}/department/get-departments`,
+    setSnackbarConfig,
+  });
+  const { data: categories } = useCustomQuery<JobCategoryType[]>({
+    queryKey: ["categories"],
+    url: `http://${baseUrl}/job-categories`,
+    setSnackbarConfig,
   });
 
-  const endpoint = jobTitleData
-    ? `/job-titles/update/${jobTitleData.id}`
-    : `/job-titles/create`;
   const {
     mutate: addJobTitle,
     isPending: isPendingJobTitle,
-    isSuccess: isSuccessJobTitle,
     isError: isErrorJobTitle,
     error: errorJobTitle,
   } = useCreateMutation({
-    endpoint: endpoint,
-    onSuccessMessage: "Job Title added successfully!",
+    endpoint: jobTitleData
+      ? `/job-titles/update/${jobTitleData.id}`
+      : `/job-titles/create`,
+    onSuccessMessage: t("Job Title added successfully!"),
     invalidateQueryKeys: ["jobTitles"],
-  });
-
-  const onSubmit = async (data: any) => {
-    console.log("Form data before submission:", {
-      ...data,
-      permissions: permissionsSelected,
-      is_manager: isManager,
-      accessibleDepartments: specificDept,
-      accessibleEmps: specificEmp,
-      accessibleJobTitles: specificJobTitle,
-    });
-
-    addJobTitle({
-      ...data,
-      permissions: permissionsSelected,
-      is_manager: isManager,
-      accessibleDepartments: specificDept,
-      accessibleEmps: specificEmp,
-      accessibleJobTitles: specificJobTitle,
-    });
-  };
-
-  useEffect(() => {
-    if (isSuccessJobTitle) {
-      sessionStorage.clear();
-
+    setSnackbarConfig,
+    onSuccessFn() {
       reset({
         id: "",
         name: "",
@@ -164,123 +117,102 @@ const AddJobTitle: React.FC = () => {
           : "Job Title created successfully!",
         severity: "success",
       });
-    } else if (isErrorJobTitle) {
-      console.error("Failed to create/update the job title", errorJobTitle);
-    }
-  }, [errorJobTitle, isErrorJobTitle, isSuccessJobTitle, jobTitleData, reset]);
-
-  const { data: departments } = useCustomQuery<DepartmentType[]>({
-    queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
-    setSnackbarConfig,
-  });
-  const { data: categories } = useCustomQuery<JobCategoryType[]>({
-    queryKey: ["categories"],
-    url: `http://${baseUrl}/job-categories`,
-    setSnackbarConfig,
+    },
   });
 
   useEffect(() => {
-    console.log(specificDept);
-  }, [specificDept]);
-  useEffect(() => {
-    console.log(specificEmp);
-  }, [specificEmp]);
-  useEffect(() => {
-    console.log(specificJobTitle);
-  }, [specificJobTitle]);
-
-  const departmentOptions = departments
-    ? departments.map((dept: any) => ({
-        value: dept.id,
-        label: dept.name,
-      }))
-    : [];
-
-  const handlePermissionsChange = (selectedOptions: any) => {
-    const selectedValues = selectedOptions.map((option: any) => option.value);
-    setPermissionsSelected(selectedValues);
-
-    // Update dropdowns only if relevant permissions are selected
-    if (selectedValues.includes("department_view_specific")) {
-      setSpecificDept(specificDept);
+    if (jobTitleData) {
+      reset(jobTitleData);
+      setValue("department_id", jobTitleData.department_id);
+      setValue("category", jobTitleData.category.id);
+      setSelectedCategory(jobTitleData.category.id);
+      setSelectedDept(jobTitleData.department.id);
+      setPermissionsSelected(jobTitleData.permissions || []);
+      setSpecificDept(jobTitleData.accessibleDepartments || []);
+      setSpecificEmp(jobTitleData.accessibleEmps || []);
+      setSpecificJobTitle(jobTitleData.accessibleJobTitles || []);
+      setIsManager(jobTitleData.is_manager);
+      setPermissionsMode(
+        jobTitleData.permissions.length > 0 ? "custom" : "default"
+      );
     } else {
-      setSpecificDept([]);
+      reset();
     }
-
-    if (selectedValues.includes("emp_view_specific")) {
-      setSpecificEmp(specificEmp);
-    } else {
-      setSpecificEmp([]);
-    }
-
-    if (selectedValues.includes("job_title_view_specific")) {
-      setSpecificJobTitle(specificJobTitle);
-    } else {
-      setSpecificJobTitle([]);
-    }
-  };
+  }, [
+    jobTitleData,
+    reset,
+    setValue,
+    setPermissionsMode,
+    setSelectedCategory,
+    setSelectedDept,
+  ]);
 
   useEffect(() => {
-    const handleUnload = () => {
-      reset(); // Reset the form
-      sessionStorage.removeItem("jobData"); // Clear session storage if needed
-    };
-
-    // Listen for backward/forward navigation (popstate) and page unload (beforeunload)
-    window.addEventListener("beforeunload", handleUnload);
-    window.addEventListener("popstate", handleUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleUnload);
-      window.removeEventListener("popstate", handleUnload);
-    };
-  }, [reset]);
+    if (Object.keys(errors).length > 0) {
+      getErrorMessages({ errors, setSnackbarConfig });
+    }
+  }, [errors, setSnackbarConfig]);
 
   return (
     <GridContainer>
       <div className="bg-white p-8 rounded-xl shadow-lg col-span-12 w-full relative">
         <h1 className="text-center text-2xl  font-bold mb-6">
-          {jobTitleData ? "Update Job Title" : "Create Job Title"}
+          {jobTitleData ? t("Update Job Title") : t("Create Job Title")}
         </h1>
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="space-y-4"
+          onSubmit={handleSubmit(async (data) => {
+            addJobTitle({
+              ...data,
+              permissions: permissionsSelected,
+              is_manager: isManager,
+              accessibleDepartments: specificDept,
+              accessibleEmps: specificEmp,
+              accessibleJobTitles: specificJobTitle,
+            });
+          })}
+        >
           <div>
-            <label className="block  text-sm font-medium">Job Title Name</label>
+            <label className="block  text-sm font-medium">
+              {t("Job Title Name")}
+            </label>
             <input
               type="text"
               {...register("name")}
               className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.name ? "border-high" : "border-border"
               }`}
-              placeholder="Enter job title name"
+              placeholder={t("Enter job title name")}
             />
             {errors.name && (
               <p className="text-high mt-1 text-sm">{errors.name.message}</p>
             )}
           </div>
           <div>
-            <label className="block  text-sm font-medium">Title</label>
+            <label className="block  text-sm font-medium">{t("Title")}</label>
             <input
               type="text"
               {...register("title")}
               className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.title ? "border-high" : "border-border"
               }`}
-              placeholder="Enter job title"
+              placeholder={t("Enter job title")}
             />
             {errors.title && (
               <p className="text-high mt-1 text-sm">{errors.title.message}</p>
             )}
           </div>
           <div>
-            <label className="block  text-sm font-medium">Description</label>
+            <label className="block  text-sm font-medium">
+              {t("Description")}
+            </label>
             <input
               type="text"
               {...register("description")}
               className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.description ? "border-high" : "border-border"
               }`}
-              placeholder="Enter job description"
+              placeholder={t("Enter job description")}
             />
             {errors.description && (
               <p className="text-high mt-1 text-sm">
@@ -289,14 +221,16 @@ const AddJobTitle: React.FC = () => {
             )}
           </div>
           <div>
-            <label className="block  text-sm font-medium">Grade Level</label>
+            <label className="block  text-sm font-medium">
+              {t("Grade Level")}
+            </label>
             <input
               type="text"
               {...register("grade_level")}
               className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.grade_level ? "border-high" : "border-border"
               }`}
-              placeholder="Enter grade level"
+              placeholder={t("Enter grade level")}
             />
             {errors.grade_level && (
               <p className="text-high mt-1 text-sm">
@@ -306,15 +240,18 @@ const AddJobTitle: React.FC = () => {
           </div>
           <div>
             <label className="block  text-sm font-medium">
-              Responsibilities
+              {t("Responsibilities")}
             </label>
 
             <textarea
               className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.responsibilities ? "border-high" : "border-border"
               }`}
-              placeholder="Enter responsibilities (comma-separated)"
+              placeholder={t("Enter responsibilities (comma-separated)")}
               rows={3}
+              value={
+                jobTitleData ? jobTitleData.responsibilities.join(",") : ""
+              }
               onChange={(event) => {
                 const values = event.target.value.split(",");
                 console.log(values);
@@ -332,7 +269,7 @@ const AddJobTitle: React.FC = () => {
           {/* Permissions Toggle */}
           <div>
             <label className="block text-sm font-medium">
-              Permissions Mode
+              {t("Permissions Mode")}
             </label>
             <div className="flex gap-4">
               <label>
@@ -348,7 +285,7 @@ const AddJobTitle: React.FC = () => {
                     setSpecificJobTitle([]);
                   }}
                 />
-                Default
+                {t("Default")}
               </label>
               <label>
                 <input
@@ -357,7 +294,7 @@ const AddJobTitle: React.FC = () => {
                   checked={permissionsMode === "custom"}
                   onChange={() => setPermissionsMode("custom")}
                 />
-                Custom
+                {t("Custom")}
               </label>
             </div>
           </div>
@@ -366,7 +303,7 @@ const AddJobTitle: React.FC = () => {
           {permissionsMode === "custom" && (
             <div>
               <label className="block text-sm font-medium">
-                Select Permissions
+                {t("Select Permissions")}
               </label>
               <Select
                 isMulti
@@ -374,9 +311,23 @@ const AddJobTitle: React.FC = () => {
                   permissionsSelected.includes(option.value)
                 )}
                 options={permissionsOptions}
-                onChange={handlePermissionsChange}
+                onChange={(selectedOptions) =>
+                  handlePermissionsChange({
+                    selectedOptions: selectedOptions as {
+                      value: string;
+                      label: string;
+                    }[],
+                    setPermissionsSelected,
+                    setSpecificDept,
+                    setSpecificJobTitle,
+                    setSpecificEmp,
+                    specificDept,
+                    specificEmp,
+                    specificJobTitle,
+                  })
+                }
                 className="mt-1"
-                placeholder="Select Permissions..."
+                placeholder={t("Select Permissions...")}
               />
             </div>
           )}
@@ -385,24 +336,22 @@ const AddJobTitle: React.FC = () => {
           {permissionsSelected.includes("department_view_specific") && (
             <div>
               <label className="block text-sm font-medium">
-                Specific Department
+                {t("Specific Department")}
               </label>
 
               <Select
                 {...register("accessibleDepartments")}
                 isMulti
-                value={departmentOptions.filter(
+                value={getDepartmentOptions(departments).filter(
                   (option: { value: string; label: string }) =>
                     specificDept.includes(option.value)
                 )}
-                options={departmentOptions}
+                options={getDepartmentOptions(departments)}
                 onChange={(selectedOptions) =>
-                  setSpecificDept(
-                    selectedOptions.map((option: any) => option.value)
-                  )
+                  setSpecificDept(selectedOptions.map((option) => option.value))
                 }
                 className="mt-1"
-                placeholder="Select Accessible Departments..."
+                placeholder={t("Select Accessible Departments...")}
               />
             </div>
           )}
@@ -410,23 +359,21 @@ const AddJobTitle: React.FC = () => {
           {permissionsSelected.includes("emp_view_specific") && (
             <div>
               <label className="block text-sm font-medium">
-                Specific Employee
+                {t("Specific Employee")}
               </label>
               <Select
                 {...register("accessibleEmps")}
                 isMulti
-                value={departmentOptions.filter(
+                value={getDepartmentOptions(departments).filter(
                   (option: { value: string; label: string }) =>
                     specificEmp.includes(option.value)
                 )}
-                options={departmentOptions}
+                options={getDepartmentOptions(departments)}
                 onChange={(selectedOptions) =>
-                  setSpecificEmp(
-                    selectedOptions.map((option: any) => option.value)
-                  )
+                  setSpecificEmp(selectedOptions.map((option) => option.value))
                 }
                 className="mt-1"
-                placeholder="Select Accessible Employees..."
+                placeholder={t("Select Accessible Employees...")}
               />
             </div>
           )}
@@ -434,39 +381,48 @@ const AddJobTitle: React.FC = () => {
           {permissionsSelected.includes("job_title_view_specific") && (
             <div>
               <label className="block text-sm font-medium">
-                Specific Job Title
+                {t("Specific Job Title")}
               </label>
               <Select
                 {...register("accessibleJobTitles")}
                 isMulti
-                value={departmentOptions.filter(
+                value={getDepartmentOptions(departments).filter(
                   (option: { value: string; label: string }) =>
                     specificJobTitle.includes(option.value)
                 )}
-                options={departmentOptions}
+                options={getDepartmentOptions(departments)}
                 onChange={(selectedOptions) =>
                   setSpecificJobTitle(
-                    selectedOptions.map((option: any) => option.value)
+                    selectedOptions.map((option) => option.value)
                   )
                 }
                 className="mt-1"
-                placeholder="Select Accessible Job Titles..."
+                placeholder={t("Select Accessible Job Titles...")}
               />
             </div>
           )}
 
           <div>
-            <label className="block  text-sm font-medium">Job Category</label>
+            <label className="block  text-sm font-medium">
+              {t("Job Category")}
+            </label>
             <select
               {...register("category")}
               className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.category ? "border-high" : "border-border"
               }`}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+              }}
             >
-              <option value="">Select a Job Category</option>
+              <option value="">{t("Select a Job Category")}</option>
               {categories &&
-                categories.map((category: any) => (
-                  <option key={category.id} value={category.id}>
+                categories.map((category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                    selected={selectedCategory == category.id}
+                  >
                     {category.name}
                   </option>
                 ))}
@@ -479,18 +435,25 @@ const AddJobTitle: React.FC = () => {
           </div>
           <div>
             <label className="block  text-sm font-medium">
-              Parent Department (Optional)
+              {t("Parent Department (Optional)")}
             </label>
             <select
               {...register("department_id")}
               className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.department_id ? "border-high" : "border-border"
               }`}
+              onChange={(e) => {
+                setSelectedDept(e.target.value);
+              }}
             >
-              <option value="">Select a parent department</option>
+              <option value="">{t("Select a parent department")}</option>
               {departments &&
-                departments.map((dept: any) => (
-                  <option key={dept.id} value={dept.id}>
+                departments.map((dept) => (
+                  <option
+                    key={dept.id}
+                    value={dept.id}
+                    selected={selectedDept == dept.id}
+                  >
                     {dept.name}
                   </option>
                 ))}
@@ -503,7 +466,9 @@ const AddJobTitle: React.FC = () => {
           </div>
           {/* Is Manager Checkbox */}
           <div className="flex items-center mt-2">
-            <label className="text-sm font-medium mr-2">Is Manager?</label>
+            <label className="text-sm font-medium mr-2">
+              {t("Is Manager?")}
+            </label>
             <input
               type="checkbox"
               checked={isManager}
@@ -520,11 +485,11 @@ const AddJobTitle: React.FC = () => {
           >
             {isPendingJobTitle
               ? jobTitleData
-                ? "Updating..."
-                : "Creating..."
+                ? t("Updating...")
+                : t("Creating...")
               : jobTitleData
-              ? "Update Job Title"
-              : "Create Job Title"}
+              ? t("Update Job Title")
+              : t("Create Job Title")}
           </button>
           {isErrorJobTitle && (
             <p className="text-high mt-2 text-center">{errorJobTitle + ""}</p>

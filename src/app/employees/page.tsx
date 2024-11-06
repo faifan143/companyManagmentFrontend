@@ -1,13 +1,17 @@
 // EmployeesView.tsx
 "use client";
 
-import EmployeesContent from "@/components/common/EmployeesContent";
-import GridContainer from "@/components/common/GridContainer";
+import EmployeesContent from "@/components/common/molcules/EmployeesContent";
+import GridContainer from "@/components/common/atoms/GridContainer";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { usePermissions, useRolePermissions } from "@/utils/check_permissions";
+import {
+  usePermissions,
+  useRolePermissions,
+} from "@/hooks/useCheckPermissions";
 import { EmployeeFormInputs } from "@/types/EmployeeType.type";
-import CreateEmployee from "@/components/common/CreateEmployee";
+import CreateEmployee from "@/components/common/molcules/CreateEmployee";
+import { useTranslation } from "react-i18next";
 
 const EmployeesView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +19,7 @@ const EmployeesView: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState("get-all-emps");
   const router = useRouter();
   const isAdmin = useRolePermissions("admin");
+  const { t } = useTranslation();
 
   useEffect(() => {
     console.log(selectedOption);
@@ -24,7 +29,7 @@ const EmployeesView: React.FC = () => {
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
         <h1 className="text-3xl font-bold text-center ">
-          Employees Management
+          {t("Employees Management")}
         </h1>
         <div className="flex justify-center items-center gap-5">
           {/* Dropdown for employee filter */}
@@ -33,12 +38,16 @@ const EmployeesView: React.FC = () => {
             value={selectedOption}
             onChange={(e) => setSelectedOption(e.target.value)}
           >
-            {isAdmin && <option value="get-all-emps">All Employees</option>}
+            {isAdmin && (
+              <option value="get-all-emps">{t("All Employees")}</option>
+            )}
             {usePermissions(["emp_view_specific"]) && (
-              <option value="view">View Accessible Employees</option>
+              <option value="view">{t("View Accessible Employees")}</option>
             )}
             {useRolePermissions("primary_user") && (
-              <option value="get-my-emps">My Department Employees</option>
+              <option value="get-my-emps">
+                {t("My Department Employees")}
+              </option>
             )}
           </select>
 
@@ -50,7 +59,7 @@ const EmployeesView: React.FC = () => {
                 router.push("/employees/add-employee");
               }}
             >
-              Add Employee
+              {t("Add Employee")}
             </button>
           )}
         </div>

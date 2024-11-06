@@ -1,6 +1,6 @@
 "use client";
 
-import i18n from "@/utils/i18n";
+import i18n from "@/localization/i18n";
 import React from "react";
 import { I18nextProvider } from "react-i18next";
 

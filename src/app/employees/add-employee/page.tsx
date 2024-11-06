@@ -1,23 +1,35 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
-import GridContainer from "@/components/common/GridContainer";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { JobTitleType } from "@/types/JobTitle.type";
+import useQueryPageData from "@/hooks/useQueryPageData";
 import { addEmpSchema } from "@/schemas/employee.schema";
+import {
+  handleFileChange,
+  handleFormSubmit,
+} from "@/services/employee.service";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import { EmployeeFormInputs } from "@/types/EmployeeType.type";
+import { JobTitleType } from "@/types/JobTitle.type";
+import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { EmployeeFormInputs } from "@/types/EmployeeType.type";
+import { useTranslation } from "react-i18next";
 
 const baseUrl = process.env.BASE_URL || "";
 
 const AddEmp: React.FC = () => {
-  const [employeeData, setEmployeeData] = useState<any | null>(null);
-
+  const [snackbarConfig, setSnackbarConfig] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "info" | "warning" | "error",
+  });
   const {
     register,
     handleSubmit,
@@ -28,27 +40,65 @@ const AddEmp: React.FC = () => {
     getValues,
   } = useForm<EmployeeFormInputs>({
     resolver: yupResolver(addEmpSchema) as any,
-    defaultValues: employeeData || {},
+    defaultValues: {},
+  });
+  const employeeData = useQueryPageData<EmployeeFormInputs>(reset);
+  console.log(employeeData);
+  const {t} = useTranslation()
+
+  const {
+    fields: legalDocumentFields,
+    append: appendLegalDocument,
+    remove: removeLegalDocument,
+  } = useFieldArray({
+    control,
+    name: "legal_documents",
+  });
+  const {
+    fields: certificationFields,
+    append: appendCertification,
+    remove: removeCertification,
+  } = useFieldArray({
+    control,
+    name: "certifications",
+  });
+  const {
+    fields: allowancesFields,
+    append: appendAllowance,
+    remove: removeAllowance,
+  } = useFieldArray({
+    control,
+    name: "allowances",
+  });
+  const {
+    fields: incentivesFields,
+    append: appendIncentive,
+    remove: removeIncentive,
+  } = useFieldArray({
+    control,
+    name: "incentives",
+  });
+  const {
+    fields: bankAccountsFields,
+    append: appendBankAccount,
+    remove: removeBankAccount,
+  } = useFieldArray({
+    control,
+    name: "bank_accounts",
+  });
+  const {
+    fields: evaluationsFields,
+    append: appendEvaluation,
+    remove: removeEvaluation,
+  } = useFieldArray({
+    control,
+    name: "evaluations",
   });
 
-  useEffect(() => {
-    console.log("validation error : ", errors);
-  }, [errors]);
+  const endpoint = employeeData
+    ? `/emp/update/${employeeData.id}`
+    : `/emp/create`;
 
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("employeeData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setEmployeeData(parsedData);
-      reset(parsedData);
-    }
-  }, [reset]);
-
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
     url: `http://${baseUrl}/department/get-departments`,
@@ -60,142 +110,77 @@ const AddEmp: React.FC = () => {
     setSnackbarConfig,
   });
 
-  const endpoint = employeeData
-    ? `/emp/update/${employeeData.id}`
-    : `/emp/create`;
-
   const { mutate: addEmployee, isPending: isPendingEmployee } =
     useCreateMutation({
       endpoint: endpoint,
-      onSuccessMessage: "Employee added successfully!",
+      onSuccessMessage: t("Employee added successfully!"),
       invalidateQueryKeys: ["employees"],
-    });
-
-  const onSubmit = async (data: EmployeeFormInputs) => {
-    console.log(" data  : ", data);
-
-    // Submit the form
-    addEmployee(data, {
-      onSuccess: () => {
-        sessionStorage.clear();
-
-        // Show success snackbar
+      setSnackbarConfig,
+      onSuccessFn: () => {
         setSnackbarConfig({
           open: true,
           message: employeeData
-            ? "Employee updated successfully!"
-            : "Employee created successfully!",
+            ? t("Employee updated successfully!")
+            : t("Employee created successfully!"),
           severity: "success",
         });
-
-        // Reset the form after successful submission
         reset();
       },
-      onError: () => {
-        // Show error snackbar
-        setSnackbarConfig({
-          open: true,
-          message: "An error occurred. Please try again.",
-          severity: "error",
-        });
-      },
+    });
+
+  const onSubmit = async (data: EmployeeFormInputs) => {
+    handleFormSubmit({
+      data,
+      addEmployee,
     });
   };
 
-  // Legal Documents Field Array
-  const {
-    fields: legalDocumentFields,
-    append: appendLegalDocument,
-    remove: removeLegalDocument,
-  } = useFieldArray({
-    control,
-    name: "legal_documents",
-  });
-
-  // Certifications Field Array
-  const {
-    fields: certificationFields,
-    append: appendCertification,
-    remove: removeCertification,
-  } = useFieldArray({
-    control,
-    name: "certifications",
-  });
-
-  // Allowances Field Array
-  const {
-    fields: allowancesFields,
-    append: appendAllowance,
-    remove: removeAllowance,
-  } = useFieldArray({
-    control,
-    name: "allowances",
-  });
-
-  // Incentives Field Array
-  const {
-    fields: incentivesFields,
-    append: appendIncentive,
-    remove: removeIncentive,
-  } = useFieldArray({
-    control,
-    name: "incentives",
-  });
-
-  // Bank Accounts Field Array
-  const {
-    fields: bankAccountsFields,
-    append: appendBankAccount,
-    remove: removeBankAccount,
-  } = useFieldArray({
-    control,
-    name: "bank_accounts",
-  });
-
-  const {
-    fields: evaluationsFields,
-    append: appendEvaluation,
-    remove: removeEvaluation,
-  } = useFieldArray({
-    control,
-    name: "evaluations",
-  });
-
-  const handleFileChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-    fieldType: "legal_documents" | "certifications"
-  ) => {
-    const file = event.target.files?.[0] || null;
-
-    if (file) {
-      if (fieldType === "legal_documents") {
-        setValue(`legal_documents.${index}.file`, file.name || "", {
-          shouldValidate: true,
-        });
-      } else if (fieldType === "certifications") {
-        setValue(`certifications.${index}.file`, file.name || "", {
-          shouldValidate: true,
-        });
-      }
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      getErrorMessages({ errors, setSnackbarConfig });
     }
-  };
+  }, [errors, setSnackbarConfig]);
+  useEffect(() => {
+    if (employeeData) {
+      reset(employeeData);
+      setValue("name", employeeData.name);
+      setValue("email", employeeData.email);
+      setValue("phone", employeeData.phone);
+      setValue("national_id", employeeData.national_id);
+      setValue("address", employeeData.address);
+      setValue("emergency_contact", employeeData.emergency_contact);
+      setValue("dob", employeeData.dob ? employeeData.dob.split("T")[0] : "");
+      setValue("gender", employeeData.gender);
+      setValue("marital_status", employeeData.marital_status);
+      setValue(
+        "employment_date",
+        employeeData.employment_date
+          ? employeeData.employment_date.split("T")[0]
+          : ""
+      );
+      setValue("job_tasks", employeeData.job_tasks);
+      setValue("base_salary", employeeData.base_salary);
+      setValue("department_id", employeeData.department.id);
+      setValue("job_id", employeeData.job.id);
+    } else {
+      reset();
+    }
+  }, [employeeData, reset, setValue]);
 
   return (
     <GridContainer>
       <div className="bg-white p-8 rounded-xl shadow-lg col-span-12 w-full relative">
         <h1 className="text-center text-2xl font-bold mb-6">
-          {employeeData ? "Update Employee" : "Create Employee"}
+          {employeeData ? t("Update Employee") : t("Create Employee")}
         </h1>
         <form
           className="space-y-4"
           onSubmit={handleSubmit(onSubmit)}
           encType="multipart/form-data"
         >
-          {/* Name Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Name
+              {t("Name")}
             </label>
             <input
               type="text"
@@ -203,7 +188,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.name ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter employee name"
+              placeholder={t("Enter employee name")}
             />
             {errors.name && (
               <p className="text-red-500 mt-1 text-sm">{errors.name.message}</p>
@@ -212,7 +197,7 @@ const AddEmp: React.FC = () => {
           {/* Email Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Email
+              {t("Email")}
             </label>
             <input
               type="text"
@@ -220,7 +205,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter Employee Email"
+              placeholder={t("Enter Employee Email")}
             />
             {errors.email && (
               <p className="text-red-500 mt-1 text-sm">
@@ -228,10 +213,9 @@ const AddEmp: React.FC = () => {
               </p>
             )}
           </div>
-          {/* Phone Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Phone
+              {t("Phone")}
             </label>
             <input
               type="text"
@@ -239,7 +223,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter Employee phone"
+              placeholder={t("Enter Employee phone")}
             />
             {errors.phone && (
               <p className="text-red-500 mt-1 text-sm">
@@ -250,7 +234,7 @@ const AddEmp: React.FC = () => {
           {/* Passwword Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Password
+              {t("Password")}
             </label>
             <input
               type="text"
@@ -258,7 +242,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter Employee Password"
+              placeholder={t("Enter Employee Password")}
             />
             {errors.password && (
               <p className="text-red-500 mt-1 text-sm">
@@ -270,7 +254,7 @@ const AddEmp: React.FC = () => {
           {/* National ID Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              National ID
+              {t("National ID")}
             </label>
             <input
               type="text"
@@ -278,7 +262,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.national_id ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter national ID"
+              placeholder={t("Enter national ID")}
             />
             {errors.national_id && (
               <p className="text-red-500 mt-1 text-sm">
@@ -289,7 +273,7 @@ const AddEmp: React.FC = () => {
           {/* Address Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Address
+              {t("Address")}
             </label>
             <input
               type="text"
@@ -297,7 +281,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.address ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter Address"
+              placeholder={t("Enter Address")}
             />
             {errors.address && (
               <p className="text-red-500 mt-1 text-sm">
@@ -308,7 +292,7 @@ const AddEmp: React.FC = () => {
           {/* emergency contact Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Contact Emergency
+              {t("Contact Emergency")}
             </label>
             <input
               type="text"
@@ -316,7 +300,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.address ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter Address"
+              placeholder={t("Enter Address")}
             />
             {errors.address && (
               <p className="text-red-500 mt-1 text-sm">
@@ -327,7 +311,7 @@ const AddEmp: React.FC = () => {
           {/* DOB Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Date Of Birth
+              {t("Date Of Birth")}
             </label>
             <input
               type="date"
@@ -335,7 +319,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.dob ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter employment date"
+              placeholder={t("Enter employment date")}
             />
             {errors.dob && (
               <p className="text-red-500 mt-1 text-sm">{errors.dob.message}</p>
@@ -345,7 +329,7 @@ const AddEmp: React.FC = () => {
           {/* Gender Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Gender
+              {t("Gender")}
             </label>
             <select
               {...register("gender")}
@@ -353,8 +337,8 @@ const AddEmp: React.FC = () => {
                 errors.gender ? "border-high" : "border-border"
               }`}
             >
-              <option value="">Select a gender</option>
-              {["male", "female", "undefined"].map((gender, index: number) => (
+              <option value="">{t("Select a gender")}</option>
+              {[t("male"), t("female"), t("undefined")].map((gender, index: number) => (
                 <option key={index} value={gender}>
                   {gender}
                 </option>
@@ -370,7 +354,7 @@ const AddEmp: React.FC = () => {
           {/* Marital Status Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Marital Status
+              {t("Marital Status")}
             </label>
             <select
               {...register("marital_status")}
@@ -378,8 +362,8 @@ const AddEmp: React.FC = () => {
                 errors.marital_status ? "border-high" : "border-border"
               }`}
             >
-              <option value="">Select a marital status</option>
-              {["single", "married"].map((status, index: number) => (
+              <option value="">{t("Select a marital status")}</option>
+              {[t("single"), t("married")].map((status, index: number) => (
                 <option key={index} value={status}>
                   {status}
                 </option>
@@ -395,7 +379,7 @@ const AddEmp: React.FC = () => {
           {/* Employment Date Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Employment Date
+              {t("Employment Date")}
             </label>
             <input
               type="date"
@@ -403,7 +387,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.employment_date ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter employment date"
+              placeholder={t("Enter employment date")}
             />
             {errors.employment_date && (
               <p className="text-red-500 mt-1 text-sm">
@@ -415,7 +399,7 @@ const AddEmp: React.FC = () => {
           {/* Base Salary Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Base Salary
+              {t("Base Salary")}
             </label>
             <input
               type="number"
@@ -423,7 +407,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.base_salary ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter base salary"
+              placeholder={t("Enter base salary")}
             />
             {errors.base_salary && (
               <p className="text-red-500 mt-1 text-sm">
@@ -434,7 +418,7 @@ const AddEmp: React.FC = () => {
           {/* Department Dropdown */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Department
+              {t("Department")}
             </label>
             <select
               {...register("department_id")}
@@ -443,7 +427,7 @@ const AddEmp: React.FC = () => {
               }`}
               onChange={(e) => setValue("department_id", e.target.value)}
             >
-              <option value="">Select a department</option>
+              <option value="">{t("Select a department")}</option>
               {departments &&
                 departments.map((dept) => (
                   <option key={dept.id} value={dept.id}>
@@ -460,7 +444,7 @@ const AddEmp: React.FC = () => {
           {/* Job Dropdown */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Job Title
+              {t("Job Title")}
             </label>
             <select
               {...register("job_id")}
@@ -469,7 +453,7 @@ const AddEmp: React.FC = () => {
               }`}
               onChange={(e) => setValue("job_id", e.target.value)}
             >
-              <option value="">Select a job title</option>
+              <option value="">{t("Select a job title")}</option>
               {jobs &&
                 jobs.map((job) => (
                   <option key={job.id} value={job.id}>
@@ -487,7 +471,7 @@ const AddEmp: React.FC = () => {
           {/* Job tasks  Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
-              Job Tasks
+              {t("Job Tasks")}
             </label>
             <input
               type="text"
@@ -495,7 +479,7 @@ const AddEmp: React.FC = () => {
               className={`w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.job_tasks ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter job tasks"
+              placeholder={t("Enter job tasks")}
             />
             {errors.job_tasks && (
               <p className="text-red-500 mt-1 text-sm">
@@ -508,12 +492,12 @@ const AddEmp: React.FC = () => {
             <div key={field.id} className="flex items-center space-x-2">
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium">
-                  Legal Document {index + 1}
+                  {t("Legal Document")} {index + 1}
                 </label>
                 <input
                   type="text"
                   {...register(`legal_documents.${index}.name` as const)}
-                  placeholder="Document Name"
+                  placeholder={t("Document Name")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
@@ -524,7 +508,7 @@ const AddEmp: React.FC = () => {
                 <input
                   type="file"
                   onChange={(e) =>
-                    handleFileChange(e, index, "legal_documents")
+                    handleFileChange(e, index, "legal_documents", setValue)
                   }
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
@@ -549,20 +533,20 @@ const AddEmp: React.FC = () => {
             }
             className="text-blue-500 block text-sm"
           >
-            Add Legal Document
+            {t("Add Legal Document")}
           </button>
           {certificationFields.map((field, index) => (
             <div key={field.id} className="flex items-center space-x-2">
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium">
-                  Certification {index + 1}
+                  {t("Certification")} {index + 1}
                 </label>
                 <input
                   type="text"
                   {...register(
                     `certifications.${index}.certificate_name` as const
                   )}
-                  placeholder="Certification Name"
+                  placeholder={t("Certification Name")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
@@ -573,12 +557,14 @@ const AddEmp: React.FC = () => {
                 <input
                   type="text"
                   {...register(`certifications.${index}.grade` as const)}
-                  placeholder="Certification Grade"
+                  placeholder={t("Certification Grade")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
                   type="file"
-                  onChange={(e) => handleFileChange(e, index, "certifications")}
+                  onChange={(e) =>
+                    handleFileChange(e, index, "certifications", setValue)
+                  }
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
               </div>
@@ -607,25 +593,25 @@ const AddEmp: React.FC = () => {
             }
             className="text-blue-500 block text-sm"
           >
-            Add Certification
+            {t("Add Certification")}
           </button>
           {/* Allowances */}
           {allowancesFields.map((field, index) => (
             <div key={field.id} className="flex items-center space-x-2">
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium">
-                  Allowance {index + 1}
+                  {t("Allowance")} {index + 1}
                 </label>
                 <input
                   type="text"
                   {...register(`allowances.${index}.allowance_type` as const)}
-                  placeholder="Allowance Type"
+                  placeholder={t("Allowance Type")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
                   type="number"
                   {...register(`allowances.${index}.amount` as const)}
-                  placeholder="Amount"
+                  placeholder={t("Amount")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
               </div>
@@ -646,7 +632,7 @@ const AddEmp: React.FC = () => {
             onClick={() => appendAllowance({ allowance_type: "", amount: 0 })}
             className="text-blue-500 block text-sm"
           >
-            Add Allowance
+            {t("Add Allowance")}
           </button>
 
           {/* Incentives */}
@@ -654,18 +640,18 @@ const AddEmp: React.FC = () => {
             <div key={field.id} className="flex items-center space-x-2">
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium">
-                  Incentive {index + 1}
+                  {t("Incentive")} {index + 1}
                 </label>
                 <input
                   type="text"
                   {...register(`incentives.${index}.description` as const)}
-                  placeholder="Description"
+                  placeholder={t("Description")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
                   type="number"
                   {...register(`incentives.${index}.amount` as const)}
-                  placeholder="Amount"
+                  placeholder={t("Amount")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
               </div>
@@ -686,7 +672,7 @@ const AddEmp: React.FC = () => {
             onClick={() => appendIncentive({ description: "", amount: 0 })}
             className="text-blue-500 block text-sm"
           >
-            Add Incentive
+            {t("Add Incentive")}
           </button>
 
           {/* Bank Accounts */}
@@ -694,12 +680,12 @@ const AddEmp: React.FC = () => {
             <div key={field.id} className="flex items-center space-x-2">
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium">
-                  Bank Account {index + 1}
+                  {t("Bank Account")} {index + 1}
                 </label>
                 <input
                   type="text"
                   {...register(`bank_accounts.${index}.bank_name` as const)}
-                  placeholder="Bank Name"
+                  placeholder={t("Bank Name")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
@@ -707,7 +693,7 @@ const AddEmp: React.FC = () => {
                   {...register(
                     `bank_accounts.${index}.account_number` as const
                   )}
-                  placeholder="Account Number"
+                  placeholder={t("Account Number")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
               </div>
@@ -730,7 +716,7 @@ const AddEmp: React.FC = () => {
             }
             className="text-blue-500 block text-sm"
           >
-            Add Bank Account
+            {t("Add Bank Account")}
           </button>
 
           {/* Evaluations */}
@@ -738,22 +724,22 @@ const AddEmp: React.FC = () => {
             <div key={field.id} className="flex items-center space-x-2">
               <div className="flex-1">
                 <label className="block text-gray-600 text-sm font-medium">
-                  Evaluation {index + 1}
+                  {t("Evaluation")} {index + 1}
                 </label>
                 <input
                   type="text"
                   {...register(`evaluations.${index}.evaluation_type` as const)}
-                  placeholder="Evaluation Type"
+                  placeholder={t("Evaluation Type")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <textarea
                   {...register(`evaluations.${index}.description` as const)}
-                  placeholder="Description"
+                  placeholder={t("Description")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
                 <textarea
                   {...register(`evaluations.${index}.plan` as const)}
-                  placeholder="Plan"
+                  placeholder={t("Plan")}
                   className="w-full px-4 py-2 mt-1 rounded-lg border"
                 />
               </div>
@@ -780,7 +766,7 @@ const AddEmp: React.FC = () => {
             }
             className="text-blue-500 block text-sm"
           >
-            Add Evaluation
+            {t("Add Evaluation")}
           </button>
 
           {/* Submit Button */}
@@ -793,11 +779,11 @@ const AddEmp: React.FC = () => {
           >
             {isPendingEmployee
               ? employeeData
-                ? "Updating..."
-                : "Creating..."
+                ? t("Updating...")
+                : t("Creating...")
               : employeeData
-              ? "Update Employee"
-              : "Create Employee"}
+              ? t("Update Employee")
+              : t("Create Employee")}
           </button>
         </form>
       </div>

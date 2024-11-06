@@ -4,9 +4,10 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useState } from "react";
-import CreateTaskType from "../../../components/common/CreateTaskType";
-import CustomizedSnackbars from "@/components/common/CustomizedSnackbars";
+import CreateTaskType from "../../../components/common/molcules/CreateTaskType";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import { ITaskType } from "@/types/Task.type";
+import { handleEditTypeClick } from "@/services/task.service";
 
 const TaskTypesView: React.FC = () => {
   const [snackbarConfig, setSnackbarConfig] = useState({
@@ -14,6 +15,9 @@ const TaskTypesView: React.FC = () => {
     message: "",
     severity: "success" as "success" | "info" | "warning" | "error",
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState<ITaskType | null>(null);
+
   const {
     data: taskTypes,
     isLoading,
@@ -24,9 +28,6 @@ const TaskTypesView: React.FC = () => {
     setSnackbarConfig,
     nestedData: true,
   });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<ITaskType | null>(null);
 
   if (isLoading) {
     return (
@@ -43,11 +44,6 @@ const TaskTypesView: React.FC = () => {
       </div>
     );
   }
-
-  const handleEditClick = (taskType: ITaskType) => {
-    setEditData(taskType);
-    setIsModalOpen(true);
-  };
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
@@ -79,7 +75,13 @@ const TaskTypesView: React.FC = () => {
                   <td className="py-3 px-4 flex space-x-2">
                     <EditIcon
                       className="cursor-pointer text-[#1b1a40]"
-                      onClick={() => handleEditClick(taskType)}
+                      onClick={() =>
+                        handleEditTypeClick({
+                          taskType,
+                          setEditData,
+                          setIsModalOpen,
+                        })
+                      }
                     />
                     <DeleteIcon className="cursor-pointer text-red-500" />
                   </td>
