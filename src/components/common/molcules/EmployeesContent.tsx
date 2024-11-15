@@ -96,7 +96,7 @@ const EmployeesContent: React.FC<{
                   <td className="text-center py-3 px-4">{employee.email}</td>
                   <td className="text-center py-3 px-4">{employee.address}</td>
                   <td className="text-center py-3 px-4">
-                    {employee.job.department}
+                    {employee.department?.name}
                   </td>
                   <td className="text-center py-3 px-4">
                     {employee.job.title}

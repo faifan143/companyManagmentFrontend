@@ -6,7 +6,7 @@ export const addDeptSchema = yup.object().shape({
   goal: yup.string().required("Goal is required"),
   category: yup.string().required("Category is required"),
   mainTasks: yup.string().required("Main tasks are required"),
-  parentDepartmentId: yup.string().nullable().default(undefined),
+  parent_department_id: yup.string().nullable().default(undefined),
   numericOwners: yup.array().of(
     yup.object().shape({
       category: yup.string(),
@@ -33,7 +33,7 @@ export const addDeptSchema = yup.object().shape({
 export const addDeptPopupSchema = yup.object().shape({
   name: yup.string().required("Department name is required"),
   description: yup.string().required("Description is required"),
-  parentDepartmentId: yup
+  parent_department_id: yup
     .string()
     .transform((value) => (value === "" ? undefined : value))
     .nullable()

@@ -3,6 +3,7 @@
 
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
@@ -24,6 +25,8 @@ const AddTask: React.FC = () => {
   const [isEmployeeDisabled, setIsEmployeeDisabled] = useState(false);
   const [isDepartmentDisabled, setIsDepartmentDisabled] = useState(false);
   const [isProjectDisabled, setIsProjectDisabled] = useState(false);
+  const isAdmin = useRolePermissions("admin");
+  const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
   const {
     register,
@@ -50,12 +53,16 @@ const AddTask: React.FC = () => {
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `http://${baseUrl}/department/${
+      isAdmin || isPrimary ? "get-departments" : "view"
+    }`,
     setSnackbarConfig,
   });
   const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
-    url: `http://${baseUrl}/emp/get-all-emps`,
+    url: `http://${baseUrl}/emp/${
+      isAdmin ? "get-all-emps" : isPrimary ? "get-my-emps" : "view"
+    }`,
     setSnackbarConfig,
   });
 

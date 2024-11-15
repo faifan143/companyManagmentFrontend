@@ -11,14 +11,9 @@ const formatDate = (date: Date) => {
 export const addProjectSchema = yup.object().shape({
   name: yup.string().required("Project name is required"),
   description: yup.string().required("Description is required"),
-  departments: yup
-    .array()
-    .of(yup.string().required("Department ID is required"))
-    .min(1),
-  members: yup
-    .array()
-    .of(yup.string().required("Member ID is required"))
-    .min(1),
+  departments: yup.array().of(yup.string()).nullable(),
+  members: yup.array().of(yup.string()).nullable(),
+
   startDate: yup
     .string()
     .required("Start date is required")

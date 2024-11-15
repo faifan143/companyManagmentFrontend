@@ -41,6 +41,7 @@ const AddJobTitle: React.FC = () => {
   const [specificEmp, setSpecificEmp] = useState<string[]>([]);
   const [specificJobTitle, setSpecificJobTitle] = useState<string[]>([]);
   const [isManager, setIsManager] = useState(false);
+  const [responsibilities, setResponsibilities] = useState<string[]>([]); // Initialize as an array
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
   const {
@@ -120,11 +121,14 @@ const AddJobTitle: React.FC = () => {
 
   useEffect(() => {
     if (jobTitleData) {
+      console.log("job title data : ", jobTitleData);
+
       reset(jobTitleData);
-      setValue("department_id", jobTitleData.department_id);
+      setResponsibilities(jobTitleData.responsibilities);
+      setValue("department_id", jobTitleData.department._id);
       setValue("category", jobTitleData.category.id);
       setSelectedCategory(jobTitleData.category.id);
-      setSelectedDept(jobTitleData.department.id);
+      setSelectedDept(jobTitleData.department._id);
       setPermissionsSelected(jobTitleData.permissions || []);
       setSpecificDept(jobTitleData.accessibleDepartments || []);
       setSpecificEmp(jobTitleData.accessibleEmps || []);
@@ -144,6 +148,10 @@ const AddJobTitle: React.FC = () => {
     setSelectedCategory,
     setSelectedDept,
   ]);
+
+  useEffect(() => {
+    console.log(responsibilities);
+  }, [responsibilities]);
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
@@ -167,6 +175,7 @@ const AddJobTitle: React.FC = () => {
               accessibleDepartments: specificDept,
               accessibleEmps: specificEmp,
               accessibleJobTitles: specificJobTitle,
+              responsibilities,
             });
 
             addJobTitle({
@@ -176,6 +185,7 @@ const AddJobTitle: React.FC = () => {
               accessibleDepartments: specificDept,
               accessibleEmps: specificEmp,
               accessibleJobTitles: specificJobTitle,
+              responsibilities,
             });
           })}
         >
@@ -256,15 +266,14 @@ const AddJobTitle: React.FC = () => {
               }`}
               placeholder={t("Enter responsibilities (comma-separated)")}
               rows={3}
-              // value={
-              //   jobTitleData ? jobTitleData.responsibilities.join(",") : ""
-              // }
+              // {...register("responsibilities")} // Ensure this binds to the form
+              value={responsibilities.join(",")}
               onChange={(event) => {
-                const values = event.target.value.split(",");
-                console.log(values);
-                setValue("responsibilities", values);
+                const values = event.target.value;
+                setResponsibilities(values.split(","));
+                setValue("responsibilities", values.split(","));
               }}
-            />
+            ></textarea>
 
             {errors.responsibilities && (
               <p className="text-high mt-1 text-sm">

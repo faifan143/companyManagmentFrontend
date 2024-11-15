@@ -20,6 +20,7 @@ const Sidebar = ({
 }) => {
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
+  const isEmployee = useRolePermissions("secondary_user");
   const userPermissions = useSelector(
     (state: RootState) => state.user.userInfo?.job.permissions
   );
@@ -39,6 +40,7 @@ const Sidebar = ({
     ? sidebarItems.filter(
         (item) =>
           isAdmin ||
+          item.requiredPermissions.length == 0 ||
           item.requiredPermissions.some((permission) =>
             userPermissions!.includes(permission)
           )

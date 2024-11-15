@@ -26,7 +26,7 @@ export interface DepartmentFormInputs {
   goal: string;
   category: string;
   mainTasks: string;
-  parentDepartmentId?: string;
+  parent_department_id?: string;
   numericOwners: { category: string; count: number }[];
   supportingFiles: string[];
   requiredReports: { name: string; templateFile: string }[];

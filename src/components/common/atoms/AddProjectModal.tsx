@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import CustomizedSnackbars from "./CustomizedSnackbars";
 import { ProjectType } from "@/types/Project.type";
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
 
 const AddProjectModal: React.FC<{
   isOpen: boolean;
@@ -34,16 +35,26 @@ const AddProjectModal: React.FC<{
     resolver: yupResolver(addProjectSchema),
   });
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const isAdmin = useRolePermissions("admin");
+  const isPrimary = useRolePermissions("primary_user");
 
-  const { data: employees } = useCustomQuery<EmployeeType[]>({
+  const { data: employees, isError: isEmpError } = useCustomQuery<
+    EmployeeType[]
+  >({
     queryKey: ["employees"],
-    url: `http://${process.env.BASE_URL}/emp/get-all-emps`,
+    url: `http://${process.env.BASE_URL}/emp/${
+      isAdmin ? "get-all-emps" : isPrimary ? "get-my-emps" : "view"
+    }`,
     setSnackbarConfig,
   });
 
-  const { data: departments } = useCustomQuery<DepartmentType[]>({
+  const { data: departments, isError: isDeptError } = useCustomQuery<
+    DepartmentType[]
+  >({
     queryKey: ["departments"],
-    url: `http://${process.env.BASE_URL}/department/get-departments`,
+    url: `http://${process.env.BASE_URL}/department/${
+      isAdmin || isPrimary ? "get-departments" : "view"
+    }`,
     setSnackbarConfig,
   });
 
@@ -193,49 +204,54 @@ const AddProjectModal: React.FC<{
               </div>
 
               {/* Members Field */}
-              <div>
-                <label className="block text-sm font-medium">
-                  {t("Members")}
-                </label>
-                <Select
-                  isMulti
-                  value={selectedMembers.map((id) => ({
-                    value: id,
-                    label: employees?.find((emp) => emp.id === id)?.name || "",
-                  }))}
-                  options={getEmployeeOptions(employees)}
-                  onChange={(selectedOptions) => {
-                    setSelectedMembers(
-                      selectedOptions.map((option) => option.value)
-                    );
-                  }}
-                  className="mt-1 text-black"
-                  placeholder={t("Select Members...")}
-                />
-              </div>
+              {employees && !isEmpError && (
+                <div>
+                  <label className="block text-sm font-medium">
+                    {t("Members")}
+                  </label>
+                  <Select
+                    isMulti
+                    value={selectedMembers.map((id) => ({
+                      value: id,
+                      label:
+                        employees?.find((emp) => emp.id === id)?.name || "",
+                    }))}
+                    options={getEmployeeOptions(employees)}
+                    onChange={(selectedOptions) => {
+                      setSelectedMembers(
+                        selectedOptions.map((option) => option.value)
+                      );
+                    }}
+                    className="mt-1 text-black"
+                    placeholder={t("Select Members...")}
+                  />
+                </div>
+              )}
 
               {/* Departments Field */}
-              <div>
-                <label className="block text-sm font-medium">
-                  {t("Departments")}
-                </label>
-                <Select
-                  isMulti
-                  value={selectedDepartments.map((id) => ({
-                    value: id,
-                    label:
-                      departments?.find((dept) => dept.id === id)?.name || "",
-                  }))}
-                  options={getDepartmentOptions(departments)}
-                  onChange={(selectedOptions) => {
-                    setSelectedDepartments(
-                      selectedOptions.map((option) => option.value)
-                    );
-                  }}
-                  className="mt-1 text-black"
-                  placeholder={t("Select Departments...")}
-                />
-              </div>
+              {departments && !isDeptError && (
+                <div>
+                  <label className="block text-sm font-medium">
+                    {t("Departments")}
+                  </label>
+                  <Select
+                    isMulti
+                    value={selectedDepartments.map((id) => ({
+                      value: id,
+                      label:
+                        departments?.find((dept) => dept.id === id)?.name || "",
+                    }))}
+                    options={getDepartmentOptions(departments)}
+                    onChange={(selectedOptions) => {
+                      setSelectedDepartments(
+                        selectedOptions.map((option) => option.value)
+                      );
+                    }}
+                    className="mt-1 text-black"
+                    placeholder={t("Select Departments...")}
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"
