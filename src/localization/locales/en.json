@@ -242,6 +242,8 @@
     "Job Category": "Job Category",
     "Is Manager?": "Is Manager?",
     "Job Title created successfully!": "Job Title created successfully!",
-    "Job Title updated successfully!": "Job Title updated successfully!"
+    "Job Title updated successfully!": "Job Title updated successfully!",
+    "chat": "Chat",
+    "Project Tasks": "Project Tasks"
   }
 }

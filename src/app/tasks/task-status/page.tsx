@@ -11,13 +11,10 @@ import {
   handleDeleteStatusClick,
   handleEditStatusClick,
 } from "@/services/task.service";
+import useSnackbar from "@/hooks/useSnackbar";
 
 const TaskStatusesView: React.FC = () => {
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<ITaskStatus | null>(null);
 

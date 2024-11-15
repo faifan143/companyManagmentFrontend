@@ -6,7 +6,6 @@ export const permissionsArray = [
   "emp_delete",
   "emp_view_specific",
 
-
   "job_title_search_and_view",
   "job_title_manage_files",
   "job_title_add",
@@ -27,19 +26,16 @@ export const permissionsArray = [
   "department_delete",
   "department_view_specific",
 
-  
   "permission_search_and_view",
   "permission_add",
   "permission_update",
   "permission_delete",
-
 
   "electronic_transaction_search_and_view",
   "electronic_transaction_manage_files",
   "electronic_transaction_add",
   "electronic_transaction_update",
   "electronic_transaction_delete",
-
 
   "task_search_and_view",
   "task_manage_files",

@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { useRouter } from "next/navigation";
-import { sidebarItems } from "./data";
-import Image from "next/image";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
 import { ChatsIcon } from "@/assets";
-import ChatModal from "../../atoms/ChatModal";
+import { RootState } from "@/state/store";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import ChatModal from "../../atoms/ChatModal";
+import { sidebarItems } from "./data";
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
 
 const Sidebar = ({
   isExpanded,
@@ -18,6 +19,7 @@ const Sidebar = ({
   setIsExpanded: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
+  const isAdmin = useRolePermissions("admin");
   const userPermissions = useSelector(
     (state: RootState) => state.user.userInfo?.job.permissions
   );
@@ -27,63 +29,55 @@ const Sidebar = ({
     () => localStorage.getItem("selectedTab") || "/home"
   );
 
-  const toggleSidebar = () => {
-    setIsExpanded((prev) => !prev);
-  };
-
   const handleTabClick = (path: string) => {
     setSelectedTab(path);
     localStorage.setItem("selectedTab", path);
     router.push(path);
   };
 
-  // Filter items based on user permissions
   const visibleItems = userPermissions
-    ? sidebarItems.filter((item) =>
-        item.requiredPermissions.every((permission) =>
-          userPermissions!.includes(permission)
-        )
+    ? sidebarItems.filter(
+        (item) =>
+          isAdmin ||
+          item.requiredPermissions.some((permission) =>
+            userPermissions!.includes(permission)
+          )
       )
     : [];
 
   return (
     <div
-      className={`shadow-md p-5 mr-5 fixed top-0 bottom-0 transition-width duration-300 bg-[#1b1a40] ${
-        isExpanded ? "w-[350px]" : "w-[92px]"
-      }`}
+      className={
+        isExpanded ? "fixed inset-0 bg-slate-600/10 backdrop-blur-sm z-10 " : ""
+      }
+      onClick={() => setIsExpanded(false)}
     >
       <div
-        className="relative w-[34px] h-[34px] p-1 cursor-pointer flex items-center text-xl font-bold gap-4 text-white text-nowrap"
-        onClick={toggleSidebar}
+        className={`shadow-md p-5 mr-5 fixed top-[50px] bottom-0 transition-width duration-500  border-r border-slate-600 bg-main  ${
+          isExpanded ? "w-[350px] backdrop-blur" : "w-[92px]"
+        }`}
       >
-        <div className="font-bold text-white bg-[#413d99] rounded-md shadow-md p-2">
-          CM
-        </div>
-        {isExpanded && t(" Company Manager")}
-      </div>
-
-      <div className="sidebar flex flex-col space-y-4 py-4">
-        <div className="h-[1px] w-full bg-slate-200"></div>
-        {visibleItems.map((item) => (
+        <div className="sidebar flex flex-col space-y-4 py-4">
+          {visibleItems.map((item) => (
+            <SidebarItem
+              key={item.label}
+              icon={item.icon}
+              label={t(item.label)}
+              isExpanded={isExpanded}
+              isSelected={selectedTab === item.path}
+              onClick={() => handleTabClick(item.path)}
+            />
+          ))}
+          <div className="h-[1px] w-full bg-slate-200"></div>
           <SidebarItem
-            key={item.label}
-            icon={item.icon}
-            label={t(item.label)}
+            icon={ChatsIcon}
+            label={t(`Department Chat`)}
             isExpanded={isExpanded}
-            isSelected={selectedTab === item.path}
-            onClick={() => handleTabClick(item.path)}
+            isSelected={isChatOpen}
+            onClick={() => setIsChatOpen((prev) => !prev)}
           />
-        ))}
-
-        <div className="h-[1px] w-full bg-slate-200"></div>
-        <SidebarItem
-          icon={ChatsIcon}
-          label={t(`Department Chat`)}
-          isExpanded={isExpanded}
-          isSelected={isChatOpen}
-          onClick={() => setIsChatOpen((prev) => !prev)}
-        />
-        <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+          <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+        </div>
       </div>
     </div>
   );
@@ -105,7 +99,7 @@ const SidebarItem = ({ icon, label, isExpanded, isSelected, onClick }) => {
     >
       {isSelected && (
         <div
-          className="absolute inset-0 bg-[#413d99] rounded-md"
+          className="absolute inset-0 bg-secondary rounded-md"
           style={{ padding: "6px" }}
         />
       )}

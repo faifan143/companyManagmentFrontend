@@ -1,20 +1,17 @@
 "use client";
 
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useSnackbar from "@/hooks/useSnackbar";
+import { handleEditTypeClick } from "@/services/task.service";
+import { ITaskType } from "@/types/Task.type";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useState } from "react";
 import CreateTaskType from "../../../components/common/molcules/CreateTaskType";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
-import { ITaskType } from "@/types/Task.type";
-import { handleEditTypeClick } from "@/services/task.service";
 
 const TaskTypesView: React.FC = () => {
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<ITaskType | null>(null);
 

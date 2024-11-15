@@ -30,6 +30,7 @@ interface UseCreateMutationParams<
     }>
   >;
   onSuccessFn?: () => void;
+  requestType?: "post" | "put" | "delete";
   options?: UseMutationOptions<TResponse, unknown, TInput, unknown>;
 }
 
@@ -42,6 +43,7 @@ export const useCreateMutation = <
   invalidateQueryKeys = [],
   setSnackbarConfig,
   onSuccessFn,
+  requestType = "post",
   options,
 }: UseCreateMutationParams<TInput, TResponse>): UseMutationResult<
   TResponse,
@@ -51,7 +53,7 @@ export const useCreateMutation = <
 > => {
   const queryClient = useQueryClient();
 
-  const mutationFunction = async (data: TInput) => {
+  const mutationAddFunction = async (data: TInput) => {
     const response = await axios.post(`http://${baseUrl}${endpoint}`, data, {
       headers: {
         Authorization: `Bearer ${Cookies.get("access_token")}`,
@@ -59,10 +61,32 @@ export const useCreateMutation = <
     });
     return response.data;
   };
+  const mutationUpdateFunction = async (data: TInput) => {
+    const response = await axios.put(`http://${baseUrl}${endpoint}`, data, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("access_token")}`,
+      },
+    });
+    return response.data;
+  };
+  const mutationDeleteFunction = async (data: TInput) => {
+    const response = await axios.delete(`http://${baseUrl}${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("access_token")}`,
+      },
+    });
+    return response.data;
+  };
+
   const { t } = useTranslation();
 
   return useMutation<TResponse, unknown, TInput>({
-    mutationFn: mutationFunction,
+    mutationFn:
+      requestType == "post"
+        ? mutationAddFunction
+        : requestType == "put"
+        ? mutationUpdateFunction
+        : mutationDeleteFunction,
     onSuccess: (data: TResponse) => {
       if (onSuccessMessage) {
         console.log(onSuccessMessage, data);

@@ -4,18 +4,19 @@
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useSnackbar from "@/hooks/useSnackbar";
+import { addDeptPopupSchema } from "@/schemas/department.schema";
 import {
   CreateDepartmentProps,
   DepartmentFormInputs,
   DepartmentType,
 } from "@/types/DepartmentType.type";
-import { addDeptPopupSchema } from "@/schemas/department.schema";
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import Modal from "react-modal";
 import getErrorMessages from "@/utils/handleErrorMessages";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import Modal from "react-modal";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -43,11 +44,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     }
   }, [departmentData, reset]);
 
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const endpoint = departmentData
     ? `/department/updateDepartment/${departmentData.id}`
     : `/department/create-department`;

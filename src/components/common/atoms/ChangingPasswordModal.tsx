@@ -1,13 +1,14 @@
+import useSnackbar from "@/hooks/useSnackbar";
 import { changePasswordSchema } from "@/schemas/login.schema";
 import { ChangePasswordFormInputs } from "@/types/login.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import Modal from "react-modal";
 import CustomizedSnackbars from "./CustomizedSnackbars";
-import { useTranslation } from "react-i18next";
 
 const ChangingPasswordModal = ({
   isModalOpen,
@@ -19,11 +20,7 @@ const ChangingPasswordModal = ({
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
   const {
     register: registerChangePassword,
@@ -65,7 +62,9 @@ const ChangingPasswordModal = ({
         <h2 className="text-2xl font-bold mb-4">{t("Change Password")}</h2>
         <form onSubmit={handleChangePasswordSubmit(handlePasswordChange)}>
           <div>
-            <label className="block  text-sm font-medium">{t("New Password")}</label>
+            <label className="block  text-sm font-medium">
+              {t("New Password")}
+            </label>
             <input
               type="password"
               {...registerChangePassword("newPassword")}

@@ -9,19 +9,26 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        "droppable-fade": "linear-gradient(#252628,#2e2e30)",
+        "radial-light":
+          "radial-gradient(circle, rgba(62, 62, 64) 0%, rgb(46, 46, 48) 100%)",
+      },
       colors: {
-        foreground: "var(--foreground)",
-        background: "#1A1A2E", // Dark background similar to the board background
-        card: "#2E2E4D", // Card background color
-        textPrimary: "#EDEDED", // Primary text color (whiteish)
-        textSecondary: "#A6A6C3", // Secondary text color (light grayish-blue)
-        accent: "#0098FD", // Accent color similar to the blue buttons
-        low: "#1b1a40", // Green tag (Low priority)
-        medium: "#FFAA00", // Yellow tag (Medium priority)
-        high: "#FF3D71", // Red tag (High priority)
-        inputBackground: "#2C2C3E", // Dark input background
-        border: "#3E3E5C", // Border color, slightly lighter than the background
-        shadow: "rgba(0, 0, 0, 0.25)", // Subtle shadow for elements
+        main: "#2e2e30",
+        secondary: "#454547",
+        dark: "#252628",
+        titles: "#ffffff",
+        labels: "#cbd5e1",
+
+        "main-light": "#fafafa",
+        "secondary-light": "#ffffff",
+        "accent-light": "#f4f4f6",
+        "text-primary-light": "#3d3d3d",
+        "text-secondary-light": "#6c757d",
+        "border-light": "#e3e3e3",
+        "button-light": "#2684ff",
+        "button-text-light": "#ffffff",
       },
     },
   },

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+
 "use client";
 
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
@@ -22,6 +23,7 @@ import { permissionsArray } from "@/utils/all_permissions";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
+import useSnackbar from "@/hooks/useSnackbar";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -39,11 +41,7 @@ const AddJobTitle: React.FC = () => {
   const [specificEmp, setSpecificEmp] = useState<string[]>([]);
   const [specificJobTitle, setSpecificJobTitle] = useState<string[]>([]);
   const [isManager, setIsManager] = useState(false);
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
   const {
     register,
@@ -155,13 +153,22 @@ const AddJobTitle: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-white p-8 rounded-xl shadow-lg col-span-12 w-full relative">
+      <div className="bg-droppable-fade p-8 rounded-xl shadow-lg col-span-12 w-full text-white">
         <h1 className="text-center text-2xl  font-bold mb-6">
           {jobTitleData ? t("Update Job Title") : t("Create Job Title")}
         </h1>
         <form
           className="space-y-4"
           onSubmit={handleSubmit(async (data) => {
+            console.log({
+              ...data,
+              permissions: permissionsSelected,
+              is_manager: isManager,
+              accessibleDepartments: specificDept,
+              accessibleEmps: specificEmp,
+              accessibleJobTitles: specificJobTitle,
+            });
+
             addJobTitle({
               ...data,
               permissions: permissionsSelected,
@@ -179,7 +186,7 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("name")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.name ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter job title name")}
@@ -193,7 +200,7 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("title")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.title ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter job title")}
@@ -209,7 +216,7 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("description")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.description ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter job description")}
@@ -227,7 +234,7 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("grade_level")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.grade_level ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter grade level")}
@@ -244,14 +251,14 @@ const AddJobTitle: React.FC = () => {
             </label>
 
             <textarea
-              className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.responsibilities ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter responsibilities (comma-separated)")}
               rows={3}
-              value={
-                jobTitleData ? jobTitleData.responsibilities.join(",") : ""
-              }
+              // value={
+              //   jobTitleData ? jobTitleData.responsibilities.join(",") : ""
+              // }
               onChange={(event) => {
                 const values = event.target.value.split(",");
                 console.log(values);
@@ -326,7 +333,7 @@ const AddJobTitle: React.FC = () => {
                     specificJobTitle,
                   })
                 }
-                className="mt-1"
+                className="mt-1 text-black  bg-secondary outline-none border-none"
                 placeholder={t("Select Permissions...")}
               />
             </div>
@@ -350,7 +357,7 @@ const AddJobTitle: React.FC = () => {
                 onChange={(selectedOptions) =>
                   setSpecificDept(selectedOptions.map((option) => option.value))
                 }
-                className="mt-1"
+                className="mt-1 text-black bg-secondary outline-none border-none"
                 placeholder={t("Select Accessible Departments...")}
               />
             </div>
@@ -372,7 +379,7 @@ const AddJobTitle: React.FC = () => {
                 onChange={(selectedOptions) =>
                   setSpecificEmp(selectedOptions.map((option) => option.value))
                 }
-                className="mt-1"
+                className="mt-1 text-black bg-secondary outline-none border-none"
                 placeholder={t("Select Accessible Employees...")}
               />
             </div>
@@ -396,7 +403,7 @@ const AddJobTitle: React.FC = () => {
                     selectedOptions.map((option) => option.value)
                   )
                 }
-                className="mt-1"
+                className="mt-1 text-black bg-secondary outline-none border-none"
                 placeholder={t("Select Accessible Job Titles...")}
               />
             </div>
@@ -408,7 +415,7 @@ const AddJobTitle: React.FC = () => {
             </label>
             <select
               {...register("category")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1 rounded-lg  bg-secondary outline-none border-none   focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.category ? "border-high" : "border-border"
               }`}
               onChange={(e) => {
@@ -439,7 +446,7 @@ const AddJobTitle: React.FC = () => {
             </label>
             <select
               {...register("department_id")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1 rounded-lg   bg-secondary outline-none border-none  focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.department_id ? "border-high" : "border-border"
               }`}
               onChange={(e) => {
@@ -473,12 +480,12 @@ const AddJobTitle: React.FC = () => {
               type="checkbox"
               checked={isManager}
               onChange={() => setIsManager(!isManager)}
-              className="form-checkbox text-blue-600 h-5 w-5"
+              className="form-checkbox cursor-pointer h-5 w-5 bg-secondary outline-none border-none"
             />
           </div>
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
               isPendingJobTitle ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingJobTitle}

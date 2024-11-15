@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 "use client";
 
-import Header from "@/components/common/molcules/Header";
+import PageSpinner from "@/components/common/atoms/PageSpinner";
 import Sidebar from "@/components/common/molcules/Sidebar/Sidebar";
 import LayoutProviders from "@/components/Providers/LayoutProviders";
 import useLanguage from "@/hooks/useLanguage";
@@ -9,8 +9,7 @@ import Cookies from "js-cookie";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import "./globals.css";
-import PageSpinner from "@/components/common/atoms/PageSpinner";
-
+import NewHeader from "@/components/common/NewHeader";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +20,6 @@ export default function RootLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const { getDir } = useLanguage();
-
   useEffect(() => {
     const checkAuthState = () => {
       const token = Cookies.get("access_token");
@@ -42,8 +40,8 @@ export default function RootLayout({
   }, [pathname]);
 
   useEffect(() => {
-    if (!isAuthenticated && pathname !== "/") {
-      redirect("/");
+    if (!isAuthenticated && pathname != "/auth") {
+      redirect("/auth");
     }
   }, [isAuthenticated, pathname]);
 
@@ -62,23 +60,26 @@ export default function RootLayout({
         <title>Company Management System</title>
         <link rel="icon" href="" />
       </head>
-      <body className="h-[100dvh] w-full">
+      <body
+        className={`min-h-[100dvh] w-full  ${
+          pathname == "/home" ? "bg-radial-light" : "bg-main"
+        }`}
+      >
         <div className="flex h-full w-full">
           <LayoutProviders>
+            {isAuthenticated && (
+              <NewHeader setIsExpanded={setIsSidebarExpanded} />
+            )}
             {isAuthenticated && (
               <Sidebar
                 isExpanded={isSidebarExpanded}
                 setIsExpanded={setIsSidebarExpanded}
               />
             )}
-
             <div
               dir={getDir()}
-              className={`transition-all duration-300 py-5 ${
-                isSidebarExpanded ? "ml-[400px]" : "ml-[100px]"
-              } w-full`}
+              className={`transition-all mt-[49px] duration-300 py-5  w-full`}
             >
-              {isAuthenticated && <Header />}
               <Suspense fallback={<PageSpinner />}>{children}</Suspense>
             </div>
           </LayoutProviders>

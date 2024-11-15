@@ -1,6 +1,7 @@
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSetPageData from "@/hooks/useSetPageData";
+import useSnackbar from "@/hooks/useSnackbar";
 import { JobTitleType } from "@/types/JobTitle.type";
 import {
   Button,
@@ -11,17 +12,13 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { useState } from "react";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import { useTranslation } from "react-i18next";
+import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const {
     data: jobs,
     isLoading,
@@ -77,34 +74,34 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   }
 
   return (
-    <div className="bg-[#f0f4f9] rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
+    <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
       <div className="overflow-x-auto rounded-xl shadow-md">
-        <table className="min-w-full bg-white rounded-lg shadow-md">
-          <thead className="bg-gray-200">
+        <table className="min-w-full bg-main text-white rounded-lg shadow-md">
+          <thead className="bg-slate-600">
             <tr>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Name")}
               </th>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Title")}
               </th>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Grade Level")}
               </th>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Description")}
               </th>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Responsibilities")}
               </th>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Permissions")}
               </th>
-              <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Department ID")}
               </th>
               {isAdmin && (
-                <th className="text-center text-[#1b1a40] py-3 px-4 uppercase font-semibold text-sm">
+                <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                   {t("Actions")}
                 </th>
               )}
@@ -114,7 +111,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
             {jobs.map((jobTitle) => (
               <tr
                 key={jobTitle.id}
-                className="hover:bg-gray-100 transition-colors"
+                className="hover:bg-slate-700 transition-colors"
               >
                 <td className="py-3 px-4 text-center">{jobTitle.name}</td>
                 <td className="py-3 px-4 text-center">{jobTitle.title}</td>
@@ -167,7 +164,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                   {jobTitle.department && jobTitle.department.name}
                 </td>
                 {isAdmin && (
-                  <td className="py-3 px-4 flex space-x-2">
+                  <td className="py-3 px-4 flex gap-2">
                     <div
                       onClick={() => handleEditClick(jobTitle)}
                       className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-green-100 hover:bg-green-500 hover:text-green-100 text-green-500"

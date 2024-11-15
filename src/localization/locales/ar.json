@@ -20,8 +20,8 @@
     "Job Titles Management": "إدارة المسميات الوظيفية",
     "Department Chat": "محادثة القسم",
     " Company Manager": " إدارة الشركة",
-    "Write a comment...": " ... إكتب تعليقاً",
-    "Select options...": "... إختر خياراً ",
+    "Write a comment...": "إكتب تعليقاً... ",
+    "Select options...": "إختر خياراً... ",
     "Loading": "جاري التحميل",
     "Task Details": "تفاصيل المهمة",
     "Members": "الأعضاء",
@@ -243,6 +243,7 @@
     "Job Title created successfully!": "تم إنشاء المسمى الوظيفي بنجاح!",
     "Job Title updated successfully!": "تم تحديث المسمى الوظيفي بنجاح!",
     "Select Permissions...": "إختر اذن ...",
-    "Loading ...": "جاري التحميل ..."
+    "Loading ...": "جاري التحميل ...",
+    "chat": "محادثة"
   }
 }

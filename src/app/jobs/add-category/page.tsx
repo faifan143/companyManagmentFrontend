@@ -5,6 +5,7 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useSnackbar from "@/hooks/useSnackbar";
 import { addCategorySchema } from "@/schemas/job.schema";
 import {
   addEducationService,
@@ -28,11 +29,7 @@ const AddJobCategory: React.FC = () => {
   const [newEducation, setNewEducation] = useState("");
   const [isAddingExperience, setIsAddingExperience] = useState(false);
   const [newExperience, setNewExperience] = useState("");
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
 
   const {
@@ -103,25 +100,25 @@ const AddJobCategory: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-white p-8 rounded-xl shadow-lg col-span-12 w-full relative">
-        <h1 className="text-center text-2xl font-bold mb-6">
+      <div className="bg-droppable-fade text-white p-8 rounded-xl shadow-lg col-span-12 w-full">
+        <h1 className="text-center text-2xl  font-bold mb-6">
           {t("Create Job Category")}
         </h1>
         <form
-          className="space-y-4"
+          className="space-y-4 "
           onSubmit={handleSubmit(async (data: JobCategoryFormInputs) => {
             addJobCategory(data);
           })}
         >
           {/* Name Field */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="  block text-sm font-medium">
               {t("Category Name")}
             </label>
             <input
               type="text"
               {...register("name")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1   bg-secondary outline-none border-none   rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.name ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter category name")}
@@ -133,12 +130,12 @@ const AddJobCategory: React.FC = () => {
 
           {/* Description Field */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="  block text-sm font-medium">
               {t("Description")}
             </label>
             <textarea
               {...register("description")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1    bg-secondary outline-none border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.description ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter category description")}
@@ -153,13 +150,13 @@ const AddJobCategory: React.FC = () => {
 
           {/* Required Education Field */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="  block text-sm font-medium">
               {t("Required Education")}
             </label>
             <div className="flex gap-2 items-center">
               <select
                 {...register("required_education")}
-                className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                className={`w-full   bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                   errors.required_education ? "border-high" : "border-border"
                 }`}
               >
@@ -181,7 +178,7 @@ const AddJobCategory: React.FC = () => {
               <div className="mt-2 flex gap-2">
                 <input
                   type="text"
-                  className="w-full px-4 py-2 rounded-lg border"
+                  className="w-full   bg-secondary outline-none border-none   px-4 py-2 rounded-lg border"
                   placeholder={t("Enter new education")}
                   value={newEducation}
                   onChange={(e) => setNewEducation(e.target.value)}
@@ -197,7 +194,7 @@ const AddJobCategory: React.FC = () => {
                       setValue,
                     })
                   }
-                  className="bg-blue-500 text-white rounded-md px-4 py-2"
+                  className="bg-dark hover:bg-main text-white rounded-md px-4 py-2"
                 >
                   {t("Add")}
                 </button>
@@ -212,13 +209,13 @@ const AddJobCategory: React.FC = () => {
 
           {/* Required Experience Field */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="  block text-sm font-medium">
               {t("Required Experience")}
             </label>
             <div className="flex gap-2 items-center">
               <select
                 {...register("required_experience")}
-                className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                className={`w-full px-4 py-2   bg-secondary outline-none border-none   mt-1 rounded-lg border ${
                   errors.required_experience ? "border-high" : "border-border"
                 }`}
               >
@@ -240,7 +237,7 @@ const AddJobCategory: React.FC = () => {
               <div className="mt-2 flex gap-2">
                 <input
                   type="text"
-                  className="w-full px-4 py-2 rounded-lg border"
+                  className="w-full px-4 py-2   bg-secondary outline-none border-none   rounded-lg border"
                   placeholder={t("Enter new experience")}
                   value={newExperience}
                   onChange={(e) => setNewExperience(e.target.value)}
@@ -256,7 +253,7 @@ const AddJobCategory: React.FC = () => {
                       setValue,
                     })
                   }
-                  className="bg-blue-500 text-white rounded-md px-4 py-2"
+                  className="bg-dark hover:bg-main text-white rounded-md px-4 py-2"
                 >
                   {t("Add")}
                 </button>
@@ -271,11 +268,11 @@ const AddJobCategory: React.FC = () => {
 
           {/* Required Skills Field */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="  block text-sm font-medium">
               {t("Required Skills")}
             </label>
             <textarea
-              className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1    bg-secondary outline-none border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.required_skills ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter required skills (comma-separated)")}
@@ -297,7 +294,7 @@ const AddJobCategory: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
               isPendingJobCategory ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingJobCategory}

@@ -8,7 +8,8 @@ const resources = {
   ar: arTranslation,
 };
 
-const savedLanguage = localStorage.getItem("language") || "ar";
+const savedLanguage =
+  (localStorage && localStorage.getItem("language")) || "en";
 
 i18n.use(initReactI18next).init({
   resources,

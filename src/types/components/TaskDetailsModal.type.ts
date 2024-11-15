@@ -1,4 +1,4 @@
-import ITask from "../Task.type";
+import { ReceiveTaskType } from "../Task.type";
 
 export interface Comment {
   id: string;
@@ -13,5 +13,5 @@ export interface Comment {
 export interface TaskDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  taskData: ITask | null;
+  taskData: ReceiveTaskType | null;
 }

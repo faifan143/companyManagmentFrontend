@@ -26,16 +26,13 @@ import {
 import getErrorMessages from "@/utils/handleErrorMessages";
 import useQueryPageData from "@/hooks/useQueryPageData";
 import { useTranslation } from "react-i18next";
+import useSnackbar from "@/hooks/useSnackbar";
 
 const baseUrl = process.env.BASE_URL || "";
 
 const AddDept: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [requiredCategoryOptions, setRequiredCategoryOptions] = useState<
@@ -147,12 +144,12 @@ const AddDept: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-white p-8 rounded-xl shadow-lg  w-full relative col-span-full">
-        <h1 className=" text-2xl  font-bold mb-6">
+      <div className="bg-droppable-fade p-8 rounded-xl shadow-lg  w-full  col-span-full">
+        <h1 className=" text-2xl text-white font-bold mb-6">
           {departmentData ? t("Update Department") : t("Create Department")}
         </h1>
         <form
-          className="space-y-4"
+          className="space-y-4 text-white"
           onSubmit={handleSubmit(() =>
             handleManualSubmit({
               getValues,
@@ -163,13 +160,13 @@ const AddDept: React.FC = () => {
         >
           <div className="flex gap-5 items-center justify-between">
             <div>
-              <label className="block  text-sm font-medium">
+              <label className="text-slate-300 block  text-sm font-medium">
                 {t("Department Name")}
               </label>
               <input
                 type="text"
                 {...register("name")}
-                className="w-full px-4 py-2 mt-1 rounded-lg border"
+                className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                 placeholder={t("Enter department name")}
               />
               {errors.name && (
@@ -177,11 +174,13 @@ const AddDept: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium">{t("Goal")}</label>
+              <label className="text-slate-300 block text-sm font-medium">
+                {t("Goal")}
+              </label>
               <input
                 type="text"
                 {...register("goal")}
-                className="w-full px-4 py-2 mt-1 rounded-lg border"
+                className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                 placeholder={t("Enter department goal")}
               />
               {errors.goal && (
@@ -190,13 +189,13 @@ const AddDept: React.FC = () => {
             </div>
             {/* Category Field */}
             <div>
-              <label className="block text-sm font-medium">
+              <label className="text-slate-300 block text-sm font-medium">
                 {t("Category")}
               </label>
               <div className="flex gap-2 items-center">
                 <select
                   {...register("category")}
-                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                  className={`w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border ${
                     errors.category ? "border-high" : "border-border"
                   }`}
                 >
@@ -218,7 +217,7 @@ const AddDept: React.FC = () => {
                 <div className="mt-2 flex gap-2">
                   <input
                     type="text"
-                    className="w-full px-4 py-2 rounded-lg border"
+                    className=" w-full  bg-secondary border-none outline-none  px-4 py-2 rounded-lg border"
                     placeholder={t("Enter new Category")}
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
@@ -248,12 +247,12 @@ const AddDept: React.FC = () => {
             </div>
             {/*  */}
             <div>
-              <label className="block text-sm font-medium">
+              <label className="text-slate-300 block text-sm font-medium">
                 {t("Main Tasks")}
               </label>
               <textarea
                 {...register("mainTasks")}
-                className="w-full px-4 py-2 mt-1 rounded-lg border"
+                className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                 placeholder={t("Enter main tasks")}
                 rows={1}
               />
@@ -266,12 +265,12 @@ const AddDept: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">
+            <label className="text-slate-300 block text-sm font-medium">
               {t("Parent Department (Optional)")}
             </label>
             <select
               {...register("parentDepartmentId")}
-              className="w-full px-4 py-2 mt-1 rounded-lg shadow-md"
+              className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg shadow-md"
             >
               <option value="">{t("Select a parent department")}</option>
               {departments &&
@@ -290,14 +289,14 @@ const AddDept: React.FC = () => {
 
           {/* Numeric Owners Section */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="text-slate-300 block text-sm font-medium">
               {t("Numeric Owners")}
             </label>
             {numericOwnersFields.map((field, index) => (
               <div key={field.id} className="flex gap-4 items-center">
                 <select
                   {...register(`numericOwners.${index}.category` as const)}
-                  className={`w-full px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+                  className={`w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                     errors.numericOwners?.[index]?.category
                       ? "border-high"
                       : "border-border"
@@ -323,14 +322,14 @@ const AddDept: React.FC = () => {
                   type="number"
                   {...register(`numericOwners.${index}.count` as const)}
                   placeholder={t("Count")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                 />
                 <Image
                   src={XIcon}
                   alt="icon"
-                  width={20}
-                  height={20}
-                  className="cursor-pointer p-1 shadow-md rounded-md text-red-500"
+                  width={30}
+                  height={30}
+                  className=" bg-main cursor-pointer p-1 shadow-md rounded-md text-red-500"
                   onClick={() => removeNumericOwner(index)} // Remove numeric owner
                 />
               </div>
@@ -338,7 +337,7 @@ const AddDept: React.FC = () => {
             <button
               type="button"
               onClick={() => appendNumericOwner({ count: 1, category: "" })}
-              className="text-sm text-blue-500"
+              className="text-sm text-slate-100 underline"
             >
               {t("Add Numeric Owner")}
             </button>
@@ -346,7 +345,7 @@ const AddDept: React.FC = () => {
 
           {/* Supporting Files Section */}
           <div>
-            <div className="block text-sm font-medium">
+            <div className="block text-slate-300 text-sm font-medium">
               {t("Supporting Files")}
             </div>
 
@@ -356,7 +355,7 @@ const AddDept: React.FC = () => {
               type="file"
               multiple // Allow multiple files
               onChange={(e) => handleFileChange(e, setSelectedFiles)} // Handle file selection
-              className="w-full px-4 py-2 mt-1 rounded-lg"
+              className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg"
             />
             {/* Display selected file names */}
             {selectedFiles.map((file, index) => (
@@ -365,17 +364,17 @@ const AddDept: React.FC = () => {
                 <Image
                   src={XIcon}
                   alt="icon"
-                  width={20}
-                  height={20}
-                  className="cursor-pointer p-1 shadow-md rounded-md text-red-500"
+                  width={30}
+                  height={30}
+                  className=" bg-main cursor-pointer p-1 shadow-md rounded-md text-red-500"
                   onClick={() => handleRemoveFile(index, setSelectedFiles)} // Remove selected file
                 />
               </div>
             ))}
 
             <label
-              htmlFor="file-id"
-              className="text-sm text-blue-500 cursor-pointer"
+              htmlFor="text-slate-300 file-id"
+              className="text-sm text-slate-100 underline cursor-pointer"
             >
               {t("Attach Supporting File")}
             </label>
@@ -383,7 +382,7 @@ const AddDept: React.FC = () => {
 
           {/* Required Reports Section */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="text-slate-300 block text-sm font-medium">
               {t("Required Reports")}
             </label>
             {requiredReportsFields.map((field, index) => (
@@ -392,12 +391,12 @@ const AddDept: React.FC = () => {
                   type="text"
                   {...register(`requiredReports.${index}.name` as const)}
                   placeholder={t("Report Name")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
                   type="file"
                   placeholder={t("Template File")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                   onChange={(e) => {
                     const file = e.target.files?.[0]; // Get the selected file
                     if (file) {
@@ -411,9 +410,9 @@ const AddDept: React.FC = () => {
                 <Image
                   src={XIcon}
                   alt="icon"
-                  width={20}
-                  height={20}
-                  className="cursor-pointer p-1 shadow-md rounded-md text-red-500"
+                  width={30}
+                  height={30}
+                  className=" bg-main cursor-pointer p-1 shadow-md rounded-md text-red-500"
                   onClick={() => removeRequiredReport(index)} // Remove report
                 />
               </div>
@@ -423,7 +422,7 @@ const AddDept: React.FC = () => {
               onClick={() =>
                 appendRequiredReport({ name: "", templateFile: "" })
               }
-              className="text-sm text-blue-500"
+              className="text-sm text-slate-100 underline"
             >
               {t("Add Required Report")}
             </button>
@@ -431,7 +430,7 @@ const AddDept: React.FC = () => {
 
           {/* Development Programs Section */}
           <div>
-            <label className="block text-sm font-medium">
+            <label className="text-slate-300 block text-sm font-medium">
               {t("Development Programs")}
             </label>
             {developmentProgramsFields.map((field, index) => (
@@ -442,7 +441,7 @@ const AddDept: React.FC = () => {
                     `developmentPrograms.${index}.programName` as const
                   )}
                   placeholder={t("Program Name")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                 />
                 <input
                   type="text"
@@ -450,13 +449,13 @@ const AddDept: React.FC = () => {
                     `developmentPrograms.${index}.objective` as const
                   )}
                   placeholder={t("Objective")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className="w-full bg-secondary border-none outline-none px-4 py-2 mt-1 rounded-lg border"
                 />
 
                 <input
                   type="file"
                   placeholder={t("Program File")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                   onChange={(e) => {
                     const file = e.target.files?.[0]; // Get the selected file
                     if (file) {
@@ -471,15 +470,15 @@ const AddDept: React.FC = () => {
                 <textarea
                   {...register(`developmentPrograms.${index}.notes` as const)}
                   placeholder={t("Notes")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border"
+                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
                   rows={1}
                 />
                 <Image
                   src={XIcon}
                   alt="icon"
-                  width={20}
-                  height={20}
-                  className="cursor-pointer p-1 shadow-md rounded-md text-red-500"
+                  width={30}
+                  height={30}
+                  className=" bg-main cursor-pointer p-1 shadow-md rounded-md text-red-500"
                   onClick={() => removeDevelopmentProgram(index)} // Remove program
                 />
               </div>
@@ -494,7 +493,7 @@ const AddDept: React.FC = () => {
                   programFile: "",
                 })
               }
-              className="text-sm text-blue-500"
+              className="text-sm text-slate-100 underline"
             >
               {t("Add Development Program")}
             </button>
@@ -502,7 +501,7 @@ const AddDept: React.FC = () => {
 
           <button
             type="submit" // Change to "button" to avoid default form submission
-            className={`w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-300 ${
               isPendingDepartment ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingDepartment}

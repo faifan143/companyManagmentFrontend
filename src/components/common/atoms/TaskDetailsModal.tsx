@@ -6,9 +6,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaPaperclip, FaPaperPlane, FaTimes } from "react-icons/fa";
+import { PaperClipIcon } from "@/assets";
+import { XIcon } from "@/assets";
+import { PaperPlaneIcon } from "@/assets";
 import Modal from "react-modal";
-
+import Image from "next/image";
+import useLanguage from "@/hooks/useLanguage";
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleString("en-GB", {
@@ -31,6 +34,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [comments, setComments] = useState<Comment[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { t } = useTranslation();
+  const { getDir } = useLanguage();
+
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -102,9 +107,9 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   if (!taskData) return null;
   const priorityColor =
-    taskData.priority == 1
+    taskData.priority == "HIGH"
       ? "bg-red-100  text-red-600"
-      : taskData.priority == 2
+      : taskData.priority == "MEDIUM"
       ? "bg-yellow-100  text-yellow-600"
       : "bg-green-100  text-green-600";
 
@@ -114,10 +119,17 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       onRequestClose={onClose}
       ariaHideApp={false}
       contentLabel="Task Details"
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center "
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
     >
-      <div className="bg-white p-6 rounded-xl shadow-lg max-w-xl w-full relative">
+      <div
+        dir={getDir()}
+        className="bg-secondary text-white p-6 rounded-xl shadow-lg max-w-xl max-h-[80%] overflow-auto  w-full relative"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -125,27 +137,25 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           }}
           className="absolute top-4 right-4 text-gray-700 hover:text-red-500"
         >
-          <FaTimes />
+          <Image src={XIcon} alt="x icon" width={16} height={16} />
         </button>
 
         <div className="flex justify-between items-center my-5">
           <div className="flex items-center space-x-2">
-            <span className="text-[#1b1a40] text-lg font-bold">
-              {t("Task Details")}
-            </span>
+            <span className=" text-lg font-bold">{t("Task Details")}</span>
           </div>
-          <div className="flex space-x-2">
-            <div className="bg-gray-100 px-4 py-2 rounded-2xl border-none text-gray-800 font-medium">
-              {taskData.status.name}
+          <div className="flex gap-2">
+            <div className="bg-slate-300 px-4 py-2 rounded-2xl border-none text-gray-800 font-medium">
+              {taskData.status}
             </div>
             <div
               className={
                 "px-4 py-2 rounded-2xl border-none font-medium " + priorityColor
               }
             >
-              {taskData.priority == 1
+              {taskData.priority == "HIGH"
                 ? t("High")
-                : taskData.priority == 2
+                : taskData.priority == "MEDIUM"
                 ? t("Medium")
                 : t("Low")}
             </div>
@@ -154,7 +164,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
         <h2 className="text-2xl font-bold mb-4">{taskData.name}</h2>
 
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <label className="font-bold mb-2 block">{t("Members")}</label>
           <div className="flex items-center space-x-2 mt-2">
             {taskData.emp ? (
@@ -174,23 +184,25 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               +
             </button>
           </div>
-        </div>
+        </div> */}
 
         <div className="mb-4">
           <label className="font-bold mb-2 block">{t("Description")}</label>
-          <div className="bg-gray-100 p-4 rounded-md text-gray-700">
+          <div className="text-gray-300 bg-main p-2 rounded-md">
             {taskData.description}
           </div>
         </div>
 
         <div className="flex justify-between mb-4">
-          <div>
+          {/* <div>
             <label className="font-bold">{t("Task Type:")}</label>
-            <p className="mt-1 text-gray-600">{taskData.task_type.name}</p>
-          </div>
+            <p className="mt-1 text-gray-300 bg-main p-2 rounded-md text-center">
+              {taskData.task_type.name}
+            </p>
+          </div> */}
           <div>
             <label className="font-bold">{t("Department:")}</label>
-            <p className="mt-1 text-gray-600">
+            <p className="text-gray-300 bg-main p-2 rounded-md text-center">
               {taskData.emp?.department
                 ? taskData.emp?.department?.name
                 : t("No department assigned")}
@@ -200,19 +212,67 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
         <div className="mb-4">
           <label className="font-bold">{t("Due Date:")}</label>
-          <p className="mt-2 text-gray-600">
+          <p className="text-gray-300 bg-main p-2 rounded-md w-fit  ">
             {new Date(taskData.due_date).toLocaleDateString()}
           </p>
         </div>
         <div className="mb-4">
-          <label className="font-bold mb-2 block">{t("Comments")}</label>
-          <div
-            className="bg-white border shadow-md p-4 rounded-lg text-gray-700 space-y-2 h-40 overflow-y-auto "
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
+          <div className="mt-4 p-2 bg-main  rounded-md shadow-sm">
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full mt-2 p-2 border-none outline-none focus:outline-none bg-main "
+              placeholder={t("Add a comment...")}
+              rows={2}
+            />
+
+            <div className="flex items-center justify-between mt-2">
+              <div className=" bg-secondary rounded-md p-1 hover:bg-dark ">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="attach-file"
+                />
+                <label
+                  htmlFor="attach-file"
+                  className="cursor-pointer flex gap-1"
+                >
+                  {/* <FaPaperclip className="inline mr-1" />*/}
+                  <Image
+                    src={PaperClipIcon}
+                    alt="paperclip icon"
+                    width={16}
+                    height={16}
+                  />
+                  {t("Attach File")}
+                </label>
+                {attachedFile && (
+                  <span className="ml-2 text-sm text-gray-600">
+                    {attachedFile.name}
+                  </span>
+                )}
+              </div>
+
+              <button
+                onClick={handleSendComment}
+                className="bg-dark text-white px-3 py-1 rounded-md hover:bg-secondary gap-1 flex items-center"
+              >
+                {/* <FaPaperPlane className="mr-1" />  */}
+                <Image
+                  src={PaperPlaneIcon}
+                  alt="paper plane icon"
+                  width={16}
+                  height={16}
+                />
+                {t("Send")}
+              </button>
+            </div>
+          </div>
+
+          <label className="font-bold my-2 block">{t("Comments")}</label>
+          <div className="bg-main border shadow-md p-4 rounded-lg text-gray-700 space-y-2  ">
             {comments.length > 0 ? (
               comments.map((comment, index) => (
                 // <div key={comment.id} className="bg-white p-2 rounded-md mb-2">
@@ -239,19 +299,22 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 //     </div>
                 //   )}
                 // </div>
-                <div key={index} className="flex mb-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-[#1b1a40] text-white rounded-full flex items-center justify-center mr-4">
+                <div key={index} className="flex gap-2 mb-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-slate-300 font-bold rounded-full flex items-center justify-center mr-4">
                     {comment.author.name.slice(0, 1)}
                   </div>
                   <div>
-                    <p className="text-gray-900 font-semibold">
+                    <p className="text-white font-semibold">
                       {comment.author.name}
                     </p>
                     <p className="text-xs text-gray-500">
                       {formatDate(comment.createdAt)}
                     </p>
                     {comment.content && (
-                      <div className="bg-gray-100   rounded-md p-2 mt-2 text-sm">
+                      <div
+                        className="bg-secondary  text-white rounded-md p-2 mt-2 text-sm"
+                        dir={getDir()}
+                      >
                         {comment.content}
                       </div>
                     )}
@@ -273,46 +336,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             ) : (
               <p>{t("No comments yet.")}</p>
             )}
-          </div>
-
-          <div className="mt-4 p-2 bg-white border rounded-md shadow-sm">
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full mt-2 p-2 border-none outline-none focus:outline-none"
-              placeholder={t("Add a comment...")}
-              rows={2}
-            />
-
-            <div className="flex items-center justify-between mt-2">
-              <div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="attach-file"
-                />
-                <label
-                  htmlFor="attach-file"
-                  className="cursor-pointer text-gray-600 hover:text-gray-900"
-                >
-                  <FaPaperclip className="inline mr-1" /> {t("Attach File")}
-                </label>
-                {attachedFile && (
-                  <span className="ml-2 text-sm text-gray-600">
-                    {attachedFile.name}
-                  </span>
-                )}
-              </div>
-
-              <button
-                onClick={handleSendComment}
-                className="bg-[#1b1a40] text-white px-3 py-1 rounded-md hover:bg-blue-600 flex items-center"
-              >
-                <FaPaperPlane className="mr-1" /> {t("Send")}
-              </button>
-            </div>
           </div>
         </div>
       </div>

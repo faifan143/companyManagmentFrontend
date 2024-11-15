@@ -3,23 +3,19 @@
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSetPageData from "@/hooks/useSetPageData";
+import useSnackbar from "@/hooks/useSnackbar";
 import { handleDeleteClick } from "@/services/employee.service";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
-import { useState } from "react";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import { useTranslation } from "react-i18next";
+import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const EmployeesContent: React.FC<{
   selectedOption: string;
 }> = ({ selectedOption }) => {
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
   const { handleEditClick } = useSetPageData<EmployeeType>(
     "/employees/add-employee"
@@ -52,35 +48,35 @@ const EmployeesContent: React.FC<{
   }
 
   return (
-    <div className="bg-[#f0f4f9] rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12 ">
+    <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12 ">
       {employees && employees.length > 0 ? (
         <div className="overflow-x-auto rounded-lg shadow-md">
-          <table className="min-w-full bg-white rounded-lg shadow-md">
-            <thead className="bg-gray-200">
+          <table className="min-w-full bg-main rounded-lg text-white shadow-md">
+            <thead className="bg-slate-600">
               <tr>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Name")}
                 </th>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("DOB")}
                 </th>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Phone")}
                 </th>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Email")}
                 </th>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Address")}
                 </th>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Department")}
                 </th>
-                <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Job")}
                 </th>
                 {isAdmin && (
-                  <th className="text-[#1b1a40] text-center py-3 px-4 uppercase font-semibold text-sm">
+                  <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                     {t("Actions")}
                   </th>
                 )}
@@ -90,7 +86,7 @@ const EmployeesContent: React.FC<{
               {employees.map((employee) => (
                 <tr
                   key={employee.id}
-                  className="hover:bg-gray-100 transition-colors"
+                  className="hover:bg-slate-700 transition-colors"
                 >
                   <td className="text-center py-3 px-4">{employee.name}</td>
                   <td className="text-center py-3 px-4">
@@ -106,7 +102,7 @@ const EmployeesContent: React.FC<{
                     {employee.job.title}
                   </td>
                   {isAdmin && (
-                    <td className="text-center py-3 px-4 flex space-x-2">
+                    <td className="text-center py-3 px-4 flex gap-2">
                       <div
                         onClick={() => handleEditClick(employee)}
                         className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-green-100 hover:bg-green-500 hover:text-green-100 text-green-500"

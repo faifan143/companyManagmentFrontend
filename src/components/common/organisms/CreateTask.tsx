@@ -4,18 +4,19 @@
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useSnackbar from "@/hooks/useSnackbar";
+import { addTaskPopupSchema } from "@/schemas/task.schema";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { EmployeeType } from "@/types/EmployeeType.type";
-import { addTaskPopupSchema } from "@/schemas/task.schema";
+import { CreateTaskProps, TaskFormInputs } from "@/types/Task.type";
+import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import Modal from "react-modal";
 import CreateTaskStatus from "../molcules/CreateTaskStatus";
 import CreateTaskType from "../molcules/CreateTaskType";
-import { CreateTaskProps, TaskFormInputs } from "@/types/Task.type";
-import getErrorMessages from "@/utils/handleErrorMessages";
-import { useTranslation } from "react-i18next";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -29,11 +30,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
   const [isTaskStatusModalOpen, setIsTaskStatusModalOpen] = useState(false);
   const [isTaskTypeModalOpen, setIsTaskTypeModalOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
 
   const {
@@ -57,20 +54,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({
       reset();
     }
   }, [taskData, reset]);
-
-  const { data: taskTypes } = useCustomQuery<any[]>({
-    queryKey: ["taskTypes"],
-    url: `http://${baseUrl}/task-type/find-all`,
-    setSnackbarConfig,
-    nestedData: true,
-  });
-
-  const { data: taskStatuses } = useCustomQuery<any[]>({
-    queryKey: ["taskStatuses"],
-    url: `http://${baseUrl}/task-status/find-all`,
-    setSnackbarConfig,
-    nestedData: true,
-  });
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
@@ -187,40 +170,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({
             )}
           </div>
 
-          {/* Task Type Field */}
-          <div>
-            <label className="block text-gray-600 text-sm font-medium">
-              {t("Task Type")}
-            </label>
-            <div className="flex gap-[8px]">
-              <select
-                {...register("task_type")}
-                className={`w-full px-4 py-2 mt-1 rounded-lg border ${
-                  errors.task_type ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <option value="">{t("Select a task type")}</option>
-                {taskTypes &&
-                  taskTypes.map((type: any) => (
-                    <option key={type.id} value={type.id}>
-                      {type.name}
-                    </option>
-                  ))}
-              </select>
-              <div
-                onClick={() => setIsTaskTypeModalOpen(true)}
-                className="border-gray-500 border-dashed border-2 text-center rounded-md w-[45px] h-[40px] mt-1 content-center text-lg font-bold cursor-pointer"
-              >
-                +{" "}
-              </div>
-            </div>
-            {errors.task_type && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.task_type.message}
-              </p>
-            )}
-          </div>
-
           {/* Priority Field */}
           <div>
             <label className="block text-gray-600 text-sm font-medium">
@@ -292,40 +241,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({
               </p>
             )}
           </div>
-
-          <div>
-            <label className="block text-gray-600 text-sm font-medium">
-              {t("Task Status")}
-            </label>
-            <div className="flex items-center gap-2">
-              <select
-                {...register("status")}
-                className={`w-full px-4 py-2 mt-1 rounded-lg border ${
-                  errors.status ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <option value="">{t("Select task status")}</option>
-                {taskStatuses &&
-                  taskStatuses.map((status: any) => (
-                    <option key={status.id} value={status.id}>
-                      {status.name}
-                    </option>
-                  ))}
-              </select>
-              <div
-                onClick={() => setIsTaskStatusModalOpen(true)}
-                className="mt-1 border-gray-500 border-dashed border-2 text-center rounded-md w-[45px] h-[40px] content-center text-lg font-bold cursor-pointer"
-              >
-                +{" "}
-              </div>
-            </div>
-            {errors.status && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.status.message}
-              </p>
-            )}
-          </div>
-
           <div>
             <label className="block text-gray-600 text-sm font-medium">
               {t("Due Date")}

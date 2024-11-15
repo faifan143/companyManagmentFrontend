@@ -1,10 +1,10 @@
 "use client";
 
+import { ArrowDownIcon } from "@/assets";
 import { useRedux } from "@/hooks/useRedux";
 import { TeamHeaderProps } from "@/types/components/TeamHeader.type";
+import Image from "next/image";
 import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { FiChevronDown } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 
 const TeamHeader: React.FC<TeamHeaderProps> = ({
@@ -31,7 +31,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         {currentContent === "Departments" ? (
           <button className="flex items-center text-[#1b1a40] font-medium">
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
-              <FaPlus />
+              +
             </div>
             <span className="ml-2 text-black font-bold">
               {t("Add a department")}
@@ -40,7 +40,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         ) : currentContent === "Job Titles" ? (
           <button className="flex items-center text-[#1b1a40] font-medium">
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
-              <FaPlus />
+              +
             </div>
             <span className="ml-2 text-black font-bold">
               {t("Add a job title")}
@@ -49,7 +49,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         ) : currentContent === "Employees" ? (
           <button className="flex items-center text-[#1b1a40] font-medium">
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
-              <FaPlus />
+              +
             </div>
             <span className="ml-2 text-black font-bold">
               {t("Add a member")}
@@ -58,7 +58,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         ) : (
           <button className="flex items-center text-[#1b1a40] font-medium">
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
-              <FaPlus />
+              +
             </div>
             <span className="ml-2 text-black font-bold">{t("Add a Task")}</span>
           </button>
@@ -88,7 +88,13 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
             className="px-4 py-1 bg-[#1b1a40] text-white rounded-lg font-medium hover:bg-blue-600 transition flex items-center"
             onClick={toggleDropdown}
           >
-            {t(currentContent)} <FiChevronDown className="ml-1" />
+            {t(currentContent)}{" "}
+            <Image
+              src={ArrowDownIcon}
+              alt="arrow down"
+              height={20}
+              width={20}
+            />
           </button>
 
           {isDropdownOpen && (

@@ -16,6 +16,7 @@ import {
   EmployeeFormInputs,
 } from "@/types/EmployeeType.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
+import useSnackbar from "@/hooks/useSnackbar";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -44,11 +45,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     }
   }, [employeeData, reset]);
 
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
   const endpoint = employeeData
     ? `/emp/update/${employeeData.id}`

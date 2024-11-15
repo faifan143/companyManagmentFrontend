@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Modal from "react-modal";
-import { FaPaperclip, FaPaperPlane } from "react-icons/fa";
+import { PaperClipIcon } from "@/assets";
+import { PaperPlaneIcon } from "@/assets";
 import { socket } from "@/socket"; // Import your socket instance
 import { useRedux } from "@/hooks/useRedux";
 import axios from "axios";
@@ -8,7 +9,8 @@ import Cookies from "js-cookie";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { ChatMessage, ChatModalProps } from "@/types/Chat.type";
 import { useTranslation } from "react-i18next";
-
+import Image from "next/image";
+import useLanguage from "@/hooks/useLanguage";
 const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newComment, setNewComment] = useState<string>("");
@@ -21,6 +23,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   } = useFileUpload(`http://${process.env.BASE_URL}/upload`);
   const { selector } = useRedux((state) => state.user);
 
+  const { getDir } = useLanguage();
   useEffect(() => {
     const handleReceiveCommunication = (newMessage: ChatMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -89,12 +92,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       ariaHideApp={false}
-      className="fixed right-0 top-0 flex items-center justify-center w-[450px]  p-4 h-full"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+      className="fixed right-0 top-0 flex items-center justify-center w-[450px] p-4 h-full border-none outline-none"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-20"
     >
       {selector.userInfo && selector.userInfo.department && (
-        <div className="bg-white p-6 rounded-lg shadow-lg w-full relative h-full">
-          <h2 className="text-xl  text-right font-bold mb-4">
+        <div className="bg-droppable-fade p-6 rounded-lg shadow-lg w-full relative h-full ">
+          <h2 className="text-xl text-white  font-bold mb-4" dir={getDir()}>
             {t("chat")} {selector.userInfo?.department.name}
           </h2>
           <div
@@ -107,12 +110,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
           >
             {messages.map((message, index) => (
               <div key={index} className="flex mb-4">
-                <div className="flex-shrink-0 w-10 h-10 bg-[#1b1a40] text-white rounded-full flex items-center justify-center mr-4">
+                <div className="flex-shrink-0 w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center mr-4">
                   {message.emp.charAt(0)}
                 </div>
                 <div>
-                  <p className="text-gray-900 font-semibold">{message.emp}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-slate-400 font-semibold">{message.emp}</p>
+                  <p className="text-xs mb-1 text-gray-500">
                     {new Date(message.date).toLocaleTimeString()}
                   </p>
                   <p className="text-sm bg-gray-100 p-2 rounded-md shadow-md">
@@ -123,7 +126,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
                       {message.files.map((file, idx) => (
                         <div
                           key={idx}
-                          className="bg-gray-200 text-gray-700 p-1 px-2 rounded-md inline-block mr-2 mb-1"
+                          className="bg-gray-200 text-gray-700 p-1 px-2 rounded-md inline-block mr-2 my-1"
                         >
                           {file}
                         </div>
@@ -135,17 +138,29 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          <div className="bg-white flex items-center my-4 space-x-3 absolute bottom-0 w-[90%] p-2 border rounded-md resize-none focus:outline-none">
+          <div
+            className="bg-dark  flex items-center my-4 space-x-3 absolute bottom-0 w-[90%] p-2 border-none outline-none text-white rounded-md resize-none focus:outline-none"
+            dir={getDir()}
+          >
             <input
               type="text"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder={t("Write a comment...")}
-              className="w-[100%] resize-none focus:outline-none"
+              className="w-[100%] resize-none focus:outline-none bg-transparent"
             />
 
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <FaPaperclip className="text-gray-500 hover:text-gray-700" />
+            <label
+              htmlFor="file-upload"
+              className="bg-main p-2 rounded-md cursor-pointer"
+            >
+              {/* <FaPaperclip className="text-gray-500 hover:text-gray-700" /> */}
+              <Image
+                src={PaperClipIcon}
+                alt="paperclip icon"
+                width={16}
+                height={16}
+              />
             </label>
             <input
               id="file-upload"
@@ -162,9 +177,15 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
 
             <button
               onClick={handleSendMessage}
-              className="bg-[#1b1a40] p-2 rounded-md text-white"
+              className="bg-main p-2 rounded-md text-white"
             >
-              <FaPaperPlane />
+              {/* <FaPaperPlane /> */}
+              <Image
+                src={PaperPlaneIcon}
+                alt="paper plane icon"
+                width={16}
+                height={16}
+              />
             </button>
           </div>
         </div>

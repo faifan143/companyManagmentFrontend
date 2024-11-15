@@ -1,98 +1,82 @@
 "use client";
 
-import { socket } from "@/socket";
-import { SocketEvent } from "@/types/Chat.type";
-import React, { useEffect, useState, useRef } from "react";
-
 const Page = () => {
-  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
-  const [chatEvents, setChatEvents] = useState<SocketEvent[]>([]);
-  const [newMessage, setNewMessage] = useState<string>(""); // State to hold the new message
-  const hasInitialized = useRef(false); // To ensure initialization happens only once
-
-  useEffect(() => {
-    if (hasInitialized.current) return; // Skip if already initialized
-    hasInitialized.current = true; // Mark as initialized
-
-    function onConnect() {
-      setIsConnected(true);
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    function onChatEvent(value: SocketEvent) {
-      setChatEvents((previous) => [...previous, value]);
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("receiveCommunication", onChatEvent);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("receiveCommunication", onChatEvent);
-    };
-  }, []);
-
-  function connect() {
-    socket.connect();
-  }
-
-  function disconnect() {
-    socket.disconnect();
-  }
-
-  function sendMessage() {
-    if (newMessage.trim()) {
-      // Emit the message to the 'send-message' event
-      socket.emit("send-message", { message: newMessage });
-
-      // Clear the input field
-      setNewMessage("");
-    }
-  }
-
   return (
-    <div>
-      <div>State: {" " + (isConnected ? "Connected" : "Disconnected")}</div>
+    <div className="fixed inset-0 bg-slate-300/30 backdrop-blur-sm">
+      <div className="bg-secondary p-6 rounded-lg shadow-md max-w-lg mx-auto text-white space-y-4 fixed  right-0">
+        {/* Task Title */}
+        <h1 className="text-3xl font-semibold">Schedule kickoff meeting</h1>
 
-      <ul>
-        {chatEvents.map((event, index) => (
-          <li key={index}>{event.message}</li>
-        ))}
-      </ul>
+        {/* Assignee and Due Date */}
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-gray-400 text-sm">Assignee</p>
+            <div className="flex items-center space-x-2">
+              <span className="bg-blue-600 rounded-full h-8 w-8 flex items-center justify-center text-white font-semibold">
+                MF
+              </span>
+              <p>Moammad Al-Faisal Fansa</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Due Date</p>
+            <div className="flex items-center space-x-2">
+              <span className="material-icons text-green-500">event</span>
+              <p>Nov 7 – 11</p>
+            </div>
+          </div>
+        </div>
 
-      <div className="flex space-x-2 mt-4">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type your message..."
-          className="border p-2 rounded-md"
-        />
-        <button
-          onClick={sendMessage}
-          className="px-4 py-2 bg-[#1b1a40] text-white rounded-md"
-        >
-          Send
+        {/* Projects */}
+        <div>
+          <p className="text-gray-400 text-sm">Projects</p>
+          <div className="flex items-center space-x-2">
+            <span className="bg-gray-700 rounded-full px-3 py-1 text-sm">
+              Cross-functional project plan
+            </span>
+            <span className="bg-gray-700 rounded-full px-3 py-1 text-sm">
+              Untitled section
+            </span>
+          </div>
+        </div>
+
+        {/* Dependencies */}
+        <div>
+          <p className="text-gray-400 text-sm">Dependencies</p>
+          <p className="text-blue-500 cursor-pointer">Add dependencies</p>
+        </div>
+
+        {/* Fields */}
+        <div>
+          <p className="text-gray-400 text-sm">Fields</p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center justify-between bg-gray-700 rounded px-3 py-2">
+              <span>Priority</span>
+              <span className="bg-yellow-500 text-black px-2 py-1 rounded text-xs">
+                Medium
+              </span>
+            </div>
+            <div className="flex items-center justify-between bg-gray-700 rounded px-3 py-2">
+              <span>Status</span>
+              <span className="bg-yellow-500 text-black px-2 py-1 rounded text-xs">
+                At risk
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <p className="text-gray-400 text-sm">Description</p>
+          <p className="text-gray-300">What is this task about?</p>
+        </div>
+
+        {/* Subtask Button */}
+        <button className="bg-gray-700 text-white py-2 px-4 rounded-lg flex items-center space-x-2">
+          <span className="material-icons">add</span>
+          <span>Add subtask</span>
         </button>
       </div>
-
-      <button
-        onClick={connect}
-        className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md"
-      >
-        Connect
-      </button>
-      <button
-        onClick={disconnect}
-        className="ml-2 mt-4 px-4 py-2 bg-red-500 text-white rounded-md"
-      >
-        Disconnect
-      </button>
     </div>
   );
 };

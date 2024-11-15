@@ -2,25 +2,22 @@
 "use client";
 
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskStatusSchema } from "@/schemas/task.schema";
 import { CreateTaskStatusProps, TaskStatusFormInputs } from "@/types/Task.type";
+import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "react-modal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import getErrorMessages from "@/utils/handleErrorMessages";
 
 const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
   isOpen,
   onClose,
   taskStatusData,
 }) => {
-  const [snackbarConfig, setSnackbarConfig] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "info" | "warning" | "error",
-  });
+  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const {
     register,
     handleSubmit,

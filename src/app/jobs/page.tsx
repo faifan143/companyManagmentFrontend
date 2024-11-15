@@ -18,10 +18,12 @@ const JobTitlesView: React.FC = () => {
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-center">{t("Job Titles")}</h1>
+        <h1 className="text-3xl font-bold text-white text-center">
+          {t("Job Titles")}
+        </h1>
         <div className="flex justify-center items-center gap-5">
           <select
-            className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+            className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
             value={selectedOption}
             onChange={(e) => setSelectedOption(e.target.value)}
           >
@@ -35,7 +37,7 @@ const JobTitlesView: React.FC = () => {
           {isAdmin && (
             <>
               <button
-                className="bg-[#1b1a40] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+                className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
                 onClick={() => {
                   router.push("/jobs/add-category");
                 }}
@@ -43,7 +45,7 @@ const JobTitlesView: React.FC = () => {
                 {t("Add Job Category")}
               </button>
               <button
-                className="bg-[#1b1a40] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+                className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
                 onClick={() => {
                   router.push("/jobs/add-title");
                 }}

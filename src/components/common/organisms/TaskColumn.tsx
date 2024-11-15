@@ -8,19 +8,18 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
   title,
   taskCount,
   tasks,
-  setIsModalOpen,
 }) => {
   return (
     <Droppable droppableId={columnId}>
       {(provided) => (
         <div
-          className="bg-[#f0f4f9] rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-3"
+          className="bg-droppable-fade rounded-xl  p-4 flex flex-col space-y-4 col-span-3"
           ref={provided.innerRef}
           {...provided.droppableProps}
         >
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-            <div className="bg-white text-[#1b1a40] px-2 rounded-xl w-10 text-center shadow-md py-0.5 text-sm font-bold">
+            <h2 className="text-lg font-bold text-slate-300">{title}</h2>
+            <div className="bg-main text-white px-2 rounded-xl w-10 text-center shadow-md py-0.5 text-sm font-bold">
               {taskCount}
             </div>
           </div>
@@ -38,14 +37,14 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
                 priority={task.priority + ""}
               />
             ))}
+
             <div
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-              className="rounded-xl shadow-md p-4 h-20 w-full border-dashed border-blue-300 border-2 text-center content-center text-xl font-bold text-blue-300 cursor-pointer"
+              onClick={() => {}}
+              className="rounded-xl shadow-md p-4 h-20 w-full border-dashed border-slate-600 border-2 text-center content-center text-xl font-bold text-slate-600 cursor-pointer"
             >
-              +
+              Drop Here
             </div>
+
             {provided.placeholder}
           </div>
         </div>

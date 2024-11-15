@@ -1,4 +1,4 @@
-import ITask from "../Task.type";
+import { ReceiveTaskType } from "../Task.type";
 
 export interface TaskCardProps {
   taskId: string;
@@ -7,5 +7,5 @@ export interface TaskCardProps {
   commentsCount: number;
   attachmentsCount: number;
   priority: string;
-  task: ITask;
+  task: ReceiveTaskType;
 }
