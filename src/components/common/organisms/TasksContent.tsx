@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
+import { useTranslation } from "react-i18next";
 
 const TasksContent = ({
   tasksData,
@@ -20,7 +21,7 @@ const TasksContent = ({
 }) => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const queryClient = useQueryClient();
-
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<{
     [key: string]: ReceiveTaskType[];
   }>({});
@@ -32,6 +33,13 @@ const TasksContent = ({
     }
   }, [tasksData]);
 
+  if (!tasksData || tasksData.length === 0) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5 text-white">
+        {t("No Tasks")}
+      </div>
+    );
+  }
   return (
     <>
       <DragDropContext
