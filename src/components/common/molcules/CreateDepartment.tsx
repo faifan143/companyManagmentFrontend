@@ -65,8 +65,8 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     addDepartment({
       name: data.name,
       description: data.description,
-      ...(data.parentDepartmentId && {
-        parent_department_id: data.parentDepartmentId,
+      ...(data.parent_department_id && {
+        parent_department_id: data.parent_department_id,
       }),
     });
 
@@ -85,7 +85,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
 
       reset({
         id: "",
-        parentDepartmentId: "",
+        parent_department_id: "",
         description: "",
         name: "",
       });
@@ -98,6 +98,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     isErrorDepartment,
     isSuccessDepartment,
     reset,
+    setSnackbarConfig,
     t,
   ]);
 
@@ -172,9 +173,9 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
               {t("Parent Department (Optional)")}
             </label>
             <select
-              {...register("parentDepartmentId")}
+              {...register("parent_department_id")}
               className={`w-full px-4 py-2 mt-1 rounded-lg placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.parentDepartmentId ? "border-high" : "border-border"
+                errors.parent_department_id ? "border-high" : "border-border"
               }`}
             >
               <option value="">{t("Select a parent department")}</option>
@@ -185,9 +186,9 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
                   </option>
                 ))}
             </select>
-            {errors.parentDepartmentId && (
+            {errors.parent_department_id && (
               <p className="text-high mt-1 text-sm">
-                {errors.parentDepartmentId.message}
+                {errors.parent_department_id.message}
               </p>
             )}
           </div>

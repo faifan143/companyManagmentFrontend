@@ -20,7 +20,6 @@ const Sidebar = ({
 }) => {
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
-  const isEmployee = useRolePermissions("secondary_user");
   const userPermissions = useSelector(
     (state: RootState) => state.user.userInfo?.job.permissions
   );
