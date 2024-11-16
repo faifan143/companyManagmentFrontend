@@ -37,13 +37,50 @@ export const loginUser = createAsyncThunk<
         withCredentials: true,
       }
     );
-    Cookies.set("access_token", response.data.access_token);
-    Cookies.set("refresh_token", response.data.refresh_token);
-    Cookies.set("is_Authenticated", "true");
+    Cookies.set("access_token", response.data.access_token, { expires: 7 });
+    Cookies.set("refresh_token", response.data.refresh_token, {
+      expires: 7, // Persist for 7 days
+      path: "/", // Ensure the cookie is available site-wide
+    });
+    Cookies.set("is_Authenticated", "true", { expires: 7 });
     console.log("logged in successfully : ", response.data);
     return response.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || "Failed to login");
+  }
+});
+
+export const refreshAuthToken = createAsyncThunk<
+  LoginResponse,
+  void,
+  { rejectValue: string }
+>("user/refreshAuthToken", async (_, { rejectWithValue }) => {
+  const refreshToken = Cookies.get("refresh_token");
+
+  if (!refreshToken) {
+    return rejectWithValue("No refresh token found");
+  }
+
+  try {
+    const response = await axios.post<LoginResponse>(
+      `http://${process.env.BASE_URL}/auth/refresh-token`,
+      { refreshToken },
+      { withCredentials: true }
+    );
+
+    // Save new tokens to cookies
+    Cookies.set("access_token", response.data.access_token);
+    Cookies.set("refresh_token", response.data.refresh_token, {
+      expires: 7, // Persist for 7 days
+      path: "/", // Ensure the cookie is available site-wide
+    });
+    Cookies.set("is_Authenticated", "true");
+    console.log("token refreshed successfully : ", response.data);
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to refresh token"
+    );
   }
 });
 
@@ -84,10 +121,33 @@ const userSlice = createSlice({
           state.role = action.payload.role;
         }
       )
-
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Something went wrong";
+      })
+      .addCase(refreshAuthToken.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        refreshAuthToken.fulfilled,
+        (state, action: PayloadAction<LoginResponse>) => {
+          state.loading = false;
+          state.userInfo = {
+            ...action.payload.user,
+          };
+          state.isAuthenticated = true;
+          state.token = action.payload.access_token;
+          state.refresh_token = action.payload.refresh_token;
+          state.role = action.payload.role;
+        }
+      )
+      .addCase(refreshAuthToken.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.token = null;
+        state.refresh_token = null;
+        state.error = action.payload || "Failed to refresh token";
       });
   },
 });
