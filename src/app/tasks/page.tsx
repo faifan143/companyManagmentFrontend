@@ -11,6 +11,7 @@ import {
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
 import { RootState } from "@/state/store";
@@ -19,14 +20,13 @@ import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 const TasksView: React.FC = () => {
   const router = useRouter();
   const [selectedOption, setSelectedOption] = useState("get-emp-tasks");
   const [activeTab, setActiveTab] = useState<"list" | "board">("list");
   const [myProj, setMyProj] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const isPrimary = useRolePermissions("primary_user");
   const isAdmin = useRolePermissions("admin");
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
@@ -74,9 +74,9 @@ const TasksView: React.FC = () => {
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
         {isSectionsLoading ? (
-          <PageSpinner title="sections Loading ..." />
+          <PageSpinner title={t("sections Loading ...")} />
         ) : (
-          isTasksLoading && <PageSpinner title="Tasks Loading ..." />
+          isTasksLoading && <PageSpinner title={t("Tasks Loading ...")} />
         )}
         <h1 className="text-3xl font-bold text-white text-center">
           {t("Tasks")}

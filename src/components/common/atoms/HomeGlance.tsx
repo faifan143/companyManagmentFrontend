@@ -1,9 +1,11 @@
 import { ArrowDownIcon, CheckSlateIcon } from "@/assets";
+import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
-import { getHomeDate } from "@/services/home.service";
+import { getGreeting, getHomeDate } from "@/services/home.service";
 import { RootState } from "@/state/store";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const HomeGlance = ({
   scope,
@@ -14,6 +16,8 @@ const HomeGlance = ({
   setScope: Dispatch<SetStateAction<"weekly" | "monthly">>;
   completedTasks: number;
 }) => {
+  const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
   const {
     selector: { userInfo },
   } = useRedux((state: RootState) => state.user);
@@ -27,9 +31,11 @@ const HomeGlance = ({
 
   return (
     <header className="w-fit mx-auto text-white flex flex-col items-center gap-2 mt-20">
-      <div className="text-lg">{getHomeDate()}</div>
+      <div className="text-lg">
+        {getHomeDate(currentLanguage as "ar" | "en")}
+      </div>
       <div className="text-2xl">
-        Good Morning, {userInfo ? userInfo.name : "Guest"}
+        {getGreeting(t)}, {userInfo ? userInfo.name : "Guest"}
       </div>
       <div className="bg-dark text-slate-400 rounded-full flex justify-between min-w-[320px] items-center gap-2 p-5">
         {/* Scope Dropdown */}
@@ -38,7 +44,7 @@ const HomeGlance = ({
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-2 cursor-pointer"
           >
-            {scope === "weekly" ? "My Week" : "My Month"}
+            {scope === "weekly" ? t("My Week") : t("My Month")}
             <Image
               src={ArrowDownIcon}
               alt="arow down"
@@ -56,7 +62,7 @@ const HomeGlance = ({
                     scope === "weekly" ? "text-white" : "text-slate-400"
                   }`}
                 >
-                  My Week
+                  {t("My Week")}
                 </li>
                 <li
                   onClick={() => handleScopeChange("monthly")}
@@ -64,7 +70,7 @@ const HomeGlance = ({
                     scope === "monthly" ? "text-white" : "text-slate-400"
                   }`}
                 >
-                  My Month
+                  {t("My Month")}
                 </li>
               </ul>
             </div>
@@ -73,7 +79,7 @@ const HomeGlance = ({
         <div className="w-[1px] h-5 bg-slate-400"></div>
         <div className="flex items-center gap-2">
           <Image src={CheckSlateIcon} alt="" height={20} width={20} />
-          {completedTasks} Tasks Completed
+          {completedTasks} {t("Tasks Completed")}
         </div>
       </div>
     </header>

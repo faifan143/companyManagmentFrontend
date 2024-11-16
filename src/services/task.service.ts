@@ -162,9 +162,9 @@ export const onDragEnd = async ({
   }
 };
 
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string, locale: "ar" | "en") => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale == "en" ? "en-US" : "ar-EG", {
     year: "numeric",
     month: "short",
     day: "numeric",

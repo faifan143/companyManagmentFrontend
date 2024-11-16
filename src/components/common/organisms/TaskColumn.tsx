@@ -2,6 +2,7 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import TaskCard from "../molcules/TaskCard";
 import { TaskColumnProps } from "@/types/components/TaskColumn.type";
+import useLanguage from "@/hooks/useLanguage";
 
 const TaskColumn: React.FC<TaskColumnProps> = ({
   columnId,
@@ -9,6 +10,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
   taskCount,
   tasks,
 }) => {
+  const { t } = useLanguage();
   return (
     <Droppable droppableId={columnId}>
       {(provided) => (
@@ -18,7 +20,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
           {...provided.droppableProps}
         >
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold text-slate-300">{title}</h2>
+            <h2 className="text-lg font-bold text-slate-300">{t(title)}</h2>
             <div className="bg-main text-white px-2 rounded-xl w-10 text-center shadow-md py-0.5 text-sm font-bold">
               {taskCount}
             </div>
@@ -42,7 +44,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
               onClick={() => {}}
               className="rounded-xl shadow-md p-4 h-20 w-full border-dashed border-slate-600 border-2 text-center content-center text-xl font-bold text-slate-600 cursor-pointer"
             >
-              Drop Here
+              {t("Drop Here")}
             </div>
 
             {provided.placeholder}

@@ -1,10 +1,10 @@
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { JobTitleType } from "@/types/JobTitle.type";
 import {
-  Button,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -12,11 +12,10 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const {
@@ -167,11 +166,11 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                   <td className="py-3 px-4 flex gap-2">
                     <div
                       onClick={() => handleEditClick(jobTitle)}
-                      className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-green-100 hover:bg-green-500 hover:text-green-100 text-green-500"
+                      className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                     >
                       {t("Edit")}
                     </div>
-                    <div className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-red-100 text-red-500 hover:text-red-100 hover:bg-red-500">
+                    <div className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
                       {t("Delete")}
                     </div>
                   </td>
@@ -189,18 +188,27 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>{t("Permissions")}</DialogTitle>
-        <DialogContent>
-          <ul className="list-disc ml-4">
+        <DialogTitle
+          className={` text-white bg-secondary  ${
+            currentLanguage == "en" ? "text-left" : "text-right"
+          }`}
+        >
+          {t("Permissions")}
+        </DialogTitle>
+        <DialogContent className=" text-white bg-secondary">
+          <ul className=" text-white list-disc ml-4 ">
             {modalContent.map((perm, index) => (
               <li key={index}>{perm}</li>
             ))}
           </ul>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
+        <DialogActions className=" text-white bg-secondary">
+          <div
+            onClick={handleCloseModal}
+            className="bg-dark py-2 px-4 hover:bg-opacity-70 text-white cursor-pointer rounded-md"
+          >
             {t("Close")}
-          </Button>
+          </div>
         </DialogActions>
       </Dialog>
 

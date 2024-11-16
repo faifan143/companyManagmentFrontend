@@ -16,16 +16,9 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
     selector: { isAuthenticated, loading },
     dispatch,
   } = useRedux((state: RootState) => state.user);
-  const { getDir } = useLanguage();
+  const { getDir, t } = useLanguage();
 
   useEffect(() => {
-
-
-
-
-
-
-    
     const checkAuth = async () => {
       const refreshToken = Cookies.get("refresh_token");
 
@@ -45,13 +38,6 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
       }
     };
 
-
-
-
-
-
-
-
     checkAuth();
   }, [dispatch, router]);
 
@@ -64,7 +50,7 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
     }
   }, [isAuthenticated]);
 
-  if (loading) return <PageSpinner />;
+  if (loading) return <PageSpinner title={t("Loading ...")} />;
   return (
     <div
       className={`min-h-[100dvh] w-full  ${

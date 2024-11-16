@@ -7,6 +7,7 @@ import { SectionType } from "@/types/Section.type";
 import Image from "next/image";
 import React, { ChangeEvent, useState } from "react";
 import CustomizedSnackbars from "./CustomizedSnackbars";
+import useLanguage from "@/hooks/useLanguage";
 
 const AddSectionModal: React.FC<{
   isOpen: boolean;
@@ -16,6 +17,7 @@ const AddSectionModal: React.FC<{
   const { selector } = useRedux(
     (state: RootState) => state.user.userInfo?.department.id
   );
+  const { t } = useLanguage();
   const [section, setSection] = useState("");
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
   const { mutate: addSection, isPending: isPendingSection } = useCreateMutation(
@@ -48,7 +50,7 @@ const AddSectionModal: React.FC<{
             <div className="flex justify-center">
               <input
                 type="text"
-                placeholder="Section Name"
+                placeholder={t("Section Name")}
                 className="bg-transparent outline-none border rounded-lg px-4 py-2"
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   setSection(event.target.value)
@@ -68,11 +70,11 @@ const AddSectionModal: React.FC<{
               <Image src={CheckIcon} alt="check icon" height={20} width={20} />
               {isPendingSection
                 ? sectionData
-                  ? "Updating Section ..."
-                  : "Adding Section ..."
+                  ? t("Updating Section ...")
+                  : t("Adding Section ...")
                 : sectionData
-                ? "Update Section"
-                : "Add Section"}
+                ? t("Update Section")
+                : t("Add Section")}
             </div>
           </div>
         </div>

@@ -52,7 +52,6 @@ const TasksContent = ({
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
         }}
       >
-        {/* {Object.entries(tasks)?.map((entry, index) => ( */}
         {sections &&
           sections.map((sec, index) => {
             console.log(

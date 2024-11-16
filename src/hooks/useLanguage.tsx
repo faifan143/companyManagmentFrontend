@@ -1,13 +1,15 @@
+import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 interface UseLanguage {
   currentLanguage: string;
   toggleLanguage: () => void;
   getDir: () => string;
+  t: TFunction<"translation", undefined>;
 }
 
 const useLanguage = (): UseLanguage => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentLanguage = i18n.language;
 
   const toggleLanguage = () => {
@@ -19,7 +21,7 @@ const useLanguage = (): UseLanguage => {
     return currentLanguage === "ar" ? "rtl" : "ltr";
   };
 
-  return { currentLanguage, toggleLanguage, getDir };
+  return { currentLanguage, toggleLanguage, getDir, t };
 };
 
 export default useLanguage;

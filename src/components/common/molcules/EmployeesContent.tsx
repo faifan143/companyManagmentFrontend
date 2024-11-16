@@ -4,7 +4,6 @@ import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
-import { handleDeleteClick } from "@/services/employee.service";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useTranslation } from "react-i18next";
@@ -21,11 +20,7 @@ const EmployeesContent: React.FC<{
     "/employees/add-employee"
   );
 
-  const {
-    data: employees,
-    isLoading,
-    refetch,
-  } = useCustomQuery<EmployeeType[]>({
+  const { data: employees, isLoading } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees", selectedOption],
     url: `http://${process.env.BASE_URL}/emp/${selectedOption}`,
     setSnackbarConfig,
@@ -105,16 +100,11 @@ const EmployeesContent: React.FC<{
                     <td className="text-center py-3 px-4 flex gap-2">
                       <div
                         onClick={() => handleEditClick(employee)}
-                        className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-green-100 hover:bg-green-500 hover:text-green-100 text-green-500"
+                        className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                       >
                         {t("Edit")}
                       </div>
-                      <div
-                        className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-red-100 text-red-500 hover:text-red-100 hover:bg-red-500"
-                        onClick={() =>
-                          handleDeleteClick({ id: employee.id, refetch })
-                        }
-                      >
+                      <div className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
                         {t("Delete")}
                       </div>
                     </td>

@@ -76,11 +76,11 @@ const NewHeader = ({
       </div>
 
       {isDropdownOpen && (
-        <div className="absolute top-0 right-2 z-10 mt-12 w-32 bg-white shadow-md rounded-lg border border-gray-200">
-          <ul className="flex flex-col text-gray-700">
+        <div className="absolute -top-1 right-9 z-10 mt-12 min-w-32 bg-secondary shadow-md rounded-lg ">
+          <ul className="flex flex-col text-white">
             <li
               onClick={handleProfile}
-              className="px-4 py-2 hover:bg-gray-100 rounded-t-lg cursor-pointer"
+              className="px-4 py-2 hover:bg-slate-600 rounded-t-lg cursor-pointer"
             >
               {t("Profile")}
             </li>
@@ -89,7 +89,7 @@ const NewHeader = ({
                 dispatch(logout());
                 router.replace("/auth");
               }}
-              className="px-4 py-2 hover:bg-gray-100 rounded-b-lg cursor-pointer"
+              className="px-4 py-2 hover:bg-slate-600 rounded-b-lg cursor-pointer"
             >
               {t("Logout")}
             </li>

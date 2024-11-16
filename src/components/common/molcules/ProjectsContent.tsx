@@ -1,13 +1,13 @@
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
+import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
 import { CircularProgress } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
-import AddProjectModal from "../atoms/AddProjectModal";
 import { useState } from "react";
-import { formatDate, isDueSoon } from "@/services/task.service";
+import AddProjectModal from "../atoms/AddProjectModal";
+import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const collabColors = [
   "border-2  border-blue-500 ",
@@ -20,7 +20,7 @@ const ProjectsContent = () => {
   const [currentProject, setCurrentProject] = useState<ProjectType | null>(
     null
   );
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useLanguage();
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
@@ -103,7 +103,7 @@ const ProjectsContent = () => {
                       {project.departments[0].name}
                     </div>
                   ) : (
-                    <div className="flex justify-center -space-x-4">
+                    <div className="flex justify-center -space-x-4" dir="ltr">
                       {project.departments.slice(0, 3).map((dept, index) => (
                         <div
                           key={dept.id}
@@ -139,7 +139,7 @@ const ProjectsContent = () => {
                       {project.members[0].name}
                     </div>
                   ) : (
-                    <div className="flex justify-center -space-x-4">
+                    <div className="flex justify-center -space-x-4" dir="ltr">
                       {project.members.slice(0, 3).map((member, index) => (
                         <div
                           key={member.id}
@@ -174,7 +174,10 @@ const ProjectsContent = () => {
                   <div
                     className={`  border-2  border-purple-500/30  bg-dark text-white py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
                   >
-                    {formatDate(project.startDate)}
+                    {formatDate(
+                      project.startDate,
+                      currentLanguage as "en" | "ar"
+                    )}
                   </div>
                 </td>
 
@@ -184,7 +187,10 @@ const ProjectsContent = () => {
                       isDueSoon(project.endDate) ? "flash" : ""
                     }`}
                   >
-                    {formatDate(project.endDate)}
+                    {formatDate(
+                      project.endDate,
+                      currentLanguage as "en" | "ar"
+                    )}
                   </div>
                 </td>
                 {isAdmin && (
@@ -212,7 +218,7 @@ const ProjectsContent = () => {
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
-            setCurrentProject(null); // Clear current project when closing modal
+            setCurrentProject(null);
           }}
         />
       )}

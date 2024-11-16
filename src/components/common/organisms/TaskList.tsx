@@ -1,11 +1,12 @@
+import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
+import { categorizeTasks } from "@/services/task.service";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { useEffect, useState } from "react";
 import AddSectionModal from "../atoms/AddSectionModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import ListSection from "../molcules/ListSection";
-import { categorizeTasks } from "@/services/task.service";
 
 const ListTasks = ({
   tasksData,
@@ -19,7 +20,7 @@ const ListTasks = ({
     [key: string]: ReceiveTaskType[];
   }>({});
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
-
+  const { t, currentLanguage } = useLanguage();
   useEffect(() => {
     if (tasksData) {
       const categorizedTasks = categorizeTasks(tasksData);
@@ -32,18 +33,27 @@ const ListTasks = ({
         <table className="min-w-full bg-main rounded-md">
           <thead>
             <tr>
-              <th className="px-6 py-3 border-y border-slate-500 text-left text-md font-bold text-slate-300">
-                Task Name
+              <th
+                className={`px-6 py-3 border-y border-slate-500 ${
+                  currentLanguage == "en" ? "text-left" : "text-right"
+                } text-md font-bold text-slate-300  `}
+              >
+                {t("Task Name")}
               </th>
-              <th className="px-6 py-3 border border-slate-500 text-left text-md font-bold text-slate-300">
-                Due Date
+              <th
+                className={`px-6 py-3 border border-slate-500 ${
+                  currentLanguage == "en" ? "text-left" : "text-right"
+                } text-md font-bold text-slate-300  `}
+              >
+                {t("Due Date")}
               </th>
-              <th className="px-6 py-3 border-y border-slate-500 text-left text-md font-bold text-slate-300">
-                Status
+              <th
+                className={`px-6 py-3 border-y border-slate-500 ${
+                  currentLanguage == "en" ? "text-left" : "text-right"
+                } text-md font-bold text-slate-300  `}
+              >
+                {t("Status")}
               </th>
-              {/* <th className="px-6 py-3 border-y border-slate-500 text-left text-md font-bold text-slate-300">
-                Priority
-              </th> */}
             </tr>
           </thead>
           <tbody>
@@ -62,7 +72,7 @@ const ListTasks = ({
           onClick={() => setIsModalOpen(true)}
         >
           <div className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-500  hover:text-white  border-dashed border-slate-500 hover:shadow-xl border-2 text-center content-center  w-fit  text-slate-500  cursor-pointer">
-            Add section
+            {t("Add section")}
           </div>
         </div>
         {isModalOpen && (

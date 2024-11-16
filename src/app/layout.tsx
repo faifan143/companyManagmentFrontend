@@ -15,7 +15,7 @@ export default function RootLayout({
         <title>Company Management System</title>
         <link rel="icon" href="" />
       </head>
-      <body>
+      <body className="bg-main">
         <LayoutProviders>{children}</LayoutProviders>
       </body>
     </html>

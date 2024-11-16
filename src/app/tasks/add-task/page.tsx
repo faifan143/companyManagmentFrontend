@@ -179,27 +179,6 @@ const AddTask: React.FC = () => {
               </p>
             )}
           </div>
-
-          {/* Priority Field */}
-          {/* <div>
-            <label className="block text-slate-300 text-sm font-medium">
-              {t("Priority")}
-            </label>
-            <input
-              type="number"
-              {...register("priority")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg border ${
-                errors.priority ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder={t("Enter priority")}
-            />
-            {errors.priority && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.priority.message}
-              </p>
-            )}
-          </div> */}
-
           <div>
             <label className="block text-slate-300 text-sm font-medium">
               {t("Priority")}

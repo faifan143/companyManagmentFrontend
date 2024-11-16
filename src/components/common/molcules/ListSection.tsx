@@ -9,6 +9,7 @@ import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import PageSpinner from "../atoms/PageSpinner";
 import { ReceiveTaskType } from "@/types/Task.type";
 import ListRow from "../atoms/ListRow";
+import useLanguage from "@/hooks/useLanguage";
 
 const ListSection: React.FC<{
   section: SectionType;
@@ -18,15 +19,17 @@ const ListSection: React.FC<{
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { currentLanguage } = useLanguage();
   useEffect(() => {
     if (isMenuOpen) {
       setInterval(() => setIsMenuOpen(false), 5000);
     }
   }, [isMenuOpen]);
+  const { t } = useLanguage();
 
   const { mutate: deleteSection, isPending } = useCreateMutation({
     endpoint: `/sections/${section._id}`,
-    onSuccessMessage: "Section Deleted successfully!",
+    onSuccessMessage: t("Section Deleted successfully!"),
     invalidateQueryKeys: ["sections"],
     setSnackbarConfig,
     requestType: "delete",
@@ -34,7 +37,7 @@ const ListSection: React.FC<{
 
   return (
     <>
-      {isPending && <PageSpinner title="Deleting ..." />}
+      {isPending && <PageSpinner title={t("Deleting ...")} />}
       <tr>
         <td
           colSpan={4}
@@ -47,11 +50,15 @@ const ListSection: React.FC<{
               width={20}
               height={20}
               className={`mr-2 z-0  transform  ${
-                isOpen ? "rotate-0" : "-rotate-90"
+                isOpen
+                  ? "rotate-0"
+                  : currentLanguage == "en"
+                  ? "-rotate-90"
+                  : "rotate-90"
               }`}
               onClick={() => setIsOpen((prev) => !prev)}
             />
-            {section.name}
+            {t(section.name)}
 
             <div className="relative">
               <Image
@@ -73,7 +80,7 @@ const ListSection: React.FC<{
                       }}
                     >
                       <Image src={PencilIcon} alt="" width={14} height={14} />
-                      Rename
+                      {t("Rename")}
                     </li>
                     <li
                       className="px-4 py-2 text-sm text-white hover:bg-slate-700 cursor-pointer  flex items-center gap-1"
@@ -84,7 +91,7 @@ const ListSection: React.FC<{
                       }}
                     >
                       <Image src={TrashIcon} alt="" width={14} height={15} />
-                      Delete
+                      {t("Delete")}
                     </li>
                   </ul>
                 </div>
@@ -101,15 +108,6 @@ const ListSection: React.FC<{
             <div className="w-full h-2 bg-transparent"></div>
           </>
         ))}
-      {/* {isOpen && (
-        <tr>
-          <td colSpan={4}>
-            <div className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-600 hover:text-white  border-dashed border-slate-600 border-2 text-center content-center  w-fit  text-slate-600 cursor-pointer">
-              Add Task
-            </div>
-          </td>
-        </tr>
-      )} */}
 
       {isRenameOpen && (
         <>

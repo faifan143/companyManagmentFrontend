@@ -47,7 +47,7 @@ const HomeTasksReport = ({
   return (
     <>
       <div className="bg-main w-[70%] min-h-64 rounded-md shadow-md mx-auto mt-5 p-5 text-white border border-slate-700">
-        <div className="text-lg font-bold">My Tasks</div>
+        <div className="text-lg font-bold">{t("My Tasks")}</div>
         <div className="flex items-center gap-3 text-sm my-5 font-semibold border-b border-slate-700">
           <div
             onClick={() => setStatus("upcoming")}
@@ -57,7 +57,7 @@ const HomeTasksReport = ({
                 : "cursor-pointer text-slate-400 pb-[5px]"
             }
           >
-            Currently {"(" + currently?.length + ")"}
+            {t("Currently")} {"(" + currently?.length + ")"}
           </div>
           <div
             onClick={() => setStatus("overdue")}
@@ -67,7 +67,7 @@ const HomeTasksReport = ({
                 : "cursor-pointer text-slate-400 pb-[5px]"
             }
           >
-            Overdue {"(" + overdue?.length + ")"}
+            {t("Overdue")} {"(" + overdue?.length + ")"}
           </div>
           <div
             onClick={() => setStatus("completed")}
@@ -77,7 +77,7 @@ const HomeTasksReport = ({
                 : "cursor-pointer text-slate-400 pb-[5px]"
             }
           >
-            Completed {"(" + completed?.length + ")"}
+            {t("Completed")} {"(" + completed?.length + ")"}
           </div>
         </div>
         {status == "upcoming" && (

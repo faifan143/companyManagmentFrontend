@@ -7,10 +7,11 @@ import { TaskCardProps } from "@/types/components/TaskCard.type";
 import React, { useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import ListTaskDetails from "../atoms/ListTaskDetails";
+import useLanguage from "@/hooks/useLanguage";
 
 const TaskCard: React.FC<TaskCardProps> = ({ taskId, index, title, task }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { currentLanguage } = useLanguage();
   useEffect(() => {
     console.log("isModalOpen : ", task.priority);
   }, [task]);
@@ -20,7 +21,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ taskId, index, title, task }) => {
       <Draggable draggableId={taskId} index={index}>
         {(provided) => (
           <div
-            className={`bg-dark border-l-2 ${getPriorityBorderColor(
+            className={`bg-dark ${
+              currentLanguage == "en" ? "border-l-2" : "border-r-2"
+            } ${getPriorityBorderColor(
               task.priority
             )} rounded-lg shadow-md p-4`}
             ref={provided.innerRef}
@@ -35,7 +38,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ taskId, index, title, task }) => {
                   task.is_over_due ? "text-red-500" : "text-slate-400"
                 } ${isDueSoon(task.due_date) ? "flash" : ""}`}
               >
-                {formatDate(task.due_date)}
+                {formatDate(task.due_date, currentLanguage as "en" | "ar")}
               </div>
             </div>
           </div>
