@@ -44,7 +44,9 @@ const TasksView: React.FC = () => {
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `http://${process.env.BASE_URL}/projects/get-emp-project`,
+    url: `http://${process.env.BASE_URL}/projects/${
+      isAdmin ? "get-all-projects" : "get-emp-project"
+    }`,
     setSnackbarConfig,
   });
 
