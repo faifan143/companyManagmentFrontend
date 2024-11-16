@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 const URL =
   process.env.NODE_ENV === "production"
     ? undefined
-    : `http://ec2-13-60-206-79.eu-north-1.compute.amazonaws.com/`;
+    : `http://ec2-35-173-139-149.compute-1.amazonaws.com/`;
 
 export const socket = io(URL, {
   extraHeaders: {
