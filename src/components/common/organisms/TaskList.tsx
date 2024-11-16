@@ -1,10 +1,11 @@
 import useSnackbar from "@/hooks/useSnackbar";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddSectionModal from "../atoms/AddSectionModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import ListSection from "../molcules/ListSection";
+import { categorizeTasks } from "@/services/task.service";
 
 const ListTasks = ({
   tasksData,
@@ -14,9 +15,17 @@ const ListTasks = ({
   sections: SectionType[] | undefined;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [tasks, setTasks] = useState<{
+    [key: string]: ReceiveTaskType[];
+  }>({});
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
+  useEffect(() => {
+    if (tasksData) {
+      const categorizedTasks = categorizeTasks(tasksData);
+      setTasks(categorizedTasks);
+    }
+  }, [tasksData]);
   return (
     <>
       <div className="bg-main  rounded-lg p-4 w-full h-full">
@@ -43,9 +52,7 @@ const ListTasks = ({
                 <ListSection
                   key={section._id}
                   section={section}
-                  tasks={tasksData?.filter(
-                    (task) => task.section && task.section.name == section.name
-                  )}
+                  tasks={tasks && tasks[section._id]}
                 />
               ))}
           </tbody>
