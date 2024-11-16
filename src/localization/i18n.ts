@@ -8,8 +8,14 @@ const resources = {
   ar: arTranslation,
 };
 
+// Define a fallback language
+const defaultLanguage = "en";
+
+// Safely access localStorage only on the client side
 const savedLanguage =
-  (localStorage && localStorage.getItem("language")) || "en";
+  typeof window !== "undefined" && localStorage.getItem("language")
+    ? localStorage.getItem("language")
+    : defaultLanguage;
 
 i18n.use(initReactI18next).init({
   resources,
