@@ -313,6 +313,13 @@
     "Add subtask": "Add Subtask",
 
     "SubTasks": "Subtasks",
-    "No Subtasks yet.": "No subtasks yet."
+    "No Subtasks yet.": "No subtasks yet.",
+    "Job Categories Management": "Job Categories Management",
+    "No Job Categories Found": "No Job Categories Found",
+    "Failed to load job categories.": "Failed to load job categories.",
+    "Skills": "Skills",
+
+    "Update Job Category": "Update Job Category",
+    "Job Category updated successfully!": "Job Category updated successfully!"
   }
 }

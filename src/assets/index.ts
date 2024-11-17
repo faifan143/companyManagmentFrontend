@@ -26,3 +26,4 @@ export { default as TrashIcon } from "./icons/trash-icon.svg";
 export { default as PlayIcon } from "./icons/play-icon.svg";
 export { default as PauseIcon } from "./icons/pause-icon.svg";
 export { default as ProjectIcon } from "./icons/project-icon.svg";
+export { default as CategoryIcon } from "./icons/category-icon.svg";

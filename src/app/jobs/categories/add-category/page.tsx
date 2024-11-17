@@ -5,6 +5,7 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useQueryPageData from "@/hooks/useQueryPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addCategorySchema } from "@/schemas/job.schema";
 import {
@@ -50,6 +51,8 @@ const AddJobCategory: React.FC = () => {
     },
   });
 
+  const jobCategoryData = useQueryPageData<JobCategoryFormInputs>(reset);
+
   const { data: education_experience } = useCustomQuery<any>({
     queryKey: ["education_experience"],
     url: `http://${process.env.BASE_URL}/job-categories/unique/education-experience`,
@@ -62,7 +65,9 @@ const AddJobCategory: React.FC = () => {
     isError: isErrorJobCategory,
     error: errorJobCategory,
   } = useCreateMutation({
-    endpoint: `/job-categories`,
+    endpoint: jobCategoryData
+      ? `/job-categories/update-job-category/${jobCategoryData.id}`
+      : `/job-categories`,
     onSuccessMessage: t("Job Category added successfully!"),
     invalidateQueryKeys: ["jobCategories"],
     setSnackbarConfig,
@@ -77,7 +82,9 @@ const AddJobCategory: React.FC = () => {
 
       setSnackbarConfig({
         open: true,
-        message: t("Job Category created successfully!"),
+        message: jobCategoryData
+          ? t("Job Category updated successfully!")
+          : t("Job Category created successfully!"),
         severity: "success",
       });
     },
@@ -102,7 +109,9 @@ const AddJobCategory: React.FC = () => {
     <GridContainer>
       <div className="bg-droppable-fade text-white p-8 rounded-xl shadow-lg col-span-12 w-full">
         <h1 className="text-center text-2xl  font-bold mb-6">
-          {t("Create Job Category")}
+          {jobCategoryData
+            ? t("Update Job Category")
+            : t("Create Job Category")}
         </h1>
         <form
           className="space-y-4 "
@@ -122,6 +131,7 @@ const AddJobCategory: React.FC = () => {
                 errors.name ? "border-high" : "border-border"
               }`}
               placeholder={t("Enter category name")}
+              defaultValue={jobCategoryData ? jobCategoryData.name : ""}
             />
             {errors.name && (
               <p className="text-high mt-1 text-sm">{errors.name.message}</p>
@@ -140,6 +150,7 @@ const AddJobCategory: React.FC = () => {
               }`}
               placeholder={t("Enter category description")}
               rows={4}
+              defaultValue={jobCategoryData ? jobCategoryData.description : ""}
             />
             {errors.description && (
               <p className="text-high mt-1 text-sm">
@@ -159,6 +170,9 @@ const AddJobCategory: React.FC = () => {
                 className={`w-full   bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                   errors.required_education ? "border-high" : "border-border"
                 }`}
+                defaultValue={
+                  jobCategoryData ? jobCategoryData.required_education : ""
+                }
               >
                 <option value="">{t("Select Required Education")}</option>
                 {requiredEducationOptions.map((education, index) => (
@@ -218,6 +232,9 @@ const AddJobCategory: React.FC = () => {
                 className={`w-full px-4 py-2   bg-secondary outline-none border-none   mt-1 rounded-lg border ${
                   errors.required_experience ? "border-high" : "border-border"
                 }`}
+                defaultValue={
+                  jobCategoryData ? jobCategoryData.required_experience : ""
+                }
               >
                 <option value="">{t("Select Required Experience")}</option>
                 {requiredExperienceOptions.map((experience, index) => (
@@ -277,6 +294,9 @@ const AddJobCategory: React.FC = () => {
               }`}
               placeholder={t("Enter required skills (comma-separated)")}
               rows={3}
+              defaultValue={
+                jobCategoryData ? jobCategoryData.required_skills.join(",") : ""
+              }
               onChange={(event) => {
                 const values = event.target.value
                   .split(",")
@@ -299,7 +319,13 @@ const AddJobCategory: React.FC = () => {
             }`}
             disabled={isPendingJobCategory}
           >
-            {isPendingJobCategory ? t("Creating...") : t("Create Job Category")}
+            {isPendingJobCategory
+              ? jobCategoryData
+                ? t("Updating...")
+                : t("Creating...")
+              : jobCategoryData
+              ? t("Update Job Category")
+              : t("Create Job Category")}
           </button>
           {isErrorJobCategory && (
             <p className="text-high mt-2 text-center">

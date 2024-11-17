@@ -58,7 +58,7 @@ const ChangingPasswordModal = ({
       className="fixed inset-0 flex items-center justify-center"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
     >
-      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full relative">
+      <div className="bg-droppable-fade text-white p-8 rounded-xl shadow-lg max-w-md w-full relative">
         <h2 className="text-2xl font-bold mb-4">{t("Change Password")}</h2>
         <form onSubmit={handleChangePasswordSubmit(handlePasswordChange)}>
           <div>
@@ -68,7 +68,7 @@ const ChangingPasswordModal = ({
             <input
               type="password"
               {...registerChangePassword("newPassword")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg    focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1 rounded-lg  bg-secondary    focus:outline-none  border ${
                 changePasswordErrors.newPassword
                   ? "border-red-600"
                   : "border-[#1b1a40]"
@@ -88,7 +88,7 @@ const ChangingPasswordModal = ({
             <input
               type="password"
               {...registerChangePassword("confirmPassword")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg    focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full px-4 py-2 mt-1 rounded-lg    bg-secondary  focus:outline-none  border ${
                 changePasswordErrors.confirmPassword
                   ? "border-red-600"
                   : "border-[#1b1a40]"
@@ -103,7 +103,7 @@ const ChangingPasswordModal = ({
           </div>
           <button
             type="submit"
-            className="w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200"
+            className="w-full py-2 mt-4 bg-dark text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200"
           >
             {t("Change Password")}
           </button>

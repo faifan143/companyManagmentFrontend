@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode, Suspense, useEffect, useState } from "react";
 import PageSpinner from "../common/atoms/PageSpinner";
 import Sidebar from "../common/molcules/Sidebar/Sidebar";
-import NewHeader from "../common/NewHeader";
+import NewHeader from "../common/atoms/NewHeader";
 import Cookies from "js-cookie";
 const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
   const router = useRouter();

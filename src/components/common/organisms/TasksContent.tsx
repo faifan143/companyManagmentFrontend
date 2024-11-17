@@ -48,6 +48,13 @@ const TasksContent = ({
             result,
             tasks,
             setTasks,
+            setMessage(msg) {
+              setSnackbarConfig({
+                open: true,
+                message: msg,
+                severity: "error",
+              });
+            },
           });
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
         }}

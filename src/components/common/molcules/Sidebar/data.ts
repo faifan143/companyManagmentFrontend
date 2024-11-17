@@ -1,4 +1,5 @@
 import {
+  CategoryIcon,
   DepartmentsIcon,
   EmployeesIcon,
   HomeIcon,
@@ -49,5 +50,11 @@ export const sidebarItems = [
       "job_title_search_and_view",
       "job_title_view_specific",
     ],
+  },
+  {
+    label: "Job Categories Management",
+    icon: CategoryIcon,
+    path: "/jobs/categories",
+    requiredPermissions: ["job_title_category_search_and_view"],
   },
 ];

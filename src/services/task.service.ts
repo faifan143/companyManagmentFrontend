@@ -92,6 +92,7 @@ export const onDragEnd = async ({
   result,
   setTasks,
   tasks,
+  setMessage,
 }: {
   result: DropResult;
   tasks: {
@@ -102,6 +103,7 @@ export const onDragEnd = async ({
       [key: string]: ReceiveTaskType[];
     }>
   >;
+  setMessage: (msg: string) => void;
 }) => {
   const { destination, source } = result;
   console.log("destination: ", destination);
@@ -118,6 +120,7 @@ export const onDragEnd = async ({
 
   const start = tasks[source.droppableId];
   const finish = tasks[destination.droppableId] ?? [];
+  console.log("start  task: ", start);
 
   // Check if start and finish are defined to avoid undefined errors
   if (!start || !finish) {
@@ -143,6 +146,11 @@ export const onDragEnd = async ({
     const startTaskIds = Array.from(start);
     const [movedTask] = startTaskIds.splice(source.index, 1);
 
+    if (movedTask.parent_task != null) {
+      setMessage("Cannot move a SubTask");
+      return;
+    }
+
     const finishTaskIds = Array.from(finish);
     finishTaskIds.splice(destination.index, 0, movedTask);
 
@@ -158,6 +166,7 @@ export const onDragEnd = async ({
       });
     } catch (error) {
       console.error("Error updating task section:", error);
+      setMessage(error + "");
     }
   }
 };

@@ -65,6 +65,17 @@ const Login: React.FC = () => {
     }
   }, [errors, setSnackbarConfig]);
 
+  useEffect(() => {
+    if (
+      error &&
+      error
+        .split(",")[0]
+        .includes("You must change your password on the first login")
+    ) {
+      setEmpId(error.split(",")[1]);
+      setIsModalOpen(true);
+    }
+  }, []);
   return (
     <div className="flex items-center justify-center min-h-screen bg-radial-light fixed inset-0">
       <div className="backdrop-blur-md bg-dark text-white p-10 rounded-xl shadow-xl max-w-sm w-full">

@@ -312,6 +312,12 @@
     "Task Status must be ONGOING": "يجب أن تكون حالة المهمة جارية",
     "Add subtask": "إضافة مهمة فرعية",
     "SubTasks": "المهام الفرعية",
-    "No Subtasks yet.": "لا توجد مهام فرعية حتى الآن."
+    "No Subtasks yet.": "لا توجد مهام فرعية حتى الآن.",
+    "Job Categories Management": "إدارة الفئات الوظيفية",
+    "No Job Categories Found": "لم يتم العثور على فئات وظائف",
+    "Failed to load job categories.": "فشل في تحميل فئات الوظائف.",
+    "Skills": "المهارات",
+    "Update Job Category": "تحديث فئة الوظيفة",
+    "Job Category updated successfully!": "تم تحديث فئة الوظيفة بنجاح!"
   }
 }
