@@ -310,6 +310,9 @@
     "Time Actions": "Time Actions",
     "Start": "Start",
     "Pause": "Pause",
-    "Add subtask": "Add Subtask"
+    "Add subtask": "Add Subtask",
+
+    "SubTasks": "Subtasks",
+    "No Subtasks yet.": "No subtasks yet."
   }
 }

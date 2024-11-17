@@ -310,6 +310,8 @@
     "Start": "ابدأ",
     "Pause": "إيقاف مؤقت",
     "Task Status must be ONGOING": "يجب أن تكون حالة المهمة جارية",
-    "Add subtask": "إضافة مهمة فرعية"
+    "Add subtask": "إضافة مهمة فرعية",
+    "SubTasks": "المهام الفرعية",
+    "No Subtasks yet.": "لا توجد مهام فرعية حتى الآن."
   }
 }
