@@ -4,6 +4,7 @@ import { PencilIcon, TrashIcon } from "@/assets";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
+import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { JobCategoryType } from "@/types/JobTitle.type";
 import {
@@ -16,7 +17,6 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import useSetPageData from "@/hooks/useSetPageData";
 const JobCategoryContent = () => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");

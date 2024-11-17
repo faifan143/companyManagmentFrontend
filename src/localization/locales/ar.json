@@ -318,6 +318,8 @@
     "Failed to load job categories.": "فشل في تحميل فئات الوظائف.",
     "Skills": "المهارات",
     "Update Job Category": "تحديث فئة الوظيفة",
-    "Job Category updated successfully!": "تم تحديث فئة الوظيفة بنجاح!"
+    "Job Category updated successfully!": "تم تحديث فئة الوظيفة بنجاح!",
+    "Categories Management": "إدارة الفئات",
+    "Add Category": "إضافة فئة"
   }
 }

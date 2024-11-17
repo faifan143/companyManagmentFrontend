@@ -15,6 +15,11 @@ const JobTitlesView: React.FC = () => {
   const router = useRouter();
   const isAdmin = useRolePermissions("admin");
   const { t } = useTranslation();
+
+  const canViewSpecific = usePermissions(["job_title_view_specific"]);
+
+  const showSelect = isAdmin || canViewSpecific;
+
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
@@ -22,18 +27,20 @@ const JobTitlesView: React.FC = () => {
           {t("Job Titles")}
         </h1>
         <div className="flex justify-center items-center gap-5">
-          <select
-            className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-            value={selectedOption}
-            onChange={(e) => setSelectedOption(e.target.value)}
-          >
-            {isAdmin && (
-              <option value="get-job-titles">{t("All Job Titles")}</option>
-            )}
-            {usePermissions(["job_title_view_specific"]) && (
-              <option value="view">{t("Accessible Job Titles")}</option>
-            )}
-          </select>
+          {showSelect && (
+            <select
+              className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+            >
+              {isAdmin && (
+                <option value="get-job-titles">{t("All Job Titles")}</option>
+              )}
+              {canViewSpecific && (
+                <option value="view">{t("Accessible Job Titles")}</option>
+              )}
+            </select>
+          )}
           {isAdmin && (
             <>
               <button

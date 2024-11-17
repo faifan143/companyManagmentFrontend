@@ -70,6 +70,10 @@ const TasksView: React.FC = () => {
     console.log("Selected tasksData: ", tasksData);
   }, [tasksData]);
 
+  const canViewSpecific = usePermissions(["task_search_and_view"]);
+
+  const showMainSelect = canViewSpecific || isPrimary || isAdmin;
+
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
@@ -83,33 +87,36 @@ const TasksView: React.FC = () => {
         </h1>
         <div className="flex justify-center items-center gap-5">
           {/* Main Dropdown */}
-          <select
-            className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-            value={myProj ? "my-project-tasks" : selectedOption}
-            onChange={(e) => {
-              if (e.target.value === "my-project-tasks") {
-                setMyProj(true);
-              } else {
-                setMyProj(false);
-                setSelectedOption(e.target.value);
-              }
-            }}
-          >
-            {usePermissions(["task_search_and_view"]) && (
-              <option value="get-emp-tasks">{t("My Tasks")}</option>
-            )}
-            {usePermissions(["task_search_and_view"]) && isPrimary && (
-              <option value="get-my-dept-tasks">
-                {t("My Department Tasks")}
-              </option>
-            )}
-            {usePermissions(["task_search_and_view"]) && (
-              <option value="my-project-tasks">{t("Project Tasks")}</option>
-            )}
-          </select>
+
+          {showMainSelect && (
+            <select
+              className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              value={myProj ? "my-project-tasks" : selectedOption}
+              onChange={(e) => {
+                if (e.target.value === "my-project-tasks") {
+                  setMyProj(true);
+                } else {
+                  setMyProj(false);
+                  setSelectedOption(e.target.value);
+                }
+              }}
+            >
+              {canViewSpecific && (
+                <option value="get-emp-tasks">{t("My Tasks")}</option>
+              )}
+              {canViewSpecific && isPrimary && (
+                <option value="get-my-dept-tasks">
+                  {t("My Department Tasks")}
+                </option>
+              )}
+              {canViewSpecific && (
+                <option value="my-project-tasks">{t("Project Tasks")}</option>
+              )}
+            </select>
+          )}
 
           {/* Project-Specific Dropdown */}
-          {myProj && (
+          {myProj && projects && projects.length > 0 && (
             <select
               className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
               onChange={(e) =>

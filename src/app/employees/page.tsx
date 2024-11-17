@@ -19,7 +19,12 @@ const EmployeesView: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState("get-all-emps");
   const router = useRouter();
   const isAdmin = useRolePermissions("admin");
+  const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
+
+  const canViewSpecific = usePermissions(["emp_view_specific"]);
+
+  const showSelect = isAdmin || canViewSpecific || isPrimary;
 
   useEffect(() => {
     console.log(selectedOption);
@@ -32,23 +37,25 @@ const EmployeesView: React.FC = () => {
           {t("Employees Management")}
         </h1>
         <div className="flex justify-center items-center gap-5">
-          <select
-            className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-            value={selectedOption}
-            onChange={(e) => setSelectedOption(e.target.value)}
-          >
-            {isAdmin && (
-              <option value="get-all-emps">{t("All Employees")}</option>
-            )}
-            {usePermissions(["emp_view_specific"]) && (
-              <option value="view">{t("View Accessible Employees")}</option>
-            )}
-            {useRolePermissions("primary_user") && (
-              <option value="get-my-emps">
-                {t("My Department Employees")}
-              </option>
-            )}
-          </select>
+          {showSelect && (
+            <select
+              className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+            >
+              {isAdmin && (
+                <option value="get-all-emps">{t("All Employees")}</option>
+              )}
+              {canViewSpecific && (
+                <option value="view">{t("View Accessible Employees")}</option>
+              )}
+              {isPrimary && (
+                <option value="get-my-emps">
+                  {t("My Department Employees")}
+                </option>
+              )}
+            </select>
+          )}
 
           {isAdmin && (
             <button

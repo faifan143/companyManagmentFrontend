@@ -20,7 +20,11 @@ const DepartmentsView: React.FC = () => {
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
+  const canViewSpecificDepartments = usePermissions([
+    "department_view_specific",
+  ]);
 
+  const showSelect = isAdmin || (canViewSpecificDepartments && isPrimary);
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
@@ -28,18 +32,20 @@ const DepartmentsView: React.FC = () => {
           {t("Departments")}
         </h1>
         <div className="flex items-center gap-5">
-          <select
-            className=" border bg-secondary outline-none border-none text-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-            value={selectedOption}
-            onChange={(e) => setSelectedOption(e.target.value)}
-          >
-            {isAdmin && (
-              <option value="get-departments">{t("All Departments")}</option>
-            )}
-            {usePermissions(["department_view_specific"]) && isPrimary && (
-              <option value="view">{t("Accessible Departments")}</option>
-            )}
-          </select>
+          {showSelect && (
+            <select
+              className=" border bg-secondary outline-none border-none text-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+            >
+              {isAdmin && (
+                <option value="get-departments">{t("All Departments")}</option>
+              )}
+              {canViewSpecificDepartments && isPrimary && (
+                <option value="view">{t("Accessible Departments")}</option>
+              )}
+            </select>
+          )}
 
           {isAdmin && (
             <button

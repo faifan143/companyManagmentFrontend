@@ -97,6 +97,7 @@ const userSlice = createSlice({
       state.role = null;
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
+      localStorage.clear();
     },
   },
   extraReducers: (builder) => {
