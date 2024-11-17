@@ -30,33 +30,38 @@ const ListTasks = ({
   return (
     <>
       <div className="bg-main  rounded-lg p-4 w-full h-full">
-        <table className="min-w-full bg-main rounded-md">
-          <thead>
-            <tr>
-              <th
-                className={`px-6 py-3 border-y border-slate-500 ${
-                  currentLanguage == "en" ? "text-left" : "text-right"
-                } text-md font-bold text-slate-300  `}
-              >
-                {t("Task Name")}
-              </th>
-              <th
-                className={`px-6 py-3 border border-slate-500 ${
-                  currentLanguage == "en" ? "text-left" : "text-right"
-                } text-md font-bold text-slate-300  `}
-              >
-                {t("Due Date")}
-              </th>
-              <th
-                className={`px-6 py-3 border-y border-slate-500 ${
-                  currentLanguage == "en" ? "text-left" : "text-right"
-                } text-md font-bold text-slate-300  `}
-              >
-                {t("Status")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+        <div className="min-w-full bg-main rounded-md">
+          <div className="flex items-center justify-between">
+            <div
+              className={`w-[100%] px-6 py-3 border-y border-slate-500 ${
+                currentLanguage == "en" ? "text-left" : "text-right"
+              } text-md font-bold text-slate-300  `}
+            >
+              {t("Task Name")}
+            </div>
+            <div
+              className={`w-[100%] text-center px-6 py-3 border border-slate-500 ${
+                currentLanguage == "en" ? "text-left" : "text-right"
+              } text-md font-bold text-slate-300  `}
+            >
+              {t("Due Date")}
+            </div>
+            <div
+              className={`w-[100%] text-center px-6 py-3 border border-slate-500 ${
+                currentLanguage == "en" ? "text-left" : "text-right"
+              } text-md font-bold text-slate-300  `}
+            >
+              {t("Status")}
+            </div>
+            <div
+              className={`w-[100%] text-center px-6 py-3 border-y border-slate-500 ${
+                currentLanguage == "en" ? "text-left" : "text-right"
+              } text-md font-bold text-slate-300  `}
+            >
+              {t("Actions")}
+            </div>
+          </div>
+          <div>
             {sections &&
               sections.map((section) => (
                 <ListSection
@@ -65,14 +70,14 @@ const ListTasks = ({
                   tasks={tasks && tasks[section._id]}
                 />
               ))}
-          </tbody>
-        </table>
-          <div
-            onClick={() => setIsModalOpen(true)}
-            className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-500   hover:text-white  border-dashed border-slate-500 hover:shadow-xl border-2 text-center content-center  w-fit  text-slate-500  cursor-pointer"
-          >
-            {t("Add section")}
           </div>
+        </div>
+        <div
+          onClick={() => setIsModalOpen(true)}
+          className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-500   hover:text-white  border-dashed border-slate-500 hover:shadow-xl border-2 text-center content-center  w-fit  text-slate-500  cursor-pointer"
+        >
+          {t("Add section")}
+        </div>
         {isModalOpen && (
           <>
             <div

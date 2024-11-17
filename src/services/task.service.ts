@@ -212,3 +212,16 @@ export const getPriorityBorderColor = (priority: string) => {
     //   return "border-slate-600";
   }
 };
+
+export const getPriorityDashColor = (priority: string) => {
+  switch (priority) {
+    case "HIGH":
+      return "text-red-500";
+    case "MEDIUM":
+      return "text-yellow-500";
+    case "LOW":
+      return "text-green-500";
+    // default:
+    //   return "border-slate-600";
+  }
+};

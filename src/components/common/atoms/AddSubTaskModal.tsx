@@ -40,7 +40,7 @@ const AddSubTaskModal: React.FC<{
     setSnackbarConfig,
     onSuccessFn() {
       reset();
-      onClose()
+      setInterval(onClose, 1000);
     },
   });
 

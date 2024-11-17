@@ -3,24 +3,25 @@
 
 "use client";
 
+import { CheckIcon, PauseIcon, PlayIcon } from "@/assets";
+import useLanguage from "@/hooks/useLanguage";
+import useSnackbar from "@/hooks/useSnackbar";
+import useTimeTicker from "@/hooks/useTimeTicker";
 import {
   formatDate,
   getPriorityBorderColor,
   isDueSoon,
 } from "@/services/task.service";
 import { ReceiveTaskType } from "@/types/Task.type";
-import React, { useEffect, useState } from "react";
-import ListTaskDetails, { formatTime } from "./ListTaskDetails";
-import useLanguage from "@/hooks/useLanguage";
 import Image from "next/image";
-import { CheckIcon, PauseIcon, PlayIcon } from "@/assets";
-import useSnackbar from "@/hooks/useSnackbar";
-import useTimeTicker from "@/hooks/useTimeTicker";
+import React, { useEffect, useState } from "react";
 import CustomizedSnackbars from "./CustomizedSnackbars";
+import ListTaskDetails, { formatTime } from "./ListTaskDetails";
 
 const ListRow: React.FC<{
   task: ReceiveTaskType;
-}> = ({ task }) => {
+  level: number;
+}> = ({ task, level }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t, currentLanguage } = useLanguage();
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
@@ -68,110 +69,123 @@ const ListRow: React.FC<{
 
   return (
     <>
-      <tr
-        className={`hover:bg-slate-700 bg-dark cursor-pointer !rounded-md ${
-          currentLanguage == "en" ? " border-l-2" : " border-r-2"
-        } ${getPriorityBorderColor(task.priority)} `}
-        onClick={() => setIsModalOpen((prev) => !prev)}
+      <div
+        style={{
+          marginRight: currentLanguage === "ar" ? `${level * 20}px` : undefined,
+          marginLeft: currentLanguage === "en" ? `${level * 20}px` : undefined,
+        }}
       >
-        <td className="  px-6 py-4 text-white flex  items-center">
-          {task.name}
-        </td>
-        <td
-          className={`px-6 py-4     ${
-            task.is_over_due ? "text-red-500" : "text-slate-400"
-          } ${isDueSoon(task.due_date) ? "flash" : ""}`}
+        <div
+          className={`hover:bg-slate-700 bg-dark flex items-center justify-between w-full cursor-pointer my-1 px-5  !rounded-md ${
+            currentLanguage == "en" ? " border-l " : " border-r"
+          } ${getPriorityBorderColor(task.priority)}  `}
+          onClick={() => setIsModalOpen((prev) => !prev)}
         >
-          {formatDate(task.due_date, currentLanguage as "en" | "ar")}
-        </td>
-        <td className=" px-6 py-4 text-slate-400   ">{t(task.status)}</td>
-
-        <td className="w-30 flex items-center justify-center">
-          <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer">
-            {task?.status == "DONE"
-              ? formatTime(task?.totalTimeSpent || 0)
-              : formatTime(displayedTime)}
-          </span>
-          {task?.status == "DONE" ? (
-            <span className="bg-secondary text-white px-2 py-1 rounded text-xs cursor-not-allowed flex items-center gap-1">
-              <Image src={CheckIcon} alt="start icon" width={15} height={15} />{" "}
-              {t("Completed")}
+          <div className={` w-full    px-6 py-4 text-white `}>
+            {task.name}
+          </div>
+          <div
+            className={` w-full  px-6 py-4  text-center  ${
+              task.is_over_due ? "text-red-500" : "text-slate-400"
+            } ${isDueSoon(task.due_date) ? "flash" : ""}`}
+          >
+            {formatDate(task.due_date, currentLanguage as "en" | "ar")}
+          </div>
+          <div className=" w-full   px-6 py-4 text-slate-400  text-center ">
+            {t(task.status)}
+          </div>
+          <div className=" w-full  flex items-center justify-center">
+            <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer">
+              {task?.status == "DONE"
+                ? formatTime(task?.totalTimeSpent || 0)
+                : formatTime(displayedTime)}
             </span>
-          ) : (
-            <span className="bg-secondary text-white px-2 py-1 rounded text-xs cursor-pointer flex items-center gap-1">
-              {!isTaskRunning ? (
-                <div
-                  className="flex items-center gap-1"
-                  onClick={() => {
-                    if (task?.status == "ONGOING") {
-                      startTaskTicker();
-                      const startTime = Date.now();
-                      localStorage.setItem(
-                        `task-timer-${task!.id}`,
-                        JSON.stringify({
-                          startTime,
-                          elapsedTime: displayedTime,
-                        })
+            {task?.status == "DONE" ? (
+              <span className="bg-secondary text-white px-2 py-1 rounded text-xs cursor-not-allowed flex items-center gap-1">
+                <Image
+                  src={CheckIcon}
+                  alt="start icon"
+                  width={15}
+                  height={15}
+                />{" "}
+                {t("Completed")}
+              </span>
+            ) : (
+              <span className="bg-secondary text-white px-2 py-1 rounded text-xs cursor-pointer flex items-center gap-1">
+                {!isTaskRunning ? (
+                  <div
+                    className="flex items-center gap-1"
+                    onClick={() => {
+                      if (task?.status == "ONGOING") {
+                        startTaskTicker();
+                        const startTime = Date.now();
+                        localStorage.setItem(
+                          `task-timer-${task!.id}`,
+                          JSON.stringify({
+                            startTime,
+                            elapsedTime: displayedTime,
+                          })
+                        );
+                        setIsTaskRunning(true);
+                      } else {
+                        setSnackbarConfig({
+                          message: t("Task Status must be ONGOING"),
+                          open: true,
+                          severity: "warning",
+                        });
+                      }
+                    }}
+                  >
+                    <Image
+                      src={PlayIcon}
+                      alt="start icon"
+                      width={15}
+                      height={15}
+                    />{" "}
+                    {t("Start")}
+                  </div>
+                ) : (
+                  <div
+                    className="flex items-center gap-1"
+                    onClick={() => {
+                      const storedData = JSON.parse(
+                        localStorage.getItem(`task-timer-${task!.id}`) || "{}"
                       );
-                      setIsTaskRunning(true);
-                    } else {
-                      setSnackbarConfig({
-                        message: t("Task Status must be ONGOING"),
-                        open: true,
-                        severity: "warning",
-                      });
-                    }
-                  }}
-                >
-                  <Image
-                    src={PlayIcon}
-                    alt="start icon"
-                    width={15}
-                    height={15}
-                  />{" "}
-                  {t("Start")}
-                </div>
-              ) : (
-                <div
-                  className="flex items-center gap-1"
-                  onClick={() => {
-                    const storedData = JSON.parse(
-                      localStorage.getItem(`task-timer-${task!.id}`) || "{}"
-                    );
-                    const startTime = storedData.startTime;
-                    const elapsedTime = storedData.elapsedTime || displayedTime;
-
-                    if (startTime) {
-                      const additionalTime = Math.floor(
-                        (Date.now() - startTime) / 1000
-                      );
-                      const newElapsedTime = elapsedTime + additionalTime;
-                      setDisplayedTime(newElapsedTime);
-                      localStorage.setItem(
-                        `task-timer-${task!.id}`,
-                        JSON.stringify({
-                          startTime: null,
-                          elapsedTime: newElapsedTime,
-                        })
-                      );
-                    }
-                    setIsTaskRunning(false);
-                    pauseTaskTicker();
-                  }}
-                >
-                  <Image
-                    src={PauseIcon}
-                    alt="pause icon"
-                    width={15}
-                    height={15}
-                  />{" "}
-                  {t("Pause")}
-                </div>
-              )}
-            </span>
-          )}
-        </td>
-      </tr>
+                      const startTime = storedData.startTime;
+                      const elapsedTime =
+                        storedData.elapsedTime || displayedTime;
+                      if (startTime) {
+                        const additionalTime = Math.floor(
+                          (Date.now() - startTime) / 1000
+                        );
+                        const newElapsedTime = elapsedTime + additionalTime;
+                        setDisplayedTime(newElapsedTime);
+                        localStorage.setItem(
+                          `task-timer-${task!.id}`,
+                          JSON.stringify({
+                            startTime: null,
+                            elapsedTime: newElapsedTime,
+                          })
+                        );
+                      }
+                      setIsTaskRunning(false);
+                      pauseTaskTicker();
+                    }}
+                  >
+                    <Image
+                      src={PauseIcon}
+                      alt="pause icon"
+                      width={15}
+                      height={15}
+                    />{" "}
+                    {t("Pause")}
+                  </div>
+                )}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
       {isModalOpen && (
         <>
           <div
