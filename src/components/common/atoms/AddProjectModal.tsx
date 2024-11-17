@@ -19,6 +19,7 @@ import Select from "react-select";
 import CustomizedSnackbars from "./CustomizedSnackbars";
 import { ProjectType } from "@/types/Project.type";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import { selectStyle } from "@/utils/SelectStyle";
 
 const AddProjectModal: React.FC<{
   isOpen: boolean;
@@ -69,6 +70,7 @@ const AddProjectModal: React.FC<{
       reset();
       setSelectedDepartments([]);
       setSelectedMembers([]);
+      setInterval(onClose, 500);
     },
   });
 
@@ -128,7 +130,7 @@ const AddProjectModal: React.FC<{
             >
               {/* Project Name Field */}
               <div>
-                <label className="block text-slate-300 text-sm font-medium">
+                <label className="block text-slate-400 text-sm font-medium">
                   {t("Project Name")}
                 </label>
                 <input
@@ -224,6 +226,7 @@ const AddProjectModal: React.FC<{
                     }}
                     className="mt-1 text-black"
                     placeholder={t("Select Members...")}
+                    styles={selectStyle}
                   />
                 </div>
               )}
@@ -249,6 +252,7 @@ const AddProjectModal: React.FC<{
                     }}
                     className="mt-1 text-black"
                     placeholder={t("Select Departments...")}
+                    styles={selectStyle}
                   />
                 </div>
               )}

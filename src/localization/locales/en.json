@@ -293,6 +293,23 @@
     "Rename": "Rename",
     "Section Deleted successfully!": "Section Deleted successfully!",
     "Project": "Project",
-    "Select a project (optional)": "Select a project (optional)"
+    "Select a project (optional)": "Select a project (optional)",
+    "Task Status must be ONGOING": "Task Status must be ONGOING",
+    "Select a priority ": "Select a priority",
+    "HIGH": "HIGH",
+    "MEDIUM": "MEDIUM",
+    "LOW": "LOW",
+    "Select an employee": "Select an employee",
+    "Create SubTask": "Create SubTask",
+    "SubTask Added successfully!": "SubTask Added successfully!",
+    "Assignee": "Assignee",
+    "Parent Task": "Parent Task",
+    "No Parent Task": "No Parent Task",
+    "Assigned Emp": "Assigned Employee",
+    "Total Time": "Total Time",
+    "Time Actions": "Time Actions",
+    "Start": "Start",
+    "Pause": "Pause",
+    "Add subtask": "Add Subtask"
   }
 }

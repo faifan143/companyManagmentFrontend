@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-
+import Image from "next/image";
+import { PencilIcon, TrashIcon } from "@/assets";
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
@@ -166,12 +167,24 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                   <td className="py-3 px-4 flex gap-2">
                     <div
                       onClick={() => handleEditClick(jobTitle)}
-                      className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                      className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                     >
-                      {t("Edit")}
+                      {/* {t("Edit")} */}
+                      <Image
+                        src={PencilIcon}
+                        alt="edit icon"
+                        height={20}
+                        width={20}
+                      />
                     </div>
-                    <div className="cursor-pointer p-2 w-16 text-xs text-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                      {t("Delete")}
+                    <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                      {/* {t("Delete")} */}
+                      <Image
+                        src={TrashIcon}
+                        alt="delete icon"
+                        height={20}
+                        width={20}
+                      />
                     </div>
                   </td>
                 )}

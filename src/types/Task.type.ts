@@ -248,5 +248,6 @@ export type ReceiveTaskType = {
   startTime: string;
   timeLogs: TimeLog[];
   section: Section;
+  subTasks: ReceiveTaskType[];
   parent_task?: string;
 };

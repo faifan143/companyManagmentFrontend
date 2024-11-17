@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+
 "use client";
 
 import {
   CalendarIcon,
   CalendarRedIcon,
   CheckIcon,
+  PaperClipIcon,
+  PaperPlaneIcon,
   PauseIcon,
   PlayIcon,
 } from "@/assets";
@@ -23,6 +26,18 @@ import React, { useEffect, useRef, useState } from "react";
 import AddSubTaskModal from "./AddSubTaskModal";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import useLanguage from "@/hooks/useLanguage";
+import useComments from "@/hooks/useComments";
+
+export const formatTime = (totalSeconds: number) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};
 
 const ListTaskDetails: React.FC<{
   isOpen: boolean;
@@ -62,18 +77,11 @@ const ListTaskDetails: React.FC<{
   const { startTaskTicker, pauseTaskTicker } = useTimeTicker({
     taskId: task!.id,
   });
+
+  const { t, currentLanguage, getDir } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
-
-  const formatTime = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  };
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -133,7 +141,7 @@ const ListTaskDetails: React.FC<{
     }
   }, [task]);
 
-  const { setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
 
   const { data: allTasks } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
@@ -141,6 +149,16 @@ const ListTaskDetails: React.FC<{
     setSnackbarConfig,
     nestedData: true,
   });
+
+  const {
+    comments,
+    comment,
+    attachedFile,
+    setComment,
+    handleFileChange,
+    handleSendComment,
+    fileInputRef,
+  } = useComments(task?.id, true);
 
   if (!isOpen) return null;
   return (
@@ -161,8 +179,8 @@ const ListTaskDetails: React.FC<{
         <h1 className="text-lg font-semibold">{task?.name}</h1>
         {/* Assignee and Due Date */}
         <div className="flex gap-4 items-center">
-          <div className="text-white text-sm">Assignee</div>
-          <div className="flex items-center space-x-2">
+          <div className="text-white text-sm">{t("Assignee")}</div>
+          <div className="flex items-center space-x-2" dir="ltr">
             <span className="bg-blue-600 rounded-full h-8 w-8 flex items-center justify-center text-white font-semibold">
               {task?.assignee.name.charAt(0).toUpperCase()}
             </span>
@@ -170,10 +188,11 @@ const ListTaskDetails: React.FC<{
           </div>
         </div>
         <div className="flex gap-4 items-center">
-          <div className="text-white text-sm">Due Date</div>
+          <div className="text-white text-sm">{t("Due Date")}</div>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => calRef.current?.showPicker()}
+            dir="ltr"
           >
             <div
               className={`border ${
@@ -198,13 +217,13 @@ const ListTaskDetails: React.FC<{
                 task?.is_over_due ? "text-red-500" : "text-green-600"
               } ${isDueSoon(calendar!) ? "flash" : ""}`}
             >
-              {formatDate(calendar!)}
+              {formatDate(calendar!, currentLanguage as "ar" | "en")}
             </p>
           </div>
         </div>
         {/* Parent task */}
         <div className="relative flex items-center justify-between  gap-5 w-fit bg-slate-600 rounded px-3 py-2">
-          <span>Parent Task</span>
+          <span>{t("Parent Task")}</span>
           <span
             className={` text-dark px-2 py-1 rounded text-xs cursor-pointer bg-yellow-500`}
           >
@@ -213,13 +232,13 @@ const ListTaskDetails: React.FC<{
                 allTasks.find(
                   (singleTask) => singleTask.id == task?.parent_task
                 )?.name
-              : "No Parent Task"}
+              : t("No Parent Task")}
           </span>
         </div>
         {/* Assigned Emp  */}
         {task && task.emp && (
           <div className="relative flex items-center justify-between  gap-5 w-fit bg-slate-600 rounded px-3 py-2">
-            <span>Assigned Emp</span>
+            <span>{t("Assigned Emp")}</span>
             <div className="border-2 border-red-500 bg-droppable-fade text-white py-2 px-3 w-fit mx-auto rounded-md  text-sm font-bold">
               {task.emp.name}
             </div>
@@ -230,17 +249,21 @@ const ListTaskDetails: React.FC<{
           ref={priorityRef}
           className="relative flex items-center justify-between w-1/2 bg-slate-600 rounded px-3 py-2"
         >
-          <span>Priority</span>
+          <span>{t("Priority")}</span>
           <span
             className={`${getPriorityColor(
               selectedPriority!
             )} text-black px-2 py-1 rounded text-xs cursor-pointer`}
             onClick={() => setPriorityMenuOpen(!isPriorityMenuOpen)}
           >
-            {selectedPriority}
+            {t(selectedPriority)}
           </span>
           {isPriorityMenuOpen && (
-            <div className="absolute top-10 -right-20 bg-dark border border-slate-500 text-white rounded-md shadow-lg p-2 z-10 backdrop-blur-sm">
+            <div
+              className={`absolute top-10 ${
+                currentLanguage == "en" ? "-right-20" : "right-20"
+              }  bg-dark border border-slate-500 text-white rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+            >
               {priorityOptions.map((option) => (
                 <div
                   key={option}
@@ -250,7 +273,7 @@ const ListTaskDetails: React.FC<{
                   }}
                   className="px-4 py-2 rounded-md hover:bg-gray-500 cursor-pointer"
                 >
-                  {option}
+                  {t(option)}
                 </div>
               ))}
             </div>
@@ -261,15 +284,19 @@ const ListTaskDetails: React.FC<{
           ref={statusRef}
           className="relative flex items-center justify-between w-1/2 bg-slate-600 rounded px-3 py-2"
         >
-          <span>Status</span>
+          <span>{t("Status")}</span>
           <span
             className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer"
             onClick={() => setStatusMenuOpen(!isStatusMenuOpen)}
           >
-            {selectedStatus}
+            {t(selectedStatus)}
           </span>
           {isStatusMenuOpen && (
-            <div className="absolute top-10 -right-20 bg-dark border border-slate-500 text-white rounded-md shadow-lg p-2 z-10 backdrop-blur-sm">
+            <div
+              className={`absolute top-10 ${
+                currentLanguage == "en" ? "-right-20" : "right-20"
+              }  bg-dark border border-slate-500 text-white w-40 rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+            >
               {statusOptions.map((option) => (
                 <div
                   key={option}
@@ -279,7 +306,7 @@ const ListTaskDetails: React.FC<{
                   }}
                   className="px-4 py-2 rounded-md hover:bg-gray-500 cursor-pointer"
                 >
-                  {option}
+                  {t(option)}
                 </div>
               ))}
             </div>
@@ -290,7 +317,7 @@ const ListTaskDetails: React.FC<{
           ref={statusRef}
           className="relative flex items-center justify-between gap-2 w-fit bg-slate-600 rounded px-3 py-2"
         >
-          <span>Total Time</span>
+          <span>{t("Total Time")}</span>
           <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer">
             {task?.status == "DONE"
               ? formatTime(task?.totalTimeSpent || 0)
@@ -301,12 +328,12 @@ const ListTaskDetails: React.FC<{
           ref={statusRef}
           className="relative flex items-center justify-between gap-2 w-fit bg-slate-600 rounded px-3 py-2"
         >
-          <span>Time Actions</span>
+          <span>{t("Time Actions")}</span>
 
           {task?.status == "DONE" ? (
             <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-not-allowed flex items-center gap-1">
               <Image src={CheckIcon} alt="start icon" width={15} height={15} />{" "}
-              Completed
+              {t("Completed")}
             </span>
           ) : (
             <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer flex items-center gap-1">
@@ -314,16 +341,24 @@ const ListTaskDetails: React.FC<{
                 <div
                   className="flex items-center gap-1"
                   onClick={() => {
-                    startTaskTicker();
-                    const startTime = Date.now();
-                    localStorage.setItem(
-                      `task-timer-${task!.id}`,
-                      JSON.stringify({
-                        startTime,
-                        elapsedTime: displayedTime,
-                      })
-                    );
-                    setIsTaskRunning(true);
+                    if (task?.status == "ONGOING") {
+                      startTaskTicker();
+                      const startTime = Date.now();
+                      localStorage.setItem(
+                        `task-timer-${task!.id}`,
+                        JSON.stringify({
+                          startTime,
+                          elapsedTime: displayedTime,
+                        })
+                      );
+                      setIsTaskRunning(true);
+                    } else {
+                      setSnackbarConfig({
+                        message: t("Task Status must be ONGOING"),
+                        open: true,
+                        severity: "warning",
+                      });
+                    }
                   }}
                 >
                   <Image
@@ -332,7 +367,7 @@ const ListTaskDetails: React.FC<{
                     width={15}
                     height={15}
                   />{" "}
-                  Start
+                  {t("Start")}
                 </div>
               ) : (
                 <div
@@ -368,29 +403,161 @@ const ListTaskDetails: React.FC<{
                     width={15}
                     height={15}
                   />{" "}
-                  Pause
+                  {t("Pause")}
                 </div>
               )}
             </span>
           )}
+          <CustomizedSnackbars
+            open={snackbarConfig.open}
+            message={snackbarConfig.message}
+            severity={snackbarConfig.severity}
+            onClose={() =>
+              setSnackbarConfig((prev) => ({ ...prev, open: false }))
+            }
+          />
         </div>
         {/* Description */}
         <div>
-          <p className="text-gray-400 text-sm">Description</p>
+          <p className="text-gray-400 text-sm">{t("Description")}</p>
           <textarea
             ref={descriptionRef}
             defaultValue={task?.description}
-            className="text-gray-300 mt-2 p-4 rounded-md w-full outline-none border-none bg-secondary"
+            className="text-gray-300 mt-2 p-4 rounded-md w-full outline-none border-none bg-main"
             placeholder="What is this task about?"
           ></textarea>
         </div>
+
         {/* Subtask Button */}
+        <label className="font-bold my-2 block">{t("SubTasks")}</label>
+
+        <div className="bg-droppable-fade border-2 border-red-500/30 shadow-md p-4 rounded-lg text-slate-300 space-y-2  ">
+          {task && task.subTasks.length > 0 ? (
+            task.subTasks.map((sub, index) => (
+              <div className="flex items-center gap-2" key={index}>
+                <Image
+                  src={CheckIcon}
+                  alt="check icon"
+                  width={15}
+                  height={15}
+                  className="text-gray-300"
+                />
+                <p className="text-gray-400">{sub.name}</p>
+              </div>
+            ))
+          ) : (
+            <p>{t("No Subtasks yet.")}</p>
+          )}
+        </div>
+
         <button
           className="bg-gray-700 text-white py-2 px-4 rounded-lg flex items-center space-x-2"
           onClick={() => setIsModalOpen(true)}
         >
-          <span>Add subtask</span>
+          <span>{t("Add subtask")}</span>
         </button>
+
+        <div className="mb-4">
+          <label className="font-bold my-2 block">{t("Comments")}</label>
+
+          <div className="my-4 p-2 bg-main  rounded-md shadow-sm">
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full mt-2 p-2 border-none outline-none focus:outline-none bg-main "
+              placeholder={t("Add a comment...")}
+              rows={2}
+            />
+
+            <div className="flex items-center justify-between mt-2">
+              <div className=" bg-secondary rounded-md p-1 hover:bg-dark ">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="attach-file"
+                />
+                <label
+                  htmlFor="attach-file"
+                  className="cursor-pointer flex gap-1"
+                >
+                  <Image
+                    src={PaperClipIcon}
+                    alt="paperclip icon"
+                    width={16}
+                    height={16}
+                  />
+                  {t("Attach File")}
+                </label>
+                {attachedFile && (
+                  <span className="ml-2 text-sm text-slate-300">
+                    {attachedFile.name}
+                  </span>
+                )}
+              </div>
+
+              <button
+                onClick={handleSendComment}
+                className="bg-dark text-white px-3 py-1 rounded-md hover:bg-secondary gap-1 flex items-center"
+              >
+                {/* <FaPaperPlane className="mr-1" />  */}
+                <Image
+                  src={PaperPlaneIcon}
+                  alt="paper plane icon"
+                  width={16}
+                  height={16}
+                />
+                {t("Send")}
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-droppable-fade border-2 border-yellow-500/30 shadow-md p-4 rounded-lg text-slate-300 space-y-2  ">
+            {comments.length > 0 ? (
+              comments.map((comment, index) => (
+                <div key={index} className="flex gap-2 mb-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-slate-300 font-bold rounded-full flex items-center justify-center mr-4">
+                    {comment.author.name.slice(0, 1)}
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold">
+                      {comment.author.name}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {formatDate(
+                        comment.createdAt,
+                        currentLanguage as "ar" | "en"
+                      )}
+                    </p>
+                    {comment.content && (
+                      <div
+                        className="bg-secondary  text-white rounded-md p-2 mt-2 text-sm"
+                        dir={getDir()}
+                      >
+                        {comment.content}
+                      </div>
+                    )}
+                    {comment.files && (
+                      <div className="mt-2">
+                        {comment.files.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-gray-200 text-slate-300 p-1 px-2 rounded-md inline-block mr-2 mb-1"
+                          >
+                            {file}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>{t("No comments yet.")}</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {isModalOpen && (

@@ -40,6 +40,7 @@ const AddSubTaskModal: React.FC<{
     setSnackbarConfig,
     onSuccessFn() {
       reset();
+      onClose()
     },
   });
 
@@ -111,10 +112,10 @@ const AddSubTaskModal: React.FC<{
                     errors.name ? "border border-red-500" : "border-none"
                   }`}
                 >
-                  <option value="">{t("Select a department ")}</option>
+                  <option value="">{t("Select a priority ")}</option>
                   {["HIGH", "MEDIUM", "LOW"].map((priority, index) => (
                     <option className="" key={index} value={priority}>
-                      {priority}
+                      {t(priority)}
                     </option>
                   ))}
                 </select>
@@ -156,7 +157,7 @@ const AddSubTaskModal: React.FC<{
                       errors.name ? "border border-red-500" : "border-none"
                     }`}
                   >
-                    <option value="">{t("Select an employee ")}</option>
+                    <option value="">{t("Select an employee")}</option>
                     {employees &&
                       employees.map((emp) => (
                         <option key={emp.id} value={emp.id}>

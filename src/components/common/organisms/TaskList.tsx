@@ -67,14 +67,12 @@ const ListTasks = ({
               ))}
           </tbody>
         </table>
-        <div
-          className="px-6 py-4 text-slate-300 cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <div className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-500  hover:text-white  border-dashed border-slate-500 hover:shadow-xl border-2 text-center content-center  w-fit  text-slate-500  cursor-pointer">
+          <div
+            onClick={() => setIsModalOpen(true)}
+            className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-500   hover:text-white  border-dashed border-slate-500 hover:shadow-xl border-2 text-center content-center  w-fit  text-slate-500  cursor-pointer"
+          >
             {t("Add section")}
           </div>
-        </div>
         {isModalOpen && (
           <>
             <div

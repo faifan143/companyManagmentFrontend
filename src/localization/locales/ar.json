@@ -293,6 +293,23 @@
     "Rename": "إعادة تسمية",
     "Section Deleted successfully!": "تم حذف القسم بنجاح!",
     "Project": "المشروع",
-    "Select a project (optional)": "اختر مشروعًا (اختياري)"
+    "Select a project (optional)": "اختر مشروعًا (اختياري)",
+    "Select a priority ": "اختر الأولوية",
+    "Select an employee": "اختر موظفًا",
+    "Create SubTask": "إنشاء مهمة فرعية",
+    "SubTask Added successfully!": "تمت إضافة المهمة الفرعية بنجاح!",
+    "Assignee": "المسؤول",
+    "Parent Task": "المهمة الرئيسية",
+    "No Parent Task": "لا توجد مهمة رئيسية",
+    "Assigned Emp": "الموظف المسؤول",
+    "LOW": "منخفضة",
+    "MEDIUM": "متوسطة",
+    "HIGH": "عالية",
+    "Total Time": "الوقت الإجمالي",
+    "Time Actions": "إجراءات الوقت",
+    "Start": "ابدأ",
+    "Pause": "إيقاف مؤقت",
+    "Task Status must be ONGOING": "يجب أن تكون حالة المهمة جارية",
+    "Add subtask": "إضافة مهمة فرعية"
   }
 }
