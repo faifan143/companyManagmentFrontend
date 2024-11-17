@@ -109,20 +109,22 @@ const JobCategoryContent = () => {
                   key={category.id}
                   className="hover:bg-slate-700 transition-colors"
                 >
-                  <td className="py-3 px-4 text-center">{category.name}</td>
                   <td className="py-3 px-4 text-center">
-                    {category.description}
+                    {categories && category.name}
                   </td>
                   <td className="py-3 px-4 text-center">
-                    {category.required_education}
+                    {categories && category.description}
                   </td>
                   <td className="py-3 px-4 text-center">
-                    {category.required_experience}
+                    {categories && category.required_education}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {categories && category.required_experience}
                   </td>
                   {/* <td className="py-3 px-4 text-center">
-                    {category.required_skills.length > 0 ? (
+                    {categories && category.required_skills.length > 0 ? (
                       <ul className="list-disc ml-4">
-                        {category.required_skills.map((skill, index) => (
+                        {categories && category.required_skills.map((skill, index) => (
                           <li key={index}>{skill}</li>
                         ))}
                       </ul>
@@ -133,19 +135,23 @@ const JobCategoryContent = () => {
 
                   {/* Permissions Column with Show More */}
                   <td className="py-3 px-4 text-center">
-                    {category.required_skills &&
+                    {categories &&
+                    category.required_skills &&
+                    categories &&
                     category.required_skills.length > 3 ? (
                       <>
                         <ul className="list-disc ml-4">
-                          {category.required_skills
-                            .slice(0, 3)
-                            .map((skill, index) => (
-                              <li key={index}>{skill}</li>
-                            ))}
+                          {categories &&
+                            category.required_skills
+                              .slice(0, 3)
+                              .map((skill, index) => (
+                                <li key={index}>{skill}</li>
+                              ))}
                         </ul>
                         <button
                           className="text-blue-500 underline"
                           onClick={() =>
+                            categories &&
                             handleShowMoreClick(category.required_skills)
                           }
                         >
@@ -154,9 +160,10 @@ const JobCategoryContent = () => {
                       </>
                     ) : (
                       <ul className="list-disc ml-4">
-                        {category.required_skills.map((skill, index) => (
-                          <li key={index}>{skill}</li>
-                        ))}
+                        {categories &&
+                          category.required_skills.map((skill, index) => (
+                            <li key={index}>{skill}</li>
+                          ))}
                       </ul>
                     )}
                   </td>
