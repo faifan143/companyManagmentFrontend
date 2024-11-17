@@ -1,4 +1,7 @@
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import {
+  usePermissions,
+  useRolePermissions,
+} from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
@@ -18,6 +21,9 @@ import { PencilIcon, TrashIcon } from "@/assets";
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
+  const hasEditPermission = usePermissions(["job_title_update"]);
+  const hasDeletePermission = usePermissions(["job_title_delete"]);
+
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const {
     data: jobs,
@@ -100,7 +106,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Department ID")}
               </th>
-              {isAdmin && (
+              {(isAdmin || hasEditPermission || hasDeletePermission) && (
                 <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                   {t("Actions")}
                 </th>
@@ -163,29 +169,33 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                 <td className="py-3 px-4 text-center">
                   {jobTitle.department && jobTitle.department.name}
                 </td>
-                {isAdmin && (
+                {(isAdmin || hasEditPermission || hasDeletePermission) && (
                   <td className="py-3 px-4 flex gap-2">
-                    <div
-                      onClick={() => handleEditClick(jobTitle)}
-                      className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
-                    >
-                      {/* {t("Edit")} */}
-                      <Image
-                        src={PencilIcon}
-                        alt="edit icon"
-                        height={20}
-                        width={20}
-                      />
-                    </div>
-                    <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                      {/* {t("Delete")} */}
-                      <Image
-                        src={TrashIcon}
-                        alt="delete icon"
-                        height={20}
-                        width={20}
-                      />
-                    </div>
+                    {(isAdmin || hasEditPermission) && (
+                      <div
+                        onClick={() => handleEditClick(jobTitle)}
+                        className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                      >
+                        {/* {t("Edit")} */}
+                        <Image
+                          src={PencilIcon}
+                          alt="edit icon"
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                    )}
+                    {(isAdmin || hasDeletePermission) && (
+                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                        {/* {t("Delete")} */}
+                        <Image
+                          src={TrashIcon}
+                          alt="delete icon"
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                    )}
                   </td>
                 )}
               </tr>

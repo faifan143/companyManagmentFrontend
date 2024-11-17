@@ -1,3 +1,4 @@
+import { PencilIcon, TrashIcon } from "@/assets";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
@@ -5,11 +6,10 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
 import { CircularProgress } from "@mui/material";
+import Image from "next/image";
 import { useState } from "react";
 import AddProjectModal from "../atoms/AddProjectModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import Image from "next/image";
-import { PencilIcon, TrashIcon } from "@/assets";
 
 const collabColors = [
   "border-2  border-blue-500 ",
@@ -84,7 +84,7 @@ const ProjectsContent = () => {
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("End Date")}
               </th>
-              {isAdmin && (
+              {(isAdmin || isPrimary) && (
                 <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Actions")}
                 </th>
@@ -195,7 +195,7 @@ const ProjectsContent = () => {
                     )}
                   </div>
                 </td>
-                {isAdmin && (
+                {(isAdmin || isPrimary) && (
                   <td className="py-3 px-4 flex gap-2 justify-center">
                     <div
                       onClick={() => handleEditClick(project)}

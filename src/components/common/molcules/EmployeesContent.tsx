@@ -1,6 +1,9 @@
 "use client";
 
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import {
+  usePermissions,
+  useRolePermissions,
+} from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
@@ -11,12 +14,14 @@ import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import { PencilIcon, TrashIcon } from "@/assets";
 import Image from "next/image";
 
-
 const EmployeesContent: React.FC<{
   selectedOption: string;
 }> = ({ selectedOption }) => {
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
+  const hasEditPermission = usePermissions(["emp_update"]);
+  const hasDeletePermission = usePermissions(["emp_delete"]);
+
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
   const { handleEditClick } = useSetPageData<EmployeeType>(
@@ -73,7 +78,7 @@ const EmployeesContent: React.FC<{
                 <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Job")}
                 </th>
-                {isAdmin && (
+                {(isAdmin || hasEditPermission || hasDeletePermission) && (
                   <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                     {t("Actions")}
                   </th>
@@ -99,29 +104,33 @@ const EmployeesContent: React.FC<{
                   <td className="text-center py-3 px-4">
                     {employee.job.title}
                   </td>
-                  {isAdmin && (
+                  {(isAdmin || hasEditPermission || hasDeletePermission) && (
                     <td className="text-center py-3 px-4 flex gap-2">
-                      <div
-                        onClick={() => handleEditClick(employee)}
-                        className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
-                      >
-                        {/* {t("Edit")} */}
-                        <Image
-                          src={PencilIcon}
-                          alt="edit icon"
-                          height={20}
-                          width={20}
-                        />
-                      </div>
-                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                        {/* {t("Delete")} */}
-                        <Image
-                          src={TrashIcon}
-                          alt="delete icon"
-                          height={20}
-                          width={20}
-                        />
-                      </div>
+                      {(isAdmin || hasEditPermission) && (
+                        <div
+                          onClick={() => handleEditClick(employee)}
+                          className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                        >
+                          {/* {t("Edit")} */}
+                          <Image
+                            src={PencilIcon}
+                            alt="edit icon"
+                            height={20}
+                            width={20}
+                          />
+                        </div>
+                      )}
+                      {(isAdmin || hasDeletePermission) && (
+                        <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                          {/* {t("Delete")} */}
+                          <Image
+                            src={TrashIcon}
+                            alt="delete icon"
+                            height={20}
+                            width={20}
+                          />
+                        </div>
+                      )}
                     </td>
                   )}
                 </tr>

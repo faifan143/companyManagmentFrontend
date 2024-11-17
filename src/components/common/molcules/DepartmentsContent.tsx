@@ -1,4 +1,7 @@
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import {
+  usePermissions,
+  useRolePermissions,
+} from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
@@ -9,11 +12,12 @@ import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import { PencilIcon, TrashIcon } from "@/assets";
 import Image from "next/image";
 
-
 const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t } = useTranslation();
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const isAdmin = useRolePermissions("admin");
+  const hasEditPermission = usePermissions(["department_updatesss"]);
+  const hasDeletePermission = usePermissions(["department_delete"]);
   const { handleEditClick } = useSetPageData<DepartmentType>(
     "/departments/add-department"
   );
@@ -60,7 +64,7 @@ const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
               <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Parent Department")}
               </th>
-              {isAdmin && (
+              {(isAdmin || hasEditPermission || hasDeletePermission) && (
                 <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Actions")}
                 </th>
@@ -83,29 +87,33 @@ const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
                     ? department.parent_department.name
                     : "None"}
                 </td>
-                {isAdmin && (
+                {(isAdmin || hasEditPermission || hasDeletePermission) && (
                   <td className="py-3 px-4 flex gap-2 justify-center">
-                    <div
-                      onClick={() => handleEditClick(department)}
-                      className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
-                    >
-                      {/* {t("Edit")} */}
-                      <Image
-                        src={PencilIcon}
-                        alt="edit icon"
-                        height={20}
-                        width={20}
-                      />
-                    </div>
-                    <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                      {/* {t("Delete")} */}
-                      <Image
-                        src={TrashIcon}
-                        alt="delete icon"
-                        height={20}
-                        width={20}
-                      />
-                    </div>
+                    {(isAdmin || hasEditPermission) && (
+                      <div
+                        onClick={() => handleEditClick(department)}
+                        className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                      >
+                        {/* {t("Edit")} */}
+                        <Image
+                          src={PencilIcon}
+                          alt="edit icon"
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                    )}
+                    {(isAdmin || hasDeletePermission) && (
+                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                        {/* {t("Delete")} */}
+                        <Image
+                          src={TrashIcon}
+                          alt="delete icon"
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                    )}
                   </td>
                 )}
               </tr>
