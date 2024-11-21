@@ -150,7 +150,6 @@ const JobCategoryContent = () => {
                   <td className="py-3 px-4 text-center">
                     {category &&
                     category.required_skills &&
-                    category &&
                     category.required_skills.length > 3 ? (
                       <>
                         <ul className="list-disc ml-4">
@@ -174,6 +173,7 @@ const JobCategoryContent = () => {
                     ) : (
                       <ul className="list-disc ml-4">
                         {category &&
+                          category.required_skills &&
                           category.required_skills.length > 0 &&
                           category.required_skills.map((skill, index) => (
                             <li key={index}>{skill}</li>

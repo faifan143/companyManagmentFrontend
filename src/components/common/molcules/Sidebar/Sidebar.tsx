@@ -3,15 +3,14 @@
 import { ChatsIcon } from "@/assets";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomTheme from "@/hooks/useCustomTheme";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import { RootState } from "@/state/store";
 import Image from "next/image";
+import Link from "next/link";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import ChatModal from "../../atoms/ChatModal";
 import { sidebarItems } from "./data";
-import PageSpinner from "../../atoms/PageSpinner";
 
 const Sidebar = ({
   isExpanded,
@@ -26,16 +25,14 @@ const Sidebar = ({
     (state: RootState) => state.user.userInfo?.job.permissions
   );
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const { loading, navigateWithLoading } = useNavigationWithLoading();
+  const { isLightMode } = useCustomTheme();
   const [selectedTab, setSelectedTab] = useState(
     () => localStorage.getItem("selectedTab") || "/home"
   );
 
-  const { isLightMode } = useCustomTheme();
   const handleTabClick = (path: string) => {
     setSelectedTab(path);
     localStorage.setItem("selectedTab", path);
-    navigateWithLoading(path);
   };
 
   const visibleItems = userPermissions
@@ -56,8 +53,6 @@ const Sidebar = ({
       }
       onClick={() => setIsExpanded(false)}
     >
-      {loading && <PageSpinner />}
-
       <div
         className={`shadow-md p-5 mr-5 fixed top-[50px] bottom-0 transition-width duration-500  border-r border-slate-600 ${
           isLightMode ? "bg-darkest" : "bg-main"
@@ -65,14 +60,21 @@ const Sidebar = ({
       >
         <div className="sidebar flex flex-col space-y-4 py-4">
           {visibleItems.map((item) => (
-            <SidebarItem
+            <Link
               key={item.label}
-              icon={item.icon}
-              label={t(item.label)}
-              isExpanded={isExpanded}
-              isSelected={selectedTab === item.path}
+              href={item.path}
+              passHref
               onClick={() => handleTabClick(item.path)}
-            />
+            >
+              <SidebarItem
+                key={item.label}
+                icon={item.icon}
+                label={t(item.label)}
+                isExpanded={isExpanded}
+                isSelected={selectedTab === item.path}
+                onClick={() => {}}
+              />
+            </Link>
           ))}
           <div className="h-[1px] w-full bg-slate-200"></div>
           <SidebarItem

@@ -166,8 +166,6 @@ const AddEmp: React.FC = () => {
     }
   }, [employeeData, reset, setValue]);
 
-
-
   return (
     <GridContainer>
       <div
@@ -549,7 +547,17 @@ const AddEmp: React.FC = () => {
               </p>
             )}
           </div>
+
           {/* Legal Documents */}
+          <button
+            type="button"
+            onClick={() =>
+              appendLegalDocument({ name: "", validity: "", file: null })
+            }
+            className="text-tbright block text-sm"
+          >
+            {t("Add Legal Document")}
+          </button>
           {legalDocumentFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <div className="flex-1">
@@ -600,14 +608,20 @@ const AddEmp: React.FC = () => {
               </button>
             </div>
           ))}
+
           <button
             type="button"
             onClick={() =>
-              appendLegalDocument({ name: "", validity: "", file: null })
+              appendCertification({
+                certificate_name: "",
+                date: "",
+                grade: "",
+                file: null,
+              })
             }
             className="text-tbright block text-sm"
           >
-            {t("Add Legal Document")}
+            {t("Add Certification")}
           </button>
           {certificationFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
@@ -671,21 +685,15 @@ const AddEmp: React.FC = () => {
               </button>
             </div>
           ))}
+
+          {/* Allowances */}
           <button
             type="button"
-            onClick={() =>
-              appendCertification({
-                certificate_name: "",
-                date: "",
-                grade: "",
-                file: null,
-              })
-            }
+            onClick={() => appendAllowance({ allowance_type: "", amount: 0 })}
             className="text-tbright block text-sm"
           >
-            {t("Add Certification")}
+            {t("Add Allowance")}
           </button>
-          {/* Allowances */}
           {allowancesFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <div className="flex-1">
@@ -725,15 +733,15 @@ const AddEmp: React.FC = () => {
               </button>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() => appendAllowance({ allowance_type: "", amount: 0 })}
-            className="text-tbright block text-sm"
-          >
-            {t("Add Allowance")}
-          </button>
 
           {/* Incentives */}
+          <button
+            type="button"
+            onClick={() => appendIncentive({ description: "", amount: 0 })}
+            className="text-tbright block text-sm"
+          >
+            {t("Add Incentive")}
+          </button>
           {incentivesFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <div className="flex-1">
@@ -773,15 +781,17 @@ const AddEmp: React.FC = () => {
               </button>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() => appendIncentive({ description: "", amount: 0 })}
-            className="text-tbright block text-sm"
-          >
-            {t("Add Incentive")}
-          </button>
 
           {/* Bank Accounts */}
+          <button
+            type="button"
+            onClick={() =>
+              appendBankAccount({ bank_name: "", account_number: "" })
+            }
+            className="text-tbright block text-sm"
+          >
+            {t("Add Bank Account")}
+          </button>
           {bankAccountsFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <div className="flex-1">
@@ -823,17 +833,21 @@ const AddEmp: React.FC = () => {
               </button>
             </div>
           ))}
+
+          {/* Evaluations */}
           <button
             type="button"
             onClick={() =>
-              appendBankAccount({ bank_name: "", account_number: "" })
+              appendEvaluation({
+                evaluation_type: "",
+                description: "",
+                plan: "",
+              })
             }
             className="text-tbright block text-sm"
           >
-            {t("Add Bank Account")}
+            {t("Add Evaluation")}
           </button>
-
-          {/* Evaluations */}
           {evaluationsFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <div className="flex-1">
@@ -881,19 +895,6 @@ const AddEmp: React.FC = () => {
               </button>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() =>
-              appendEvaluation({
-                evaluation_type: "",
-                description: "",
-                plan: "",
-              })
-            }
-            className="text-tbright block text-sm"
-          >
-            {t("Add Evaluation")}
-          </button>
 
           {/* Submit Button */}
           <button

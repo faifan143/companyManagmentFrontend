@@ -43,7 +43,7 @@ const AddJobTitle: React.FC = () => {
   const [specificEmp, setSpecificEmp] = useState<string[]>([]);
   const [specificJobTitle, setSpecificJobTitle] = useState<string[]>([]);
   const [isManager, setIsManager] = useState(false);
-  const [responsibilities, setResponsibilities] = useState<string[]>([]); // Initialize as an array
+  const [responsibilities, setResponsibilities] = useState<string[]>([]);
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
   const { isLightMode } = useCustomTheme();

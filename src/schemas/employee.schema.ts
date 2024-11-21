@@ -4,7 +4,6 @@ export const addEmpSchema = yup.object().shape({
   id: yup.string().optional(),
   name: yup.string().required("Employee name is required"),
   national_id: yup.string().required("National Id is required"),
-  //
   gender: yup.string().required("Gender is required"),
   marital_status: yup.string().required("Marital status is required"),
   address: yup.string().required("Address is required"),
