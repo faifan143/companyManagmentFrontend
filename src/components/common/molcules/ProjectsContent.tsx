@@ -3,15 +3,16 @@ import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
+import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddProjectModal from "../atoms/AddProjectModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
+import PageSpinner from "../atoms/PageSpinner";
 
 export const collabColors = [
   "border-2  border-blue-500 ",
@@ -29,7 +30,7 @@ const ProjectsContent = () => {
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { isLightMode } = useCustomTheme();
-  const router = useRouter();
+  const { loading, navigateWithLoading } = useNavigationWithLoading();
   const { data: projects, isLoading } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `http://${process.env.BASE_URL}/projects/${
@@ -65,6 +66,8 @@ const ProjectsContent = () => {
 
   return (
     <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
+      {loading && <PageSpinner />}
+
       <div className="overflow-x-auto rounded-lg shadow-md">
         <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
           <thead
@@ -107,7 +110,7 @@ const ProjectsContent = () => {
                       : "hover:bg-slate-700 text-twhite"
                   }  group transition-colors`}
                   onClick={() =>
-                    router.push("/projects/details/" + project._id)
+                    navigateWithLoading("/projects/details/" + project._id)
                   }
                 >
                   <td

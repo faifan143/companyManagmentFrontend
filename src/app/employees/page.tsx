@@ -2,8 +2,10 @@
 "use client";
 
 import { TableIcon, TreeIcon } from "@/assets";
+import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
+import PageSpinner from "@/components/common/atoms/PageSpinner";
 import TasksTab from "@/components/common/atoms/TasksTab";
 import CreateEmployee from "@/components/common/molcules/CreateEmployee";
 import EmployeesContent from "@/components/common/molcules/EmployeesContent";
@@ -12,19 +14,18 @@ import {
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeFormInputs } from "@/types/EmployeeType.type";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 
 const EmployeesView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("table");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<EmployeeFormInputs | null>(null);
-  const router = useRouter();
+  const { loading, navigateWithLoading } = useNavigationWithLoading();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const empLink = isAdmin ? "get-all-emps" : "get-my-emps";
@@ -43,6 +44,8 @@ const EmployeesView: React.FC = () => {
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
+        {loading && <PageSpinner />}
+
         <h1 className="text-3xl font-bold text-twhite text-center ">
           {t("Employees Management")}
         </h1>
@@ -73,7 +76,7 @@ const EmployeesView: React.FC = () => {
               className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
               onClick={() => {
                 setEditData(null);
-                router.push("/employees/add-employee");
+                navigateWithLoading("/employees/add-employee");
               }}
             >
               {t("Add Employee")}

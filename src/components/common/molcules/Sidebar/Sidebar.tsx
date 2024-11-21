@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 import { ChatsIcon } from "@/assets";
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import useCustomTheme from "@/hooks/useCustomTheme";
+import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import { RootState } from "@/state/store";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import ChatModal from "../../atoms/ChatModal";
 import { sidebarItems } from "./data";
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
-import useCustomTheme from "@/hooks/useCustomTheme";
+import PageSpinner from "../../atoms/PageSpinner";
 
 const Sidebar = ({
   isExpanded,
@@ -25,7 +26,7 @@ const Sidebar = ({
     (state: RootState) => state.user.userInfo?.job.permissions
   );
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const router = useRouter();
+  const { loading, navigateWithLoading } = useNavigationWithLoading();
   const [selectedTab, setSelectedTab] = useState(
     () => localStorage.getItem("selectedTab") || "/home"
   );
@@ -34,7 +35,7 @@ const Sidebar = ({
   const handleTabClick = (path: string) => {
     setSelectedTab(path);
     localStorage.setItem("selectedTab", path);
-    router.push(path);
+    navigateWithLoading(path);
   };
 
   const visibleItems = userPermissions
@@ -55,6 +56,8 @@ const Sidebar = ({
       }
       onClick={() => setIsExpanded(false)}
     >
+      {loading && <PageSpinner />}
+
       <div
         className={`shadow-md p-5 mr-5 fixed top-[50px] bottom-0 transition-width duration-500  border-r border-slate-600 ${
           isLightMode ? "bg-darkest" : "bg-main"

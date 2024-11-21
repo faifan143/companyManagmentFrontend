@@ -1,19 +1,20 @@
 "use client";
 
-import HierarchyTree from "@/components/common/HierarchyTree";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
+import PageSpinner from "@/components/common/atoms/PageSpinner";
+import HierarchyTree from "@/components/common/HierarchyTree";
 import InfoCard from "@/components/common/InfoCard";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
 import TaskStatusPieChart from "@/components/common/TaskStatusPieChart";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
+import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate } from "@/services/task.service";
 import { ProjectDetailsType } from "@/types/Project.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
-import { useRouter } from "next/navigation";
 
 const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
@@ -27,7 +28,7 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
     setSnackbarConfig,
   });
 
-  const router = useRouter();
+  const { loading, navigateWithLoading } = useNavigationWithLoading();
 
   if (isLoading) {
     return (
@@ -48,6 +49,8 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
   return (
     <GridContainer>
       <div className="col-span-full ">
+        {loading && <PageSpinner />}
+
         <h1
           className={`text-3xl font-bold ${
             isLightMode ? "text-twhite " : "text-twhite"
@@ -105,7 +108,7 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
                   width="100%"
                   onPress={(deptId) => {
                     console.log(`Node clicked: ${deptId}`);
-                    router.push(
+                    navigateWithLoading(
                       `/projects/details/project-tasks/${project._id}/${deptId}`
                     );
                   }}

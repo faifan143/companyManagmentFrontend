@@ -7,13 +7,14 @@ import {
 } from "@/assets";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
+import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import { logout } from "@/state/slices/userSlice";
 import { AppDispatch, RootState } from "@/state/store";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import PageSpinner from "./PageSpinner";
 
 const NewHeader = ({
   setIsExpanded,
@@ -25,7 +26,8 @@ const NewHeader = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
+  const { loading, navigateWithLoading, replaceWithLoading } =
+    useNavigationWithLoading();
   const { isLightMode, toggleThemes } = useCustomTheme();
   const { toggleLanguage, getDir } = useLanguage();
 
@@ -39,7 +41,7 @@ const NewHeader = ({
 
   const handleProfile = () => {
     console.log("Profile clicked");
-    router.push("/profile");
+    navigateWithLoading("/profile");
     setIsDropdownOpen(false);
   };
 
@@ -49,6 +51,7 @@ const NewHeader = ({
         isLightMode ? "bg-darkest" : "bg-main"
       } fixed top-0 right-0 left-0  py-2 px-[2%] flex justify-between items-center border-b border-slate-600  z-20`}
     >
+      {loading && <PageSpinner />}
       <Image
         src={MoreIcon}
         alt="more icon"
@@ -119,7 +122,7 @@ const NewHeader = ({
             <li
               onClick={() => {
                 dispatch(logout());
-                router.replace("/auth");
+                replaceWithLoading("/auth");
               }}
               className={`px-4 py-2 ${
                 isLightMode

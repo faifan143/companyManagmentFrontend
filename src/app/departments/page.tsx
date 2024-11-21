@@ -1,22 +1,23 @@
 "use client";
 
-import DepartmentsContent from "@/components/common/molcules/DepartmentsContent";
+import { TableIcon, TreeIcon } from "@/assets";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import CreateDepartment from "../../components/common/molcules/CreateDepartment";
+import PageSpinner from "@/components/common/atoms/PageSpinner";
+import TasksTab from "@/components/common/atoms/TasksTab";
+import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
+import DepartmentsContent from "@/components/common/molcules/DepartmentsContent";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { useTranslation } from "react-i18next";
-import TasksTab from "@/components/common/atoms/TasksTab";
-import { TableIcon, TreeIcon } from "@/assets";
-import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import CreateDepartment from "../../components/common/molcules/CreateDepartment";
 
 const DepartmentsView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +25,6 @@ const DepartmentsView: React.FC = () => {
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
   const [editData, setEditData] = useState<DepartmentType | null>(null);
   const [selectedOption, setSelectedOption] = useState("get-departments");
-  const router = useRouter();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
@@ -36,11 +36,13 @@ const DepartmentsView: React.FC = () => {
     url: `http://${process.env.BASE_URL}/department/tree`,
     setSnackbarConfig,
   });
+  const { loading, navigateWithLoading } = useNavigationWithLoading();
 
   const showSelect = isAdmin || (canViewSpecificDepartments && isPrimary);
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
+        {loading && <PageSpinner />}
         <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Departments")}
         </h1>
@@ -65,7 +67,7 @@ const DepartmentsView: React.FC = () => {
               className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
               onClick={() => {
                 setEditData(null);
-                router.push("/departments/add-department");
+                navigateWithLoading("/departments/add-department");
               }}
             >
               {t("Add Department")}
