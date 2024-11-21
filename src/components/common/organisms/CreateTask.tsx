@@ -125,7 +125,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full relative">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-700 hover:text-red-500"
+          className="absolute top-2 right-2 text-tblack hover:text-red-500"
         >
           &times;
         </button>
@@ -134,7 +134,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
         </h1>
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               {t("Task Name")}
             </label>
             <input
@@ -153,7 +153,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
           {/* Description Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               {t("Description")}
             </label>
             <textarea
@@ -172,7 +172,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
           {/* Priority Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               {t("Priority")}
             </label>
             <input
@@ -192,7 +192,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
           {/* Employee Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               {t("Assigned Employee")}
             </label>
             <select
@@ -217,7 +217,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
           {/* Department Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               {t("Department")}
             </label>
             <select
@@ -242,7 +242,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
             )}
           </div>
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               {t("Due Date")}
             </label>
             <input
@@ -262,7 +262,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-blue-600 text-twhite rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
               isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPending}

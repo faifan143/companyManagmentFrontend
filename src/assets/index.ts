@@ -1,5 +1,6 @@
 export { default as HomeIcon } from "./icons/home-icon.svg";
 export { default as TasksIcon } from "./icons/tasks-icon.svg";
+export { default as SubtasksIcon } from "./icons/subtasks-icon.svg";
 export { default as EmployeesIcon } from "./icons/employees-icon.svg";
 export { default as DepartmentsIcon } from "./icons/departments-icon.svg";
 export { default as JobsIcon } from "./icons/jobs-icon.svg";
@@ -27,3 +28,7 @@ export { default as PlayIcon } from "./icons/play-icon.svg";
 export { default as PauseIcon } from "./icons/pause-icon.svg";
 export { default as ProjectIcon } from "./icons/project-icon.svg";
 export { default as CategoryIcon } from "./icons/category-icon.svg";
+export { default as LightModeIcon } from "./icons/lightmode-icon.svg";
+export { default as DarkModeIcon } from "./icons/darkmode-icon.svg";
+export { default as TableIcon } from "./icons/table-icon.svg";
+export { default as TreeIcon } from "./icons/tree-icon.svg";

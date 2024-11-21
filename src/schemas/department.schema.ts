@@ -6,7 +6,7 @@ export const addDeptSchema = yup.object().shape({
   goal: yup.string().required("Goal is required"),
   category: yup.string().required("Category is required"),
   mainTasks: yup.string().required("Main tasks are required"),
-  parent_department_id: yup.string().nullable().default(undefined),
+  parent_department_id: yup.string().required("Parent Department Id is Required"),
   numericOwners: yup.array().of(
     yup.object().shape({
       category: yup.string(),

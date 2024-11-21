@@ -147,7 +147,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
               placeholder={t("Enter department name")}
             />
             {errors.name && (
-              <p className="text-high mt-1 text-sm">{errors.name.message}</p>
+              <p className="text-red-500 mt-1 text-sm">{errors.name.message}</p>
             )}
           </div>
           <div>
@@ -163,7 +163,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
               rows={4}
             />
             {errors.description && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.description.message}
               </p>
             )}
@@ -187,7 +187,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
                 ))}
             </select>
             {errors.parent_department_id && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.parent_department_id.message}
               </p>
             )}
@@ -195,7 +195,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
 
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-[#413d99] text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-[#413d99] text-twhite rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
               isPendingDepartment ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingDepartment}
@@ -209,7 +209,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
               : t("Create Department")}
           </button>
           {isErrorDepartment && (
-            <p className="text-high mt-2 text-center">
+            <p className="text-red-500 mt-2 text-center">
               {t("Error")}: {errorDepartment + ""}
             </p>
           )}

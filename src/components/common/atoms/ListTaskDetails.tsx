@@ -11,7 +11,15 @@ import {
   PaperPlaneIcon,
   PauseIcon,
   PlayIcon,
+  SubtasksIcon,
 } from "@/assets";
+import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import useComments from "@/hooks/useComments";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
+import useLanguage from "@/hooks/useLanguage";
+import { useRedux } from "@/hooks/useRedux";
+import useSnackbar from "@/hooks/useSnackbar";
 import useTimeTicker from "@/hooks/useTimeTicker";
 import {
   formatDate,
@@ -19,16 +27,14 @@ import {
   isDueSoon,
   updateTaskData,
 } from "@/services/task.service";
+import { RootState } from "@/state/store";
 import { ReceiveTaskType } from "@/types/Task.type";
+import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import AddSubTaskModal from "./AddSubTaskModal";
-import useCustomQuery from "@/hooks/useCustomQuery";
-import useSnackbar from "@/hooks/useSnackbar";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
-import useLanguage from "@/hooks/useLanguage";
-import useComments from "@/hooks/useComments";
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
 
 export const formatTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -55,7 +61,11 @@ const ListTaskDetails: React.FC<{
     "ON_TEST",
     "DONE",
   ];
-
+  const { selector: userId } = useRedux(
+    (state: RootState) => state.user.userInfo?.id
+  );
+  const isPrimary = useRolePermissions("primary_user");
+  const isAdmin = useRolePermissions("admin");
   const calRef = useRef<HTMLInputElement>(null);
   const priorityRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
@@ -69,38 +79,21 @@ const ListTaskDetails: React.FC<{
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(
     task?.status
   );
-  const [isTaskRunning, setIsTaskRunning] = useState<boolean>(
-    task!.timeLogs.length > 0 && !task!.timeLogs[task!.timeLogs.length - 1].end
-  );
-  const [displayedTime, setDisplayedTime] = useState(task?.totalTimeSpent || 0);
 
-  const { startTaskTicker, pauseTaskTicker } = useTimeTicker({
-    taskId: task!.id,
-  });
+  const { isLightMode } = useCustomTheme();
+
+  const {
+    startTaskTicker,
+    pauseTaskTicker,
+    elapsedTime,
+    isTaskRunning,
+    isMakingAPICall,
+  } = useTimeTicker(task!.id, task?.timeLogs);
 
   const { t, currentLanguage, getDir } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isTaskRunning && selectedStatus !== "DONE") {
-      timer = setInterval(() => {
-        setDisplayedTime((prevTime) => {
-          const newTime = prevTime + 1;
-          localStorage.setItem(
-            `task-timer-${task!.id}`,
-            JSON.stringify({ startTime: Date.now(), elapsedTime: newTime })
-          );
-          return newTime;
-        });
-      }, 1000);
-    } else {
-      clearInterval(timer);
-    }
-    return () => clearInterval(timer);
-  }, [isTaskRunning, selectedStatus, task]);
 
   const handleBackdropClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -126,22 +119,24 @@ const ListTaskDetails: React.FC<{
     }
   };
 
-  useEffect(() => {
-    const storedData = localStorage.getItem(`task-timer-${task!.id}`);
-    if (storedData) {
-      const { startTime, elapsedTime } = JSON.parse(storedData);
-      if (startTime) {
-        const currentTime = Date.now();
-        const additionalTime = Math.floor((currentTime - startTime) / 1000);
-        setDisplayedTime(elapsedTime + additionalTime);
-        setIsTaskRunning(true);
-      } else {
-        setDisplayedTime(elapsedTime);
-      }
-    }
-  }, [task]);
-
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+
+  const handleStart = async () => {
+    if (selectedStatus !== "ONGOING") {
+      setSnackbarConfig({
+        message: t("Task Status must be ONGOING"),
+        open: true,
+        severity: "warning",
+      });
+      return;
+    }
+
+    await startTaskTicker();
+  };
+
+  const handlePause = async () => {
+    await pauseTaskTicker();
+  };
 
   const { data: allTasks } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
@@ -164,14 +159,14 @@ const ListTaskDetails: React.FC<{
   return (
     <>
       <div
-        className="fixed inset-0 backdrop-blur-sm cursor-auto "
+        className="fixed inset-0  backdrop-blur-sm cursor-auto "
         onClick={handleBackdropClick}
       />
 
-      <div className="bg-dark rounded-xl shadow-md w-[400px] text-white space-y-4 fixed top-[50px] right-[10px] bottom-[10px] z-50 p-6 cursor-default overflow-auto ">
+      <div className="bg-secondary   rounded-xl shadow-md w-[400px] text-twhite space-y-4 fixed top-[50px] right-[10px] bottom-[10px] z-50 p-6 cursor-default overflow-auto ">
         <div
           onClick={handleBackdropClick}
-          className="text-white absolute top-4 right-4 text-xl cursor-pointer"
+          className="text-twhite absolute top-4 right-4 text-xl cursor-pointer"
         >
           &times;
         </div>
@@ -179,16 +174,20 @@ const ListTaskDetails: React.FC<{
         <h1 className="text-lg font-semibold">{task?.name}</h1>
         {/* Assignee and Due Date */}
         <div className="flex gap-4 items-center">
-          <div className="text-white text-sm">{t("Assignee")}</div>
+          <div className="text-twhite text-sm">{t("Assignee")}</div>
           <div className="flex items-center space-x-2" dir="ltr">
-            <span className="bg-blue-600 rounded-full h-8 w-8 flex items-center justify-center text-white font-semibold">
+            <span
+              className={`bg-blue-600 rounded-full h-8 w-8 flex items-center justify-center ${
+                isLightMode ? "text-tblackAF" : "text-twhite"
+              }  font-semibold`}
+            >
               {task?.assignee.name.charAt(0).toUpperCase()}
             </span>
             <p>{task?.assignee.name}</p>
           </div>
         </div>
         <div className="flex gap-4 items-center">
-          <div className="text-white text-sm">{t("Due Date")}</div>
+          <div className="text-twhite text-sm">{t("Due Date")}</div>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => calRef.current?.showPicker()}
@@ -222,10 +221,18 @@ const ListTaskDetails: React.FC<{
           </div>
         </div>
         {/* Parent task */}
-        <div className="relative flex items-center justify-between  gap-5 w-fit bg-slate-600 rounded px-3 py-2">
+        <div
+          className={`relative flex items-center justify-between  gap-5 w-fit  ${
+            isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
+          }  rounded px-3 py-2`}
+        >
           <span>{t("Parent Task")}</span>
           <span
-            className={` text-dark px-2 py-1 rounded text-xs cursor-pointer bg-yellow-500`}
+            className={`  px-2 py-1 rounded text-xs cursor-pointer ${
+              isLightMode
+                ? "bg-darkest text-tblackAF"
+                : "bg-yellow-500 text-dark"
+            } `}
           >
             {task?.parent_task
               ? allTasks &&
@@ -237,9 +244,17 @@ const ListTaskDetails: React.FC<{
         </div>
         {/* Assigned Emp  */}
         {task && task.emp && (
-          <div className="relative flex items-center justify-between  gap-5 w-fit bg-slate-600 rounded px-3 py-2">
+          <div
+            className={`relative flex items-center justify-between  gap-5 w-fit ${
+              isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
+            } rounded px-3 py-2`}
+          >
             <span>{t("Assigned Emp")}</span>
-            <div className="border-2 border-red-500 bg-droppable-fade text-white py-2 px-3 w-fit mx-auto rounded-md  text-sm font-bold">
+            <div
+              className={`border-2 border-red-500  ${
+                isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
+              } text-twhite py-2 px-3 w-fit mx-auto rounded-md  text-sm font-semibold`}
+            >
               {task.emp.name}
             </div>
           </div>
@@ -247,22 +262,25 @@ const ListTaskDetails: React.FC<{
         {/* Priority Dropdown */}
         <div
           ref={priorityRef}
-          className="relative flex items-center justify-between w-1/2 bg-slate-600 rounded px-3 py-2"
+          className={`relative flex items-center justify-between w-1/2 ${
+            isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
+          } rounded px-3 py-2`}
         >
           <span>{t("Priority")}</span>
           <span
-            className={`${getPriorityColor(
-              selectedPriority!
-            )} text-black px-2 py-1 rounded text-xs cursor-pointer`}
+            className={`${getPriorityColor(selectedPriority!)}  
+            
+            ${isLightMode ? "text-twhite" : "text-tblackAF"}
+             px-2 py-1 rounded text-xs cursor-pointer`}
             onClick={() => setPriorityMenuOpen(!isPriorityMenuOpen)}
           >
             {t(selectedPriority)}
           </span>
-          {isPriorityMenuOpen && (
+          {userId == task?.assignee._id && isPriorityMenuOpen && (
             <div
               className={`absolute top-10 ${
                 currentLanguage == "en" ? "-right-20" : "right-20"
-              }  bg-dark border border-slate-500 text-white rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+              }  bg-dark border border-slate-500 text-twhite rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
             >
               {priorityOptions.map((option) => (
                 <div
@@ -271,7 +289,11 @@ const ListTaskDetails: React.FC<{
                     setSelectedPriority(option);
                     setPriorityMenuOpen(false);
                   }}
-                  className="px-4 py-2 rounded-md hover:bg-gray-500 cursor-pointer"
+                  className={`px-4 py-2 rounded-md ${
+                    isLightMode
+                      ? " hover:bg-darkest hover:text-tblackAF"
+                      : " hover:bg-gray-500"
+                  } cursor-pointer`}
                 >
                   {t(option)}
                 </div>
@@ -282,12 +304,17 @@ const ListTaskDetails: React.FC<{
         {/* Status Dropdown */}
         <div
           ref={statusRef}
-          className="relative flex items-center justify-between w-1/2 bg-slate-600 rounded px-3 py-2"
+          className={`relative flex items-center justify-between w-1/2 ${
+            isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
+          } rounded px-3 py-2`}
         >
           <span>{t("Status")}</span>
           <span
-            className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer"
-            onClick={() => setStatusMenuOpen(!isStatusMenuOpen)}
+            className="bg-dark text-twhite px-2 py-1 rounded text-xs cursor-pointer"
+            onClick={() =>
+              (userId == task?.assignee._id || userId == task?.emp.id) &&
+              setStatusMenuOpen(!isStatusMenuOpen)
+            }
           >
             {t(selectedStatus)}
           </span>
@@ -295,7 +322,7 @@ const ListTaskDetails: React.FC<{
             <div
               className={`absolute top-10 ${
                 currentLanguage == "en" ? "-right-20" : "right-20"
-              }  bg-dark border border-slate-500 text-white w-40 rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+              }  bg-dark border border-slate-500 text-twhite w-40 rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
             >
               {statusOptions.map((option) => (
                 <div
@@ -315,115 +342,87 @@ const ListTaskDetails: React.FC<{
         {/* time tracking */}
         <div
           ref={statusRef}
-          className="relative flex items-center justify-between gap-2 w-fit bg-slate-600 rounded px-3 py-2"
+          className={`relative flex items-center justify-between gap-2 w-fit ${
+            isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
+          } rounded px-3 py-2`}
         >
           <span>{t("Total Time")}</span>
-          <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer">
+          <span className="bg-dark text-twhite px-2 py-1 rounded text-xs cursor-pointer">
             {task?.status == "DONE"
               ? formatTime(task?.totalTimeSpent || 0)
-              : formatTime(displayedTime)}
+              : formatTime(elapsedTime)}
           </span>
         </div>
-        <div
-          ref={statusRef}
-          className="relative flex items-center justify-between gap-2 w-fit bg-slate-600 rounded px-3 py-2"
-        >
-          <span>{t("Time Actions")}</span>
+        {userId == task?.emp.id && (
+          <div
+            ref={statusRef}
+            className={`relative flex items-center justify-between gap-2 w-fit ${
+              isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
+            } rounded px-3 py-2`}
+          >
+            <span>{t("Time Actions")}</span>
 
-          {task?.status == "DONE" ? (
-            <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-not-allowed flex items-center gap-1">
-              <Image src={CheckIcon} alt="start icon" width={15} height={15} />{" "}
-              {t("Completed")}
-            </span>
-          ) : (
-            <span className="bg-dark text-white px-2 py-1 rounded text-xs cursor-pointer flex items-center gap-1">
-              {!isTaskRunning ? (
-                <div
-                  className="flex items-center gap-1"
-                  onClick={() => {
-                    if (task?.status == "ONGOING") {
-                      startTaskTicker();
-                      const startTime = Date.now();
-                      localStorage.setItem(
-                        `task-timer-${task!.id}`,
-                        JSON.stringify({
-                          startTime,
-                          elapsedTime: displayedTime,
-                        })
-                      );
-                      setIsTaskRunning(true);
-                    } else {
-                      setSnackbarConfig({
-                        message: t("Task Status must be ONGOING"),
-                        open: true,
-                        severity: "warning",
-                      });
-                    }
-                  }}
-                >
-                  <Image
-                    src={PlayIcon}
-                    alt="start icon"
-                    width={15}
-                    height={15}
-                  />{" "}
-                  {t("Start")}
-                </div>
-              ) : (
-                <div
-                  className="flex items-center gap-1"
-                  onClick={() => {
-                    const storedData = JSON.parse(
-                      localStorage.getItem(`task-timer-${task!.id}`) || "{}"
-                    );
-                    const startTime = storedData.startTime;
-                    const elapsedTime = storedData.elapsedTime || displayedTime;
+            {task?.status == "DONE" ? (
+              <span className="bg-dark text-twhite px-2 py-1 rounded text-xs cursor-not-allowed flex items-center gap-1">
+                <Image
+                  src={CheckIcon}
+                  alt="start icon"
+                  width={15}
+                  height={15}
+                />{" "}
+                {t("Completed")}
+              </span>
+            ) : (
+              <span className="bg-dark text-twhite px-2 py-1 rounded text-xs cursor-pointer flex items-center gap-2">
+                {isMakingAPICall ? (
+                  <CircularProgress size={15} color="inherit" />
+                ) : !isTaskRunning ? (
+                  <div
+                    className="bg-dark flex items-center gap-2"
+                    onClick={handleStart}
+                  >
+                    <Image
+                      src={PlayIcon}
+                      alt="start icon"
+                      width={15}
+                      height={15}
+                    />{" "}
+                    {t("Start")}
+                  </div>
+                ) : (
+                  <div
+                    className="bg-dark flex items-center gap-2"
+                    onClick={handlePause}
+                  >
+                    <Image
+                      src={PauseIcon}
+                      alt="pause icon"
+                      width={15}
+                      height={15}
+                    />{" "}
+                    {t("Pause")}
+                  </div>
+                )}
+              </span>
+            )}
 
-                    if (startTime) {
-                      const additionalTime = Math.floor(
-                        (Date.now() - startTime) / 1000
-                      );
-                      const newElapsedTime = elapsedTime + additionalTime;
-                      setDisplayedTime(newElapsedTime);
-                      localStorage.setItem(
-                        `task-timer-${task!.id}`,
-                        JSON.stringify({
-                          startTime: null,
-                          elapsedTime: newElapsedTime,
-                        })
-                      );
-                    }
-                    setIsTaskRunning(false);
-                    pauseTaskTicker();
-                  }}
-                >
-                  <Image
-                    src={PauseIcon}
-                    alt="pause icon"
-                    width={15}
-                    height={15}
-                  />{" "}
-                  {t("Pause")}
-                </div>
-              )}
-            </span>
-          )}
-          <CustomizedSnackbars
-            open={snackbarConfig.open}
-            message={snackbarConfig.message}
-            severity={snackbarConfig.severity}
-            onClose={() =>
-              setSnackbarConfig((prev) => ({ ...prev, open: false }))
-            }
-          />
-        </div>
+            <CustomizedSnackbars
+              open={snackbarConfig.open}
+              message={snackbarConfig.message}
+              severity={snackbarConfig.severity}
+              onClose={() =>
+                setSnackbarConfig((prev) => ({ ...prev, open: false }))
+              }
+            />
+          </div>
+        )}
         {/* Description */}
         <div>
-          <p className="text-gray-400 text-sm">{t("Description")}</p>
+          <p className="text-tbright text-sm">{t("Description")}</p>
           <textarea
             ref={descriptionRef}
             defaultValue={task?.description}
-            className="text-gray-300 mt-2 p-4 rounded-md w-full outline-none border-none bg-main"
+            className="text-twhite mt-2 p-4 rounded-md w-full outline-none border-none bg-main"
             placeholder="What is this task about?"
           ></textarea>
         </div>
@@ -431,18 +430,24 @@ const ListTaskDetails: React.FC<{
         {/* Subtask Button */}
         <label className="font-bold my-2 block">{t("SubTasks")}</label>
 
-        <div className="bg-droppable-fade border-2 border-red-500/30 shadow-md p-4 rounded-lg text-slate-300 space-y-2  ">
-          {task && task.subTasks.length > 0 ? (
+        <div
+          className={` ${
+            isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
+          } border-2 border-red-500/30 shadow-md p-4 rounded-lg text-tmid space-y-2  `}
+        >
+          {task && task.subTasks && task.subTasks.length > 0 ? (
             task.subTasks.map((sub, index) => (
               <div className="flex items-center gap-2" key={index}>
                 <Image
-                  src={CheckIcon}
-                  alt="check icon"
+                  src={SubtasksIcon}
+                  alt="subtasks icon"
                   width={15}
                   height={15}
-                  className="text-gray-300"
+                  className={`text-twhite ${
+                    isLightMode ? `bg-tmid p-1 rounded-md w-5 h-5` : ""
+                  }`}
                 />
-                <p className="text-gray-400">{sub.name}</p>
+                <p className="text-tbright">{sub.name}</p>
               </div>
             ))
           ) : (
@@ -450,12 +455,16 @@ const ListTaskDetails: React.FC<{
           )}
         </div>
 
-        <button
-          className="bg-gray-700 text-white py-2 px-4 rounded-lg flex items-center space-x-2"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <span>{t("Add subtask")}</span>
-        </button>
+        {(isAdmin || isPrimary) && (
+          <button
+            className={`${
+              isLightMode ? "bg-darkest text-white" : "bg-gray-700"
+            }  text-twhite py-2 px-4 rounded-lg flex items-center space-x-2`}
+            onClick={() => setIsModalOpen(true)}
+          >
+            <span>{t("Add subtask")}</span>
+          </button>
+        )}
 
         <div className="mb-4">
           <label className="font-bold my-2 block">{t("Comments")}</label>
@@ -491,7 +500,7 @@ const ListTaskDetails: React.FC<{
                   {t("Attach File")}
                 </label>
                 {attachedFile && (
-                  <span className="ml-2 text-sm text-slate-300">
+                  <span className="ml-2 text-sm text-tmid">
                     {attachedFile.name}
                   </span>
                 )}
@@ -499,7 +508,7 @@ const ListTaskDetails: React.FC<{
 
               <button
                 onClick={handleSendComment}
-                className="bg-dark text-white px-3 py-1 rounded-md hover:bg-secondary gap-1 flex items-center"
+                className="bg-dark text-twhite px-3 py-1 rounded-md hover:bg-secondary gap-1 flex items-center"
               >
                 {/* <FaPaperPlane className="mr-1" />  */}
                 <Image
@@ -513,7 +522,11 @@ const ListTaskDetails: React.FC<{
             </div>
           </div>
 
-          <div className="bg-droppable-fade border-2 border-yellow-500/30 shadow-md p-4 rounded-lg text-slate-300 space-y-2  ">
+          <div
+            className={` ${
+              isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
+            }  border-2 border-yellow-500/30 shadow-md p-4 rounded-lg text-tmid space-y-2  `}
+          >
             {comments.length > 0 ? (
               comments.map((comment, index) => (
                 <div key={index} className="flex gap-2 mb-4">
@@ -521,10 +534,10 @@ const ListTaskDetails: React.FC<{
                     {comment.author.name.slice(0, 1)}
                   </div>
                   <div>
-                    <p className="text-white font-semibold">
+                    <p className="text-twhite font-semibold">
                       {comment.author.name}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-tdark">
                       {formatDate(
                         comment.createdAt,
                         currentLanguage as "ar" | "en"
@@ -532,7 +545,7 @@ const ListTaskDetails: React.FC<{
                     </p>
                     {comment.content && (
                       <div
-                        className="bg-secondary  text-white rounded-md p-2 mt-2 text-sm"
+                        className="bg-secondary  text-twhite rounded-md p-2 mt-2 text-sm"
                         dir={getDir()}
                       >
                         {comment.content}
@@ -543,7 +556,7 @@ const ListTaskDetails: React.FC<{
                         {comment.files.map((file, idx) => (
                           <div
                             key={idx}
-                            className="bg-gray-200 text-slate-300 p-1 px-2 rounded-md inline-block mr-2 mb-1"
+                            className="bg-gray-200 text-tmid p-1 px-2 rounded-md inline-block mr-2 mb-1"
                           >
                             {file}
                           </div>

@@ -124,7 +124,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     >
       <div
         dir={getDir()}
-        className="bg-secondary text-white p-6 rounded-xl shadow-lg max-w-xl max-h-[80%] overflow-auto  w-full relative"
+        className="bg-secondary text-twhite p-6 rounded-xl shadow-lg max-w-xl max-h-[80%] overflow-auto  w-full relative"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -135,7 +135,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             e.stopPropagation();
             onClose();
           }}
-          className="absolute top-4 right-4 text-gray-700 hover:text-red-500"
+          className="absolute top-4 right-4 text-tblack hover:text-red-500"
         >
           <Image src={XIcon} alt="x icon" width={16} height={16} />
         </button>
@@ -145,7 +145,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             <span className=" text-lg font-bold">{t("Task Details")}</span>
           </div>
           <div className="flex gap-2">
-            <div className="bg-slate-300 px-4 py-2 rounded-2xl border-none text-gray-800 font-medium">
+            <div className="bg-slate-300 px-4 py-2 rounded-2xl border-none text-tblack font-medium">
               {taskData.status}
             </div>
             <div
@@ -168,16 +168,16 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           <label className="font-bold mb-2 block">{t("Members")}</label>
           <div className="flex items-center space-x-2 mt-2">
             {taskData.emp ? (
-              <div className="w-8 h-8 rounded-full bg-[#1b1a40] text-white flex items-center justify-center text-sm font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#1b1a40] text-twhite flex items-center justify-center text-sm font-bold">
                 {taskData.emp.name.charAt(0).toUpperCase()}
               </div>
             ) : (
-              <span className="text-gray-500">{t("No assigned employee")}</span>
+              <span className="text-tmid">{t("No assigned employee")}</span>
             )}
-            <div className="w-8 h-8 rounded-full bg-red-300 text-white flex items-center justify-center text-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-red-300 text-twhite flex items-center justify-center text-sm font-bold">
               AA
             </div>
-            <div className="w-8 h-8 rounded-full bg-green-300 text-white flex items-center justify-center text-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-green-300 text-twhite flex items-center justify-center text-sm font-bold">
               MK
             </div>
             <button className="w-8 h-8 rounded-full bg-blue-100 text-[#1b1a40] flex items-center justify-center text-sm font-bold">
@@ -188,7 +188,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
         <div className="mb-4">
           <label className="font-bold mb-2 block">{t("Description")}</label>
-          <div className="text-gray-300 bg-main p-2 rounded-md">
+          <div className="text-twhite bg-main p-2 rounded-md">
             {taskData.description}
           </div>
         </div>
@@ -196,13 +196,13 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         <div className="flex justify-between mb-4">
           {/* <div>
             <label className="font-bold">{t("Task Type:")}</label>
-            <p className="mt-1 text-gray-300 bg-main p-2 rounded-md text-center">
+            <p className="mt-1 text-twhite bg-main p-2 rounded-md text-center">
               {taskData.task_type.name}
             </p>
           </div> */}
           <div>
             <label className="font-bold">{t("Department:")}</label>
-            <p className="text-gray-300 bg-main p-2 rounded-md text-center">
+            <p className="text-twhite bg-main p-2 rounded-md text-center">
               {taskData.emp?.department
                 ? taskData.emp?.department?.name
                 : t("No department assigned")}
@@ -212,7 +212,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
         <div className="mb-4">
           <label className="font-bold">{t("Due Date:")}</label>
-          <p className="text-gray-300 bg-main p-2 rounded-md w-fit  ">
+          <p className="text-twhite bg-main p-2 rounded-md w-fit  ">
             {new Date(taskData.due_date).toLocaleDateString()}
           </p>
         </div>
@@ -249,7 +249,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                   {t("Attach File")}
                 </label>
                 {attachedFile && (
-                  <span className="ml-2 text-sm text-gray-600">
+                  <span className="ml-2 text-sm text-tdark">
                     {attachedFile.name}
                   </span>
                 )}
@@ -257,7 +257,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
               <button
                 onClick={handleSendComment}
-                className="bg-dark text-white px-3 py-1 rounded-md hover:bg-secondary gap-1 flex items-center"
+                className="bg-dark text-twhite px-3 py-1 rounded-md hover:bg-secondary gap-1 flex items-center"
               >
                 {/* <FaPaperPlane className="mr-1" />  */}
                 <Image
@@ -272,11 +272,11 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </div>
 
           <label className="font-bold my-2 block">{t("Comments")}</label>
-          <div className="bg-main border shadow-md p-4 rounded-lg text-gray-700 space-y-2  ">
+          <div className="bg-main border shadow-md p-4 rounded-lg text-tblack space-y-2  ">
             {comments.length > 0 ? (
               comments.map((comment, index) => (
                 // <div key={comment.id} className="bg-white p-2 rounded-md mb-2">
-                //   <p className="text-sm text-gray-700">
+                //   <p className="text-sm text-tblack">
                 //     <strong>{comment.author.name}:</strong> {comment.content}
                 //   </p>
                 //   {comment.files && comment.files.length > 0 && (
@@ -284,7 +284,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 //       {comment.files.map((file, index) => (
                 //         <div
                 //           key={index}
-                //           className="bg-gray-200 text-gray-700 p-1 px-2 rounded-md inline-block mr-2 mb-1"
+                //           className="bg-gray-200 text-tblack p-1 px-2 rounded-md inline-block mr-2 mb-1"
                 //         >
                 //           <a
                 //             href={file}
@@ -304,15 +304,15 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                     {comment.author.name.slice(0, 1)}
                   </div>
                   <div>
-                    <p className="text-white font-semibold">
+                    <p className="text-twhite font-semibold">
                       {comment.author.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-tmid">
                       {formatDate(comment.createdAt)}
                     </p>
                     {comment.content && (
                       <div
-                        className="bg-secondary  text-white rounded-md p-2 mt-2 text-sm"
+                        className="bg-secondary  text-twhite rounded-md p-2 mt-2 text-sm"
                         dir={getDir()}
                       >
                         {comment.content}
@@ -323,7 +323,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                         {comment.files.map((file, idx) => (
                           <div
                             key={idx}
-                            className="bg-gray-200 text-gray-700 p-1 px-2 rounded-md inline-block mr-2 mb-1"
+                            className="bg-gray-200 text-tblack p-1 px-2 rounded-md inline-block mr-2 mb-1"
                           >
                             {file}
                           </div>

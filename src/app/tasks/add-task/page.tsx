@@ -6,6 +6,7 @@ import GridContainer from "@/components/common/atoms/GridContainer";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskSchema } from "@/schemas/task.schema";
 import { DepartmentType } from "@/types/DepartmentType.type";
@@ -28,6 +29,7 @@ const AddTask: React.FC = () => {
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
+  const { isLightMode } = useCustomTheme();
   const {
     register,
     handleSubmit,
@@ -47,15 +49,13 @@ const AddTask: React.FC = () => {
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `http://${baseUrl}/projects/get-all-projects`,
+    url: `http://${baseUrl}/projects/get-manager-project`,
     setSnackbarConfig,
   });
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/${
-      isAdmin || isPrimary ? "get-departments" : "view"
-    }`,
+    url: `http://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
   const { data: employees } = useCustomQuery<EmployeeType[]>({
@@ -115,12 +115,16 @@ const AddTask: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-droppable-fade p-8 rounded-xl shadow-lg  w-full  col-span-full">
-        <h1 className="text-center text-2xl text-white font-bold mb-6">
+      <div
+        className={`${
+          isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
+        }  p-8 rounded-xl shadow-lg  w-full  col-span-full`}
+      >
+        <h1 className={`text-center text-2xl text-twhite font-bold mb-6`}>
           {t("Create Task")}
         </h1>
         <form
-          className="space-y-4 text-white "
+          className="space-y-4 text-twhite "
           onSubmit={handleSubmit(async (data: TaskFormInputs) => {
             setFeedbackMessage(null);
             console.log({
@@ -144,13 +148,15 @@ const AddTask: React.FC = () => {
         >
           {/* Task Name Field */}
           <div>
-            <label className="block text-slate-300   text-sm font-medium">
+            <label className="block text-tmid   text-sm font-medium">
               {t("Task Name")}
             </label>
             <input
               type="text"
               {...register("name")}
-              className={` bg-secondary border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+              className={`  ${
+                isLightMode ? "bg-dark" : "bg-secondary"
+              }  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.name ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter task name")}
@@ -163,12 +169,14 @@ const AddTask: React.FC = () => {
 
           {/* Description Field */}
           <div>
-            <label className="block text-slate-300 text-sm font-medium">
+            <label className="block text-tmid text-sm font-medium">
               {t("Description")}
             </label>
             <textarea
               {...register("description")}
-              className={` bg-secondary border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+              className={`  ${
+                isLightMode ? "bg-dark" : "bg-secondary"
+              }  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.description ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter task description")}
@@ -180,12 +188,14 @@ const AddTask: React.FC = () => {
             )}
           </div>
           <div>
-            <label className="block text-slate-300 text-sm font-medium">
+            <label className="block text-tmid text-sm font-medium">
               {t("Priority")}
             </label>
             <select
               {...register("priority")}
-              className={` bg-secondary  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+              className={`  ${
+                isLightMode ? "bg-dark" : "bg-secondary"
+              }   border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.priority ? "border-red-500" : "border-gray-300"
               }`}
             >
@@ -193,7 +203,7 @@ const AddTask: React.FC = () => {
                 {t("Select a department (optional)")}
               </option>
               {["HIGH", "MEDIUM", "LOW"].map((priority, index) => (
-                <option className="text-slate-300" key={index} value={priority}>
+                <option className="text-tmid" key={index} value={priority}>
                   {priority}
                 </option>
               ))}
@@ -207,13 +217,15 @@ const AddTask: React.FC = () => {
 
           {/* Due Date Field */}
           <div>
-            <label className="block text-slate-300 text-sm font-medium">
+            <label className="block text-tmid text-sm font-medium">
               {t("Due Date")}
             </label>
             <input
               type="date"
               {...register("due_date")}
-              className={` bg-secondary border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+              className={`  ${
+                isLightMode ? "bg-dark" : "bg-secondary"
+              }  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                 errors.due_date ? "border-red-500" : "border-gray-300"
               }`}
             />
@@ -226,12 +238,14 @@ const AddTask: React.FC = () => {
           {/* Project Field */}
           {!isProjectDisabled && (
             <div>
-              <label className="block text-slate-300 text-sm font-medium">
+              <label className="block text-tmid text-sm font-medium">
                 {t("Project")}
               </label>
               <select
                 {...register("project_id")}
-                className={` bg-secondary border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+                className={`  ${
+                  isLightMode ? "bg-dark" : "bg-secondary"
+                }  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                   errors.project_id ? "border-red-500" : "border-gray-300"
                 }`}
                 disabled={isProjectDisabled}
@@ -257,12 +271,14 @@ const AddTask: React.FC = () => {
           {/* Department Field */}
           {!isDepartmentDisabled && (
             <div>
-              <label className="block text-slate-300 text-sm font-medium">
+              <label className="block text-tmid text-sm font-medium">
                 {t("Department")}
               </label>
               <select
                 {...register("department_id")}
-                className={` bg-secondary border-none outline-none w-full px-4 py-2 disabled:hidden mt-1 rounded-lg border ${
+                className={`  ${
+                  isLightMode ? "bg-dark" : "bg-secondary"
+                }  border-none outline-none w-full px-4 py-2 disabled:hidden mt-1 rounded-lg border ${
                   errors.department_id ? "border-red-500" : "border-gray-300"
                 }`}
                 disabled={isDepartmentDisabled}
@@ -288,12 +304,14 @@ const AddTask: React.FC = () => {
           {/* Employee Field */}
           {!isEmployeeDisabled && (
             <div>
-              <label className="block text-slate-300 text-sm font-medium">
+              <label className="block text-tmid text-sm font-medium">
                 {t("Assigned Employee")}
               </label>
               <select
                 {...register("emp")}
-                className={` bg-secondary border-none outline-none w-full disabled:hidden px-4 py-2 mt-1 rounded-lg border ${
+                className={`  ${
+                  isLightMode ? "bg-dark" : "bg-secondary"
+                }  border-none outline-none w-full disabled:hidden px-4 py-2 mt-1 rounded-lg border ${
                   errors.emp ? "border-red-500" : "border-gray-300"
                 }`}
                 disabled={isEmployeeDisabled}
@@ -326,7 +344,7 @@ const AddTask: React.FC = () => {
             />
             <label
               htmlFor="check-id"
-              className="ml-4 text-slate-300 text-sm font-medium cursor-pointer"
+              className="ml-4 text-tmid text-sm font-medium cursor-pointer"
             >
               {t("Is Recurring Task?")}
             </label>
@@ -336,13 +354,15 @@ const AddTask: React.FC = () => {
           {isRecurring && (
             <>
               <div>
-                <label className="block text-slate-300 text-sm font-medium">
+                <label className="block text-tmid text-sm font-medium">
                   {t("Recurring Task Interval (Days)")}
                 </label>
                 <input
                   type="number"
                   {...register("intervalInDays")}
-                  className={` bg-secondary border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+                  className={`  ${
+                    isLightMode ? "bg-dark" : "bg-secondary"
+                  }  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                     errors.intervalInDays ? "border-red-500" : "border-gray-300"
                   }`}
                   placeholder={t("Enter interval in days")}
@@ -355,13 +375,15 @@ const AddTask: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-300 text-sm font-medium">
+                <label className="block text-tmid text-sm font-medium">
                   {t("Recurring Task End Date")}
                 </label>
                 <input
                   type="date"
                   {...register("end_date")}
-                  className={` bg-secondary border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
+                  className={`  ${
+                    isLightMode ? "bg-dark" : "bg-secondary"
+                  }  border-none outline-none w-full px-4 py-2 mt-1 rounded-lg border ${
                     errors.end_date ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -377,7 +399,9 @@ const AddTask: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600  rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 ${
+              isLightMode ? " text-tblackAF" : "text-twhite"
+            } rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
               isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPending}

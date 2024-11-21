@@ -21,7 +21,6 @@ const ChangingPasswordModal = ({
 }) => {
   const { t } = useTranslation();
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
-
   const {
     register: registerChangePassword,
     handleSubmit: handleChangePasswordSubmit,
@@ -58,7 +57,7 @@ const ChangingPasswordModal = ({
       className="fixed inset-0 flex items-center justify-center"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
     >
-      <div className="bg-droppable-fade text-white p-8 rounded-xl shadow-lg max-w-md w-full relative">
+      <div className="bg-droppable-fade text-twhite p-8 rounded-xl shadow-lg max-w-md w-full relative">
         <h2 className="text-2xl font-bold mb-4">{t("Change Password")}</h2>
         <form onSubmit={handleChangePasswordSubmit(handlePasswordChange)}>
           <div>
@@ -103,14 +102,14 @@ const ChangingPasswordModal = ({
           </div>
           <button
             type="submit"
-            className="w-full py-2 mt-4 bg-dark text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200"
+            className="w-full py-2 mt-4 bg-dark text-twhite rounded-lg font-bold hover:bg-opacity-90 transition duration-200"
           >
             {t("Change Password")}
           </button>
         </form>
         <button
           onClick={() => setIsModalOpen(false)}
-          className="absolute top-2 right-2 text-gray-700 hover:text-red-500"
+          className="absolute top-2 right-2 text-tblack hover:text-red-500"
         >
           &times;
         </button>

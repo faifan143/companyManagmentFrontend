@@ -127,7 +127,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full relative">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-700 hover:text-red-500"
+          className="absolute top-2 right-2 text-tblack hover:text-red-500"
         >
           &times;
         </button>
@@ -137,9 +137,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           {/* Name Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
-              Name
-            </label>
+            <label className="block text-tdark text-sm font-medium">Name</label>
             <input
               type="text"
               {...register("name")}
@@ -154,7 +152,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           </div>
           {/* DOB Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               Date of Birth
             </label>
             <input
@@ -171,7 +169,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           </div>
           {/* Phone Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               Phone
             </label>
             <input
@@ -190,7 +188,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           </div>
           {/* Email Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               Email
             </label>
             <input
@@ -210,7 +208,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           {/* Password Field */}
           {!employeeData && (
             <div>
-              <label className="block text-gray-600 text-sm font-medium">
+              <label className="block text-tdark text-sm font-medium">
                 Password
               </label>
               <input
@@ -230,7 +228,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           )}
           {/* Address Field */}
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               Address
             </label>
             <input
@@ -289,7 +287,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-blue-600 text-twhite rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
               isPendingEmployee ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingEmployee}

@@ -18,6 +18,7 @@ import { useState } from "react";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import Image from "next/image";
 import { PencilIcon, TrashIcon } from "@/assets";
+import useCustomTheme from "@/hooks/useCustomTheme";
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
@@ -37,7 +38,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
         : `http://${process.env.BASE_URL}/job-titles/get-job-titles`,
     setSnackbarConfig,
   });
-
+  const { isLightMode } = useCustomTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string[]>([]);
 
@@ -82,8 +83,12 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   return (
     <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
       <div className="overflow-x-auto rounded-xl shadow-md">
-        <table className="min-w-full bg-main text-white rounded-lg shadow-md">
-          <thead className="bg-slate-600">
+        <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
+          <thead
+            className={` ${
+              isLightMode ? "bg-darkest text-tblackAF" : "bg-tblack text-twhite"
+            }  `}
+          >
             <tr>
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Name")}
@@ -91,9 +96,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Title")}
               </th>
-              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
-                {t("Grade Level")}
-              </th>
+
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Description")}
               </th>
@@ -117,13 +120,14 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
             {jobs.map((jobTitle) => (
               <tr
                 key={jobTitle.id}
-                className="hover:bg-slate-700 transition-colors"
+                className={` ${
+                  isLightMode
+                    ? "hover:bg-darker text-blackAF hover:text-tblackAF"
+                    : "hover:bg-slate-700 text-twhite"
+                }  group transition-colors`}
               >
                 <td className="py-3 px-4 text-center">{jobTitle.name}</td>
                 <td className="py-3 px-4 text-center">{jobTitle.title}</td>
-                <td className="py-3 px-4 text-center">
-                  {jobTitle.grade_level}
-                </td>
                 <td className="py-3 px-4 text-center">
                   {jobTitle.description}
                 </td>
@@ -174,7 +178,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                     {(isAdmin || hasEditPermission) && (
                       <div
                         onClick={() => handleEditClick(jobTitle)}
-                        className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                        className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                       >
                         {/* {t("Edit")} */}
                         <Image
@@ -186,7 +190,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                       </div>
                     )}
                     {(isAdmin || hasDeletePermission) && (
-                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
                         {/* {t("Delete")} */}
                         <Image
                           src={TrashIcon}
@@ -212,23 +216,23 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
         fullWidth
       >
         <DialogTitle
-          className={` text-white bg-secondary  ${
+          className={` text-twhite bg-secondary  ${
             currentLanguage == "en" ? "text-left" : "text-right"
           }`}
         >
           {t("Permissions")}
         </DialogTitle>
-        <DialogContent className=" text-white bg-secondary">
-          <ul className=" text-white list-disc ml-4 ">
+        <DialogContent className=" text-twhite bg-secondary">
+          <ul className=" text-twhite list-disc ml-4 ">
             {modalContent.map((perm, index) => (
               <li key={index}>{perm}</li>
             ))}
           </ul>
         </DialogContent>
-        <DialogActions className=" text-white bg-secondary">
+        <DialogActions className=" text-twhite bg-secondary">
           <div
             onClick={handleCloseModal}
-            className="bg-dark py-2 px-4 hover:bg-opacity-70 text-white cursor-pointer rounded-md"
+            className="bg-dark py-2 px-4 hover:bg-opacity-70 text-twhite cursor-pointer rounded-md"
           >
             {t("Close")}
           </div>

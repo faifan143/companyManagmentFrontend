@@ -1,17 +1,19 @@
 import { PencilIcon, TrashIcon } from "@/assets";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddProjectModal from "../atoms/AddProjectModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
-const collabColors = [
+export const collabColors = [
   "border-2  border-blue-500 ",
   "border-2  border-yellow-500 ",
   "border-2  border-red-500 ",
@@ -26,7 +28,8 @@ const ProjectsContent = () => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
-
+  const { isLightMode } = useCustomTheme();
+  const router = useRouter();
   const { data: projects, isLoading } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `http://${process.env.BASE_URL}/projects/${
@@ -54,7 +57,7 @@ const ProjectsContent = () => {
 
   if (!projects || projects.length === 0) {
     return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5 text-white">
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5 text-twhite">
         {t("No Projects")}
       </div>
     );
@@ -63,8 +66,12 @@ const ProjectsContent = () => {
   return (
     <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
       <div className="overflow-x-auto rounded-lg shadow-md">
-        <table className="min-w-full bg-main text-white rounded-lg shadow-md">
-          <thead className="bg-slate-600">
+        <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
+          <thead
+            className={` ${
+              isLightMode ? "bg-darkest text-tblackAF" : "bg-tblack text-twhite"
+            }  `}
+          >
             <tr>
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Name")}
@@ -75,9 +82,7 @@ const ProjectsContent = () => {
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Departments")}
               </th>
-              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                {t("Members")}
-              </th>
+
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Start Date")}
               </th>
@@ -92,136 +97,156 @@ const ProjectsContent = () => {
             </tr>
           </thead>
           <tbody>
-            {projects.map((project) => (
-              <tr
-                key={project._id}
-                className="hover:bg-slate-700 transition-colors"
-              >
-                <td className="py-3 px-4 text-center">{project.name}</td>
-                <td className="py-3 px-4 text-center">{project.description}</td>
-                <td className="py-3 px-4 text-center">
-                  {project.departments.length === 1 ? (
-                    <div className="border-2 border-blue-500/30 bg-dark text-white py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
-                      {project.departments[0].name}
-                    </div>
-                  ) : (
-                    <div className="flex justify-center -space-x-4" dir="ltr">
-                      {project.departments.slice(0, 3).map((dept, index) => (
-                        <div
-                          key={dept.id}
-                          className={`relative ${
-                            collabColors[index % collabColors.length]
-                          } cursor-pointer text-white rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
-                          title={dept.name}
-                        >
-                          {dept.name
-                            .split(" ")
-                            .map((word) => word[0])
-                            .join("")
-                            .toUpperCase()}
-                        </div>
-                      ))}
-                      {project.departments.length > 3 && (
-                        <div
-                          className="relative text-white bg-slate-600/50 cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
-                          title={project.departments
-                            .slice(3)
-                            .map((dept) => dept.name)
-                            .join(", ")}
-                        >
-                          +{project.departments.length - 3}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </td>
-                <td className="py-3 px-4 text-center">
-                  {project.members.length === 1 ? (
-                    <div className="border-2 border-blue-500/30 bg-dark text-white py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
-                      {project.members[0].name}
-                    </div>
-                  ) : (
-                    <div className="flex justify-center -space-x-4" dir="ltr">
-                      {project.members.slice(0, 3).map((member, index) => (
-                        <div
-                          key={member.id}
-                          className={`relative ${
-                            collabColors[index % collabColors.length]
-                          } cursor-pointer text-white rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold shadow-lg`}
-                          title={member.name}
-                        >
-                          {member.name
-                            .split(" ")
-                            .map((word) => word[0])
-                            .join("")
-                            .toUpperCase()}
-                        </div>
-                      ))}
-                      {project.members.length > 3 && (
-                        <div
-                          className="relative text-white bg-slate-600/50 cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold shadow-lg"
-                          title={project.members
-                            .slice(3)
-                            .map((member) => member.name)
-                            .join(", ")}
-                        >
-                          +{project.members.length - 3}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </td>
-
-                <td>
-                  <div
-                    className={`  border-2  border-purple-500/30  bg-dark text-white py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
-                  >
-                    {formatDate(
-                      project.startDate,
-                      currentLanguage as "en" | "ar"
-                    )}
-                  </div>
-                </td>
-
-                <td>
-                  <div
-                    className={`border-2  border-yellow-500/30 bg-dark text-white py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold  ${
-                      isDueSoon(project.endDate) ? "flash" : ""
+            {projects &&
+              projects.map((project) => (
+                <tr
+                  key={project._id}
+                  className={` ${
+                    isLightMode
+                      ? "hover:bg-darker text-blackAF"
+                      : "hover:bg-slate-700 text-twhite"
+                  }  group transition-colors`}
+                  onClick={() =>
+                    router.push("/projects/details/" + project._id)
+                  }
+                >
+                  <td
+                    className={`py-3 px-4 text-center ${
+                      isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
                   >
-                    {formatDate(
-                      project.endDate,
-                      currentLanguage as "en" | "ar"
+                    {project.name}
+                  </td>
+                  <td
+                    className={` py-3 px-4 text-center ${
+                      isLightMode ? "group-hover:text-tblackAF" : ""
+                    }`}
+                  >
+                    {project.description}
+                  </td>
+                  <td className="py-3 px-4 text-center ">
+                    {project.departments.length === 1 ? (
+                      <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
+                        {project.departments[0].name}
+                      </div>
+                    ) : (
+                      <div className="flex justify-center -space-x-4" dir="ltr">
+                        {project.departments.slice(0, 3).map((dept, index) => (
+                          <div
+                            key={dept.id}
+                            className={`   ${
+                              collabColors[index % collabColors.length]
+                            } cursor-pointer  rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
+                            title={dept.name}
+                          >
+                            {dept.name
+                              .split(" ")
+                              .map((word) => word[0])
+                              .join("")
+                              .toUpperCase()}
+                          </div>
+                        ))}
+                        {project.departments.length > 3 && (
+                          <div
+                            className="     cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
+                            title={project.departments
+                              .slice(3)
+                              .map((dept) => dept.name)
+                              .join(", ")}
+                          >
+                            +{project.departments.length - 3}
+                          </div>
+                        )}
+                      </div>
                     )}
-                  </div>
-                </td>
-                {(isAdmin || isPrimary) && (
-                  <td className="py-3 px-4 flex gap-2 justify-center">
+                  </td>
+                  {/* <td className="py-3 px-4 text-center">
+                    {project.members.length === 1 ? (
+                      <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
+                        {project.members[0].name}
+                      </div>
+                    ) : (
+                      <div className="flex justify-center -space-x-4" dir="ltr">
+                        {project.members.slice(0, 3).map((member, index) => (
+                          <div
+                            key={member.id}
+                            className={`relative ${
+                              collabColors[index % collabColors.length]
+                            } cursor-pointer  rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold shadow-lg`}
+                            title={member.name}
+                          >
+                            {member.name
+                              .split(" ")
+                              .map((word) => word[0])
+                              .join("")
+                              .toUpperCase()}
+                          </div>
+                        ))}
+                        {project.members.length > 3 && (
+                          <div
+                            className="relative   cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold shadow-lg"
+                            title={project.members
+                              .slice(3)
+                              .map((member) => member.name)
+                              .join(", ")}
+                          >
+                            +{project.members.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td> */}
+
+                  <td>
                     <div
-                      onClick={() => handleEditClick(project)}
-                      className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                      className={`  border-2  border-purple-500/30  bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
                     >
-                      {/* {t("Edit")} */}
-                      <Image
-                        src={PencilIcon}
-                        alt="edit icon"
-                        height={20}
-                        width={20}
-                      />
-                    </div>
-                    <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-dark border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                      {/* {t("Delete")} */}
-                      <Image
-                        src={TrashIcon}
-                        alt="delete icon"
-                        height={20}
-                        width={20}
-                      />
+                      {formatDate(
+                        project.startDate,
+                        currentLanguage as "en" | "ar"
+                      )}
                     </div>
                   </td>
-                )}
-              </tr>
-            ))}
+
+                  <td>
+                    <div
+                      className={`border-2  border-yellow-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold  ${
+                        isDueSoon(project.endDate) ? "flash" : ""
+                      }`}
+                    >
+                      {formatDate(
+                        project.endDate,
+                        currentLanguage as "en" | "ar"
+                      )}
+                    </div>
+                  </td>
+                  {(isAdmin || isPrimary) && (
+                    <td className="py-3 px-4 flex gap-2 justify-center">
+                      <div
+                        onClick={() => handleEditClick(project)}
+                        className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                      >
+                        {/* {t("Edit")} */}
+                        <Image
+                          src={PencilIcon}
+                          alt="edit icon"
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                        {/* {t("Delete")} */}
+                        <Image
+                          src={TrashIcon}
+                          alt="delete icon"
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import ChatModal from "../../atoms/ChatModal";
 import { sidebarItems } from "./data";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const Sidebar = ({
   isExpanded,
@@ -29,6 +30,7 @@ const Sidebar = ({
     () => localStorage.getItem("selectedTab") || "/home"
   );
 
+  const { isLightMode } = useCustomTheme();
   const handleTabClick = (path: string) => {
     setSelectedTab(path);
     localStorage.setItem("selectedTab", path);
@@ -54,9 +56,9 @@ const Sidebar = ({
       onClick={() => setIsExpanded(false)}
     >
       <div
-        className={`shadow-md p-5 mr-5 fixed top-[50px] bottom-0 transition-width duration-500  border-r border-slate-600 bg-main  ${
-          isExpanded ? "w-[350px] backdrop-blur" : "w-[92px]"
-        }`}
+        className={`shadow-md p-5 mr-5 fixed top-[50px] bottom-0 transition-width duration-500  border-r border-slate-600 ${
+          isLightMode ? "bg-darkest" : "bg-main"
+        }   ${isExpanded ? "w-[350px] backdrop-blur" : "w-[92px]"}`}
       >
         <div className="sidebar flex flex-col space-y-4 py-4">
           {visibleItems.map((item) => (
@@ -87,20 +89,24 @@ const Sidebar = ({
 // @ts-ignore
 const SidebarItem = ({ icon, label, isExpanded, isSelected, onClick }) => {
   const iconWithColor = React.cloneElement(
-    <Image src={icon} alt="home icon" width={20} height={20} />,
-    { color: "white" }
+    <div className="svg-container">
+      <Image src={icon} alt="home icon" width={20} height={20} />
+    </div>
   );
+  const { isLightMode } = useCustomTheme();
 
   return (
     <div
       onClick={onClick}
-      className={`flex cursor-pointer items-center text-white ${
-        isExpanded ? "justify-start" : "justify-center"
-      } relative p-2`}
+      className={`flex cursor-pointer items-center 
+      ${isLightMode ? "text-tblackAF" : "text-twhite"}
+      ${isExpanded ? "justify-start" : "justify-center"} relative p-2`}
     >
       {isSelected && (
         <div
-          className="absolute inset-0 bg-secondary rounded-md"
+          className={`absolute inset-0 ${
+            isLightMode ? "bg-darker" : "bg-secondary"
+          } rounded-md`}
           style={{ padding: "6px" }}
         />
       )}

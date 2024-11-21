@@ -17,6 +17,8 @@ const useLanguage = (): UseLanguage => {
     i18n.changeLanguage(newLanguage);
     localStorage.setItem("language", newLanguage);
   };
+
+  
   const getDir = () => {
     return currentLanguage === "ar" ? "rtl" : "ltr";
   };

@@ -8,6 +8,7 @@ import Image from "next/image";
 import React, { ChangeEvent, useState } from "react";
 import CustomizedSnackbars from "./CustomizedSnackbars";
 import useLanguage from "@/hooks/useLanguage";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const AddSectionModal: React.FC<{
   isOpen: boolean;
@@ -17,6 +18,7 @@ const AddSectionModal: React.FC<{
   const { selector } = useRedux(
     (state: RootState) => state.user.userInfo?.department.id
   );
+  const { isLightMode } = useCustomTheme();
   const { t } = useLanguage();
   const [section, setSection] = useState("");
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
@@ -30,7 +32,7 @@ const AddSectionModal: React.FC<{
       setSnackbarConfig,
       onSuccessFn() {
         setSection("");
-        setInterval(onClose, 500);
+        setTimeout(onClose, 500);
       },
       requestType: sectionData ? "put" : "post",
     }
@@ -39,10 +41,10 @@ const AddSectionModal: React.FC<{
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-dark rounded-xl shadow-md w-[400px] text-white space-y-4 p-6 relative">
+        <div className="bg-dark rounded-xl shadow-md w-[400px] text-twhite space-y-4 p-6 relative">
           <button
             onClick={onClose}
-            className="text-white absolute top-4 right-4 text-xl"
+            className="text-twhite absolute top-4 right-4 text-xl"
           >
             &times;
           </button>
@@ -51,7 +53,11 @@ const AddSectionModal: React.FC<{
               <input
                 type="text"
                 placeholder={t("Section Name")}
-                className="bg-transparent outline-none border rounded-lg px-4 py-2"
+                className={`${
+                  isLightMode
+                    ? "bg-darker placeholder:text-tblackAF text-tblackAF"
+                    : "bg-transparent"
+                }  outline-none border rounded-lg px-4 py-2`}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   setSection(event.target.value)
                 }
@@ -65,7 +71,13 @@ const AddSectionModal: React.FC<{
                   department: selector,
                 })
               }
-              className="border border-slate-300 px-2 py-1 rounded-md w-fit text-xs flex items-center justify-center gap-1 cursor-pointer hover:bg-main mx-auto mt-4"
+              className={`border border-slate-300 px-2 py-1 rounded-md w-fit text-xs flex items-center justify-center gap-1 cursor-pointer
+              ${
+                isLightMode
+                  ? "bg-darkest text-tblackAF hover:bg-tmid"
+                  : "hover:bg-main"
+              }
+               mx-auto mt-4`}
             >
               <Image src={CheckIcon} alt="check icon" height={20} width={20} />
               {isPendingSection

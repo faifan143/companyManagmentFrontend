@@ -33,7 +33,7 @@ const TaskStatusesView: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-xl text-gray-700">Loading...</p>
+        <p className="text-xl text-tblack">Loading...</p>
       </div>
     );
   }
@@ -100,13 +100,11 @@ const TaskStatusesView: React.FC = () => {
           </table>
         </div>
       ) : (
-        <p className="text-center text-gray-600 mt-4">
-          No task statuses found.
-        </p>
+        <p className="text-center text-tdark mt-4">No task statuses found.</p>
       )}
       <div className="flex justify-center mt-6">
         <button
-          className="bg-[#413d99] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+          className="bg-[#413d99] text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
           onClick={() => {
             setEditData(null);
             setIsModalOpen(true);

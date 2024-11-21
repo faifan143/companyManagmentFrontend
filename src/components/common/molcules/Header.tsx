@@ -77,7 +77,7 @@
 //           </div>
 
 //           <div
-//             className="h-8 w-8 flex items-center justify-center rounded-full bg-red-300 cursor-pointer text-white font-bold text-lg"
+//             className="h-8 w-8 flex items-center justify-center rounded-full bg-red-300 cursor-pointer text-twhite font-bold text-lg"
 //             onClick={toggleDropdown}
 //           >
 //             {userInitial}
@@ -85,7 +85,7 @@
 
 //           {isDropdownOpen && (
 //             <div className="absolute top-[20px] z-10 mt-12 w-32 bg-white shadow-md rounded-lg border border-gray-200">
-//               <ul className="flex flex-col text-gray-700">
+//               <ul className="flex flex-col text-tblack">
 //                 <li
 //                   onClick={handleProfile}
 //                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"

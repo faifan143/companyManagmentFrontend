@@ -5,6 +5,7 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useQueryPageData from "@/hooks/useQueryPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addCategorySchema } from "@/schemas/job.schema";
@@ -26,6 +27,7 @@ const AddJobCategory: React.FC = () => {
   const [requiredExperienceOptions, setRequiredExperienceOptions] = useState<
     string[]
   >([]);
+  const { isLightMode } = useCustomTheme();
   const [isAddingEducation, setIsAddingEducation] = useState(false);
   const [newEducation, setNewEducation] = useState("");
   const [isAddingExperience, setIsAddingExperience] = useState(false);
@@ -107,7 +109,7 @@ const AddJobCategory: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-droppable-fade text-white p-8 rounded-xl shadow-lg col-span-12 w-full">
+      <div className="bg-droppable-fade text-twhite p-8 rounded-xl shadow-lg col-span-12 w-full">
         <h1 className="text-center text-2xl  font-bold mb-6">
           {jobCategoryData
             ? t("Update Job Category")
@@ -127,14 +129,19 @@ const AddJobCategory: React.FC = () => {
             <input
               type="text"
               {...register("name")}
-              className={`w-full px-4 py-2 mt-1   bg-secondary outline-none border-none   rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.name ? "border-high" : "border-border"
-              }`}
+              className={`w-full px-4 py-2 mt-1   ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+                   outline-none border-none   rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+                     errors.name ? "border-high" : "border-border"
+                   }`}
               placeholder={t("Enter category name")}
               defaultValue={jobCategoryData ? jobCategoryData.name : ""}
             />
             {errors.name && (
-              <p className="text-high mt-1 text-sm">{errors.name.message}</p>
+              <p className="text-red-500 mt-1 text-sm">{errors.name.message}</p>
             )}
           </div>
 
@@ -145,15 +152,20 @@ const AddJobCategory: React.FC = () => {
             </label>
             <textarea
               {...register("description")}
-              className={`w-full px-4 py-2 mt-1    bg-secondary outline-none border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.description ? "border-high" : "border-border"
-              }`}
+              className={`w-full px-4 py-2 mt-1    ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+                   outline-none border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+                     errors.description ? "border-high" : "border-border"
+                   }`}
               placeholder={t("Enter category description")}
               rows={4}
               defaultValue={jobCategoryData ? jobCategoryData.description : ""}
             />
             {errors.description && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.description.message}
               </p>
             )}
@@ -167,9 +179,14 @@ const AddJobCategory: React.FC = () => {
             <div className="flex gap-2 items-center">
               <select
                 {...register("required_education")}
-                className={`w-full   bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
-                  errors.required_education ? "border-high" : "border-border"
-                }`}
+                className={`w-full   ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }
+                   outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+                     errors.required_education ? "border-high" : "border-border"
+                   }`}
                 defaultValue={
                   jobCategoryData ? jobCategoryData.required_education : ""
                 }
@@ -192,7 +209,12 @@ const AddJobCategory: React.FC = () => {
               <div className="mt-2 flex gap-2">
                 <input
                   type="text"
-                  className="w-full   bg-secondary outline-none border-none   px-4 py-2 rounded-lg border"
+                  className={`w-full   ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }
+                   outline-none border-none   px-4 py-2 rounded-lg border`}
                   placeholder={t("Enter new education")}
                   value={newEducation}
                   onChange={(e) => setNewEducation(e.target.value)}
@@ -208,14 +230,14 @@ const AddJobCategory: React.FC = () => {
                       setValue,
                     })
                   }
-                  className="bg-dark hover:bg-main text-white rounded-md px-4 py-2"
+                  className="bg-dark hover:bg-main text-twhite rounded-md px-4 py-2"
                 >
                   {t("Add")}
                 </button>
               </div>
             )}
             {errors.required_education && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.required_education.message}
               </p>
             )}
@@ -229,9 +251,16 @@ const AddJobCategory: React.FC = () => {
             <div className="flex gap-2 items-center">
               <select
                 {...register("required_experience")}
-                className={`w-full px-4 py-2   bg-secondary outline-none border-none   mt-1 rounded-lg border ${
-                  errors.required_experience ? "border-high" : "border-border"
-                }`}
+                className={`w-full px-4 py-2   ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }
+                   outline-none border-none   mt-1 rounded-lg border ${
+                     errors.required_experience
+                       ? "border-high"
+                       : "border-border"
+                   }`}
                 defaultValue={
                   jobCategoryData ? jobCategoryData.required_experience : ""
                 }
@@ -254,7 +283,12 @@ const AddJobCategory: React.FC = () => {
               <div className="mt-2 flex gap-2">
                 <input
                   type="text"
-                  className="w-full px-4 py-2   bg-secondary outline-none border-none   rounded-lg border"
+                  className={`w-full px-4 py-2   ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }
+                   outline-none border-none   rounded-lg border`}
                   placeholder={t("Enter new experience")}
                   value={newExperience}
                   onChange={(e) => setNewExperience(e.target.value)}
@@ -270,14 +304,14 @@ const AddJobCategory: React.FC = () => {
                       setValue,
                     })
                   }
-                  className="bg-dark hover:bg-main text-white rounded-md px-4 py-2"
+                  className="bg-dark hover:bg-main text-twhite rounded-md px-4 py-2"
                 >
                   {t("Add")}
                 </button>
               </div>
             )}
             {errors.required_experience && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.required_experience.message}
               </p>
             )}
@@ -289,9 +323,14 @@ const AddJobCategory: React.FC = () => {
               {t("Required Skills")}
             </label>
             <textarea
-              className={`w-full px-4 py-2 mt-1    bg-secondary outline-none border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.required_skills ? "border-high" : "border-border"
-              }`}
+              className={`w-full px-4 py-2 mt-1    ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+                   outline-none border-none  rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+                     errors.required_skills ? "border-high" : "border-border"
+                   }`}
               placeholder={t("Enter required skills (comma-separated)")}
               rows={3}
               defaultValue={
@@ -305,7 +344,7 @@ const AddJobCategory: React.FC = () => {
               }}
             />
             {errors.required_skills && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.required_skills.message}
               </p>
             )}
@@ -314,7 +353,11 @@ const AddJobCategory: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 
+            
+                        ${isLightMode ? " text-tblackAF" : "text-twhite"}
+
+            rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
               isPendingJobCategory ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingJobCategory}
@@ -328,7 +371,7 @@ const AddJobCategory: React.FC = () => {
               : t("Create Job Category")}
           </button>
           {isErrorJobCategory && (
-            <p className="text-high mt-2 text-center">
+            <p className="text-red-500 mt-2 text-center">
               {errorJobCategory + ""}
             </p>
           )}

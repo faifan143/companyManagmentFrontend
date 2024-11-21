@@ -23,7 +23,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
 
   return (
     <div className="flex justify-between items-center py-4 bg-white w-full">
-      <h1 className="text-xl font-bold text-gray-800">
+      <h1 className="text-xl font-bold text-tblack">
         {selector.userInfo?.department.name ?? title}
       </h1>
 
@@ -33,7 +33,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
               +
             </div>
-            <span className="ml-2 text-black font-bold">
+            <span className="ml-2 text-tblackAF font-bold">
               {t("Add a department")}
             </span>
           </button>
@@ -42,7 +42,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
               +
             </div>
-            <span className="ml-2 text-black font-bold">
+            <span className="ml-2 text-tblackAF font-bold">
               {t("Add a job title")}
             </span>
           </button>
@@ -51,7 +51,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
               +
             </div>
-            <span className="ml-2 text-black font-bold">
+            <span className="ml-2 text-tblackAF font-bold">
               {t("Add a member")}
             </span>
           </button>
@@ -60,7 +60,9 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
             <div className="flex items-center justify-center w-8 h-8 border-2 border-dashed border-blue-300 rounded-full">
               +
             </div>
-            <span className="ml-2 text-black font-bold">{t("Add a Task")}</span>
+            <span className="ml-2 text-tblackAF font-bold">
+              {t("Add a Task")}
+            </span>
           </button>
         )}
 
@@ -68,7 +70,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
           {members.slice(0, 3).map((member, index) => (
             <div
               key={index}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-twhite text-sm font-bold border-2 border-white"
               style={{
                 backgroundColor: member.color || "#7B1FA2",
               }}
@@ -85,7 +87,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         </div>
         <div className="relative">
           <button
-            className="px-4 py-1 bg-[#1b1a40] text-white rounded-lg font-medium hover:bg-blue-600 transition flex items-center"
+            className="px-4 py-1 bg-[#1b1a40] text-twhite rounded-lg font-medium hover:bg-blue-600 transition flex items-center"
             onClick={toggleDropdown}
           >
             {t(currentContent)}{" "}

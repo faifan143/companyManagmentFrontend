@@ -29,6 +29,7 @@ import getErrorMessages from "@/utils/handleErrorMessages";
 import useQueryPageData from "@/hooks/useQueryPageData";
 import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -57,7 +58,7 @@ const AddDept: React.FC = () => {
   const { t } = useTranslation();
   const departmentData = useQueryPageData<DepartmentFormInputs>(reset);
   console.log(departmentData);
-
+  const { isLightMode } = useCustomTheme();
   const {
     fields: numericOwnersFields,
     append: appendNumericOwner,
@@ -140,7 +141,9 @@ const AddDept: React.FC = () => {
     if (departmentData) {
       reset({
         ...departmentData,
-        parent_department_id: departmentData.parent_department._id,
+        parent_department_id:
+          departmentData.parent_department &&
+          departmentData.parent_department._id,
       });
     } else {
       reset();
@@ -149,12 +152,16 @@ const AddDept: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-droppable-fade p-8 rounded-xl shadow-lg  w-full  col-span-full">
-        <h1 className=" text-2xl text-white font-bold mb-6">
+      <div
+        className={`${
+          isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
+        }  p-8 rounded-xl shadow-lg  w-full  col-span-full  text-twhite`}
+      >
+        <h1 className=" text-2xl text-twhite font-bold mb-6">
           {departmentData ? t("Update Department") : t("Create Department")}
         </h1>
         <form
-          className="space-y-4 text-white"
+          className="space-y-4 text-twhite"
           onSubmit={handleSubmit(() =>
             handleManualSubmit({
               getValues,
@@ -165,44 +172,60 @@ const AddDept: React.FC = () => {
         >
           <div className="flex gap-5 items-center justify-between">
             <div>
-              <label className="text-slate-300 block  text-sm font-medium">
+              <label className="text-tmid block  text-sm font-medium">
                 {t("Department Name")}
               </label>
               <input
                 type="text"
                 {...register("name")}
-                className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                className={`    ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                 placeholder={t("Enter department name")}
               />
               {errors.name && (
-                <p className="text-high mt-1 text-sm">{errors.name.message}</p>
+                <p className="text-red-500 mt-1 text-sm">
+                  {errors.name.message}
+                </p>
               )}
             </div>
             <div>
-              <label className="text-slate-300 block text-sm font-medium">
+              <label className="text-tmid block text-sm font-medium">
                 {t("Goal")}
               </label>
               <input
                 type="text"
                 {...register("goal")}
-                className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                className={`    ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                 placeholder={t("Enter department goal")}
               />
               {errors.goal && (
-                <p className="text-high mt-1 text-sm">{errors.goal.message}</p>
+                <p className="text-red-500 mt-1 text-sm">
+                  {errors.goal.message}
+                </p>
               )}
             </div>
             {/* Category Field */}
             <div>
-              <label className="text-slate-300 block text-sm font-medium">
+              <label className="text-tmid block text-sm font-medium">
                 {t("Category")}
               </label>
               <div className="flex gap-2 items-center">
                 <select
                   {...register("category")}
-                  className={`w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border ${
-                    errors.category ? "border-high" : "border-border"
-                  }`}
+                  className={`
+                   ${
+                     isLightMode
+                       ? "bg-dark  placeholder:text-tdark "
+                       : "bg-secondary"
+                   } w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border
+               ${errors.category ? "border-high" : "border-border"}`}
                 >
                   <option value="">{t("Select Category")}</option>
                   {requiredCategoryOptions.map((category, index) => (
@@ -222,7 +245,11 @@ const AddDept: React.FC = () => {
                 <div className="mt-2 flex gap-2">
                   <input
                     type="text"
-                    className=" w-full  bg-secondary border-none outline-none  px-4 py-2 rounded-lg border"
+                    className={`    ${
+                      isLightMode
+                        ? "bg-dark  placeholder:text-tdark "
+                        : "bg-secondary"
+                    }  w-full  bg-secondary border-none outline-none  px-4 py-2 rounded-lg border `}
                     placeholder={t("Enter new Category")}
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
@@ -238,44 +265,52 @@ const AddDept: React.FC = () => {
                         setValue
                       );
                     }}
-                    className="bg-blue-500 text-white rounded-md px-4 py-2"
+                    className="bg-blue-500 text-twhite rounded-md px-4 py-2"
                   >
                     {t("Add")}
                   </button>
                 </div>
               )}
               {errors.category && (
-                <p className="text-high mt-1 text-sm">
+                <p className="text-red-500 mt-1 text-sm">
                   {errors.category.message}
                 </p>
               )}
             </div>
             {/*  */}
+          </div>
             <div>
-              <label className="text-slate-300 block text-sm font-medium">
+              <label className="text-tmid block text-sm font-medium">
                 {t("Main Tasks")}
               </label>
               <textarea
                 {...register("mainTasks")}
-                className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                className={`    ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                 placeholder={t("Enter main tasks")}
                 rows={1}
               />
               {errors.mainTasks && (
-                <p className="text-high mt-1 text-sm">
+                <p className="text-red-500 mt-1 text-sm">
                   {errors.mainTasks.message}
                 </p>
               )}
             </div>
-          </div>
 
           <div>
-            <label className="text-slate-300 block text-sm font-medium">
-              {t("Parent Department (Optional)")}
+            <label className="text-tmid block text-sm font-medium">
+              {t("Parent Department")}
             </label>
             <select
               {...register("parent_department_id")}
-              className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg shadow-md"
+              className={`    ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg shadow-md `}
             >
               <option value="">{t("Select a parent department")}</option>
               {departments &&
@@ -286,7 +321,7 @@ const AddDept: React.FC = () => {
                 ))}
             </select>
             {errors.parent_department_id && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.parent_department_id.message}
               </p>
             )}
@@ -294,14 +329,18 @@ const AddDept: React.FC = () => {
 
           {/* Numeric Owners Section */}
           <div>
-            <label className="text-slate-300 block text-sm font-medium">
+            <label className="text-tmid block text-sm font-medium">
               {t("Numeric Owners")}
             </label>
             {numericOwnersFields.map((field, index) => (
               <div key={field.id} className="flex gap-4 items-center">
                 <select
                   {...register(`numericOwners.${index}.category` as const)}
-                  className={`w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  } w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
                     errors.numericOwners?.[index]?.category
                       ? "border-high"
                       : "border-border"
@@ -319,7 +358,7 @@ const AddDept: React.FC = () => {
                   ))}
                 </select>
                 {errors.numericOwners?.[index]?.category && (
-                  <p className="text-high mt-1 text-sm">
+                  <p className="text-red-500 mt-1 text-sm">
                     {errors.numericOwners?.[index]?.category?.message}
                   </p>
                 )}
@@ -327,7 +366,11 @@ const AddDept: React.FC = () => {
                   type="number"
                   {...register(`numericOwners.${index}.count` as const)}
                   placeholder={t("Count")}
-                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                 />
                 <Image
                   src={XIcon}
@@ -342,7 +385,7 @@ const AddDept: React.FC = () => {
             <button
               type="button"
               onClick={() => appendNumericOwner({ count: 1, category: "" })}
-              className="text-sm text-slate-100 underline"
+              className="text-sm text-tbright underline"
             >
               {t("Add Numeric Owner")}
             </button>
@@ -350,7 +393,7 @@ const AddDept: React.FC = () => {
 
           {/* Supporting Files Section */}
           <div>
-            <div className="block text-slate-300 text-sm font-medium">
+            <div className="block text-tmid text-sm font-medium">
               {t("Supporting Files")}
             </div>
 
@@ -360,7 +403,11 @@ const AddDept: React.FC = () => {
               type="file"
               multiple // Allow multiple files
               onChange={(e) => handleFileChange(e, setSelectedFiles)} // Handle file selection
-              className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg"
+              className={`    ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg `}
             />
             {/* Display selected file names */}
             {selectedFiles.map((file, index) => (
@@ -378,8 +425,8 @@ const AddDept: React.FC = () => {
             ))}
 
             <label
-              htmlFor="text-slate-300 file-id"
-              className="text-sm text-slate-100 underline cursor-pointer"
+              htmlFor="text-tmid file-id"
+              className="text-sm text-tbright underline cursor-pointer"
             >
               {t("Attach Supporting File")}
             </label>
@@ -387,7 +434,7 @@ const AddDept: React.FC = () => {
 
           {/* Required Reports Section */}
           <div>
-            <label className="text-slate-300 block text-sm font-medium">
+            <label className="text-tmid block text-sm font-medium">
               {t("Required Reports")}
             </label>
             {requiredReportsFields.map((field, index) => (
@@ -396,12 +443,20 @@ const AddDept: React.FC = () => {
                   type="text"
                   {...register(`requiredReports.${index}.name` as const)}
                   placeholder={t("Report Name")}
-                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                 />
                 <input
                   type="file"
                   placeholder={t("Template File")}
-                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                   onChange={(e) => {
                     const file = e.target.files?.[0]; // Get the selected file
                     if (file) {
@@ -427,7 +482,7 @@ const AddDept: React.FC = () => {
               onClick={() =>
                 appendRequiredReport({ name: "", templateFile: "" })
               }
-              className="text-sm text-slate-100 underline"
+              className="text-sm text-tbright underline"
             >
               {t("Add Required Report")}
             </button>
@@ -435,7 +490,7 @@ const AddDept: React.FC = () => {
 
           {/* Development Programs Section */}
           <div>
-            <label className="text-slate-300 block text-sm font-medium">
+            <label className="text-tmid block text-sm font-medium">
               {t("Development Programs")}
             </label>
             {developmentProgramsFields.map((field, index) => (
@@ -446,7 +501,11 @@ const AddDept: React.FC = () => {
                     `developmentPrograms.${index}.programName` as const
                   )}
                   placeholder={t("Program Name")}
-                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                 />
                 <input
                   type="text"
@@ -454,13 +513,21 @@ const AddDept: React.FC = () => {
                     `developmentPrograms.${index}.objective` as const
                   )}
                   placeholder={t("Objective")}
-                  className="w-full bg-secondary border-none outline-none px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  } w-full bg-secondary border-none outline-none px-4 py-2 mt-1 rounded-lg border `}
                 />
 
                 <input
                   type="file"
                   placeholder={t("Program File")}
-                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                   onChange={(e) => {
                     const file = e.target.files?.[0]; // Get the selected file
                     if (file) {
@@ -475,7 +542,11 @@ const AddDept: React.FC = () => {
                 <textarea
                   {...register(`developmentPrograms.${index}.notes` as const)}
                   placeholder={t("Notes")}
-                  className=" w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border"
+                  className={`    ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
                   rows={1}
                 />
                 <Image
@@ -498,7 +569,7 @@ const AddDept: React.FC = () => {
                   programFile: "",
                 })
               }
-              className="text-sm text-slate-100 underline"
+              className="text-sm text-tbright underline"
             >
               {t("Add Development Program")}
             </button>
@@ -506,9 +577,13 @@ const AddDept: React.FC = () => {
 
           <button
             type="submit" // Change to "button" to avoid default form submission
-            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-300 ${
+            className={`w-full py-2 mt-4 bg-slate-600  rounded-lg font-bold hover:bg-slate-700 transition duration-300 ${
               isPendingDepartment ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            }
+            
+            ${isLightMode ? " text-tblackAF" : "text-twhite"}
+
+            `}
             disabled={isPendingDepartment}
           >
             {isPendingDepartment
@@ -520,7 +595,9 @@ const AddDept: React.FC = () => {
               : t("Create Department")}
           </button>
           {isErrorDepartment && (
-            <p className="text-high mt-2 text-center">{errorDepartment + ""}</p>
+            <p className="text-red-500 mt-2 text-center">
+              {errorDepartment + ""}
+            </p>
           )}
           {isSuccessDepartment && (
             <p className="text-low mt-2 text-center">Successful</p>

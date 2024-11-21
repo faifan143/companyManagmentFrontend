@@ -1,9 +1,11 @@
 "use client";
 
+import { TabBoardIcon, TabListIcon, TreeIcon } from "@/assets";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
 import TasksTab from "@/components/common/atoms/TasksTab";
+import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 import TaskList from "@/components/common/organisms/TaskList";
 import TasksContent from "@/components/common/organisms/TasksContent";
 import {
@@ -19,16 +21,19 @@ import { ProjectType } from "@/types/Project.type";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const TasksView: React.FC = () => {
   const router = useRouter();
-  const [selectedOption, setSelectedOption] = useState("get-emp-tasks");
-  const [activeTab, setActiveTab] = useState<"list" | "board">("list");
+  const [activeTab, setActiveTab] = useState<string>("list");
   const [myProj, setMyProj] = useState(false);
   const { t } = useLanguage();
-  const isPrimary = useRolePermissions("primary_user");
   const isAdmin = useRolePermissions("admin");
+  const isPrimary = useRolePermissions("primary_user");
+  const [selectedOption, setSelectedOption] = useState(
+    // isPrimary ? "get-my-dept-tasks" :
+    "get-emp-tasks"
+  );
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
 
   const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<
@@ -50,6 +55,12 @@ const TasksView: React.FC = () => {
     setSnackbarConfig,
   });
 
+  const { data: tasksTree } = useCustomQuery<TreeDTO[]>({
+    queryKey: ["tasksTree"],
+    url: `http://${process.env.BASE_URL}/tasks/tree`,
+    setSnackbarConfig,
+  });
+
   const { selector } = useRedux(
     (state: RootState) => state.user.userInfo?.department.id
   );
@@ -61,14 +72,12 @@ const TasksView: React.FC = () => {
     url: `http://${process.env.BASE_URL}/sections/${
       myProj
         ? `project/${selectedOption.split("/").pop()}`
+        : selectedOption == "get-my-dept-tasks"
+        ? `manager-section`
         : `department/${selector}`
     }`,
     setSnackbarConfig,
   });
-
-  useEffect(() => {
-    console.log("Selected tasksData: ", tasksData);
-  }, [tasksData]);
 
   const canViewSpecific = usePermissions(["task_search_and_view"]);
 
@@ -82,7 +91,7 @@ const TasksView: React.FC = () => {
         ) : (
           isTasksLoading && <PageSpinner title={t("Tasks Loading ...")} />
         )}
-        <h1 className="text-3xl font-bold text-white text-center">
+        <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Tasks")}
         </h1>
         <div className="flex justify-center items-center gap-5">
@@ -90,7 +99,7 @@ const TasksView: React.FC = () => {
 
           {showMainSelect && (
             <select
-              className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
               value={myProj ? "my-project-tasks" : selectedOption}
               onChange={(e) => {
                 if (e.target.value === "my-project-tasks") {
@@ -118,7 +127,7 @@ const TasksView: React.FC = () => {
           {/* Project-Specific Dropdown */}
           {myProj && projects && projects.length > 0 && (
             <select
-              className="bg-secondary outline-none border-none text-white rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
               onChange={(e) =>
                 setSelectedOption(`get-project-tasks/${e.target.value}`)
               }
@@ -135,7 +144,7 @@ const TasksView: React.FC = () => {
           {(isAdmin || isPrimary) && (
             <button
               type="button"
-              className="bg-secondary text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+              className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
               onClick={() => router.push("/tasks/add-task")}
             >
               {t("Add Task")}
@@ -146,14 +155,31 @@ const TasksView: React.FC = () => {
 
       {/* Tabs and Content */}
       <div className="col-span-full">
-        <TasksTab activeTab={activeTab} setActiveTab={setActiveTab} />
+        <TasksTab
+          tabs={[
+            { id: "list", label: "List", icon: TabListIcon },
+            { id: "board", label: "Board", icon: TabBoardIcon },
+            { id: "tree", label: "Tree", icon: TreeIcon },
+          ]}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
         {activeTab === "list" && (
-          <TaskList tasksData={tasksData} sections={sections} />
+          <TaskList
+            tasksData={tasksData?.flatMap((task) => [task, ...task.subTasks])}
+            sections={sections}
+          />
         )}
         {activeTab === "board" && (
           <GridContainer>
-            <TasksContent tasksData={tasksData} sections={sections} />
+            <TasksContent
+              tasksData={tasksData?.flatMap((task) => [task, ...task.subTasks])}
+              sections={sections}
+            />
           </GridContainer>
+        )}
+        {activeTab === "tree" && tasksTree && (
+          <HierarchyTree data={tasksTree} width="100%" />
         )}
       </div>
 

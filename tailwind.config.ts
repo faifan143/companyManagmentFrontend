@@ -10,25 +10,29 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        "droppable-fade": "linear-gradient(#252628,#2e2e30)",
+        "droppable-fade":
+          "linear-gradient(var(--color-dark),var(--color-main))",
+        "light-droppable-fade":
+          "linear-gradient(var(--color-secondary),var(--color-main))",
         "radial-light":
           "radial-gradient(circle, rgba(62, 62, 64) 0%, rgb(46, 46, 48) 100%)",
       },
       colors: {
-        main: "#2e2e30",
-        secondary: "#454547",
-        dark: "#252628",
-        titles: "#ffffff",
-        labels: "#cbd5e1",
+        main: "var(--color-main)",
+        secondary: "var(--color-secondary)",
+        dark: "var(--color-dark)",
+        darker: "var(--color-darker)",
+        darkest: "var(--color-darkest)",
+        twhite: "var(--color-twhite)",
+        tbright: "var(--color-tbright)",
+        tmid: "var(--color-tmid)",
+        tdark: "var(--color-tdark)",
+        tblack: "var(--color-tblack)",
+        tblackAF: "var(--color-tblackAF)",
 
-        "main-light": "#fafafa",
-        "secondary-light": "#ffffff",
-        "accent-light": "#f4f4f6",
-        "text-primary-light": "#3d3d3d",
-        "text-secondary-light": "#6c757d",
-        "border-light": "#e3e3e3",
-        "button-light": "#2684ff",
-        "button-text-light": "#ffffff",
+        titles: "var(--color-titles)",
+        labels: "var(--color-labels)",
+        icons: "var(--color-icons)",
       },
     },
   },

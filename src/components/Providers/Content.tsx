@@ -8,6 +8,7 @@ import PageSpinner from "../common/atoms/PageSpinner";
 import Sidebar from "../common/molcules/Sidebar/Sidebar";
 import NewHeader from "../common/atoms/NewHeader";
 import Cookies from "js-cookie";
+import useCustomTheme from "@/hooks/useCustomTheme";
 const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -17,6 +18,7 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
     dispatch,
   } = useRedux((state: RootState) => state.user);
   const { getDir, t } = useLanguage();
+  useCustomTheme();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -54,7 +56,12 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
   return (
     <div
       className={`min-h-[100dvh] w-full  ${
-        pathname == "/home" ? "bg-radial-light" : "bg-main"
+        // pathname == "/home"
+        //   ? isLightMode
+        //     ? "bg-light-droppable-fade"
+        //     : "bg-radial-light"
+        //   :
+        "bg-main"
       }`}
     >
       <div className="flex h-full w-full">
@@ -67,7 +74,7 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
         )}
         <div
           dir={getDir()}
-          className={`transition-all mt-[49px] duration-300 py-5  w-full`}
+          className={`transition-all bg-main mt-[49px] duration-300 py-5  w-full`}
         >
           <Suspense fallback={<PageSpinner />}>{children}</Suspense>
         </div>

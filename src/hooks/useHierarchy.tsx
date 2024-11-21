@@ -1,3 +1,4 @@
+import HomeListRow from "@/components/common/atoms/HomeListRow";
 import ListRow from "@/components/common/atoms/ListRow";
 import { ReceiveTaskType } from "@/types/Task.type";
 import React from "react";
@@ -49,7 +50,27 @@ const useHierarchy = () => {
       </React.Fragment>
     );
   };
-  return { buildNestedTaskHierarchy, renderTaskWithSubtasks };
+  const renderHomeTaskWithSubtasks = (task: ReceiveTaskType, level: number) => {
+    if (renderedTasks.has(task.id)) return null;
+    renderedTasks.add(task.id);
+
+    return (
+      <React.Fragment key={task.id}>
+        <HomeListRow task={task} level={level} />
+        <div className="w-full h-2 bg-transparent"></div>
+
+        {task.subTasks &&
+          task.subTasks.map((subTask) =>
+            renderHomeTaskWithSubtasks(subTask, level + 1)
+          )}
+      </React.Fragment>
+    );
+  };
+  return {
+    buildNestedTaskHierarchy,
+    renderTaskWithSubtasks,
+    renderHomeTaskWithSubtasks,
+  };
 };
 
 export default useHierarchy;

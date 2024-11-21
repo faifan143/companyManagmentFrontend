@@ -31,11 +31,11 @@ const TasksContent = ({
       const categorizedTasks = categorizeTasks(tasksData);
       setTasks(categorizedTasks);
     }
-  }, [tasksData]);
+  }, []);
 
   if (!tasksData || tasksData.length === 0) {
     return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5 text-white">
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5 text-twhite">
         {t("No Tasks")}
       </div>
     );

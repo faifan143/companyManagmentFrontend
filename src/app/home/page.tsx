@@ -1,6 +1,8 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import GridContainer from "@/components/common/atoms/GridContainer";
 import HomeGlance from "@/components/common/atoms/HomeGlance";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
@@ -46,23 +48,28 @@ const Home = () => {
   }
 
   return (
-    <div>
-      <HomeGlance
-        scope={scope}
-        setScope={setScope}
-        completedTasks={
-          tasksData?.filter((task) => task.status == "DONE").length || 0
-        }
-      />
-      <HomeTasksReport tasksData={tasksData} />
+    <GridContainer>
+      <div className=" col-span-full">
+        <HomeGlance
+          scope={scope}
+          setScope={setScope}
+          completedTasks={
+            tasksData?.filter((task) => task.status == "DONE").length || 0
+          }
+        />
 
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
-    </div>
+        <HomeTasksReport tasksData={tasksData} />
+
+        <CustomizedSnackbars
+          open={snackbarConfig.open}
+          message={snackbarConfig.message}
+          severity={snackbarConfig.severity}
+          onClose={() =>
+            setSnackbarConfig((prev) => ({ ...prev, open: false }))
+          }
+        />
+      </div>
+    </GridContainer>
   );
 };
 

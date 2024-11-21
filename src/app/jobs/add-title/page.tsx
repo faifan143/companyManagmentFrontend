@@ -24,6 +24,8 @@ import getErrorMessages from "@/utils/handleErrorMessages";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
+import { selectStyle } from "@/utils/SelectStyle";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -44,6 +46,7 @@ const AddJobTitle: React.FC = () => {
   const [responsibilities, setResponsibilities] = useState<string[]>([]); // Initialize as an array
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
+  const { isLightMode } = useCustomTheme();
   const {
     register,
     handleSubmit,
@@ -55,7 +58,6 @@ const AddJobTitle: React.FC = () => {
     defaultValues: {
       name: "",
       title: "",
-      grade_level: "",
       category: "",
       description: "",
       responsibilities: [],
@@ -97,7 +99,6 @@ const AddJobTitle: React.FC = () => {
         id: "",
         name: "",
         title: "",
-        grade_level: "",
         description: "",
         responsibilities: [],
         permissions: [],
@@ -161,7 +162,7 @@ const AddJobTitle: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="bg-droppable-fade p-8 rounded-xl shadow-lg col-span-12 w-full text-white">
+      <div className="bg-droppable-fade p-8 rounded-xl shadow-lg col-span-12 w-full text-twhite">
         <h1 className="text-center text-2xl  font-bold mb-6">
           {jobTitleData ? t("Update Job Title") : t("Create Job Title")}
         </h1>
@@ -196,13 +197,20 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("name")}
-              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.name ? "border-high" : "border-border"
+              className={` 
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+                errors.name ? "border-red-500" : "border-border"
               }`}
               placeholder={t("Enter job title name")}
             />
             {errors.name && (
-              <p className="text-high mt-1 text-sm">{errors.name.message}</p>
+              <p className="text-red-500 mt-1 text-sm">{errors.name.message}</p>
             )}
           </div>
           <div>
@@ -210,13 +218,22 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("title")}
-              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.title ? "border-high" : "border-border"
+              className={` 
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+                errors.title ? "border-red-500" : "border-border"
               }`}
               placeholder={t("Enter job title")}
             />
             {errors.title && (
-              <p className="text-high mt-1 text-sm">{errors.title.message}</p>
+              <p className="text-red-500 mt-1 text-sm">
+                {errors.title.message}
+              </p>
             )}
           </div>
           <div>
@@ -226,43 +243,40 @@ const AddJobTitle: React.FC = () => {
             <input
               type="text"
               {...register("description")}
-              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.description ? "border-high" : "border-border"
+              className={` 
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
+                errors.description ? "border-red-500" : "border-border"
               }`}
               placeholder={t("Enter job description")}
             />
             {errors.description && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.description.message}
               </p>
             )}
           </div>
-          <div>
-            <label className="block  text-sm font-medium">
-              {t("Grade Level")}
-            </label>
-            <input
-              type="text"
-              {...register("grade_level")}
-              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.grade_level ? "border-high" : "border-border"
-              }`}
-              placeholder={t("Enter grade level")}
-            />
-            {errors.grade_level && (
-              <p className="text-high mt-1 text-sm">
-                {errors.grade_level.message}
-              </p>
-            )}
-          </div>
+
           <div>
             <label className="block  text-sm font-medium">
               {t("Responsibilities")}
             </label>
 
             <textarea
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.responsibilities ? "border-high" : "border-border"
+              className={`w-full 
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
+                errors.responsibilities ? "border-red-500" : "border-border"
               }`}
               placeholder={t("Enter responsibilities (comma-separated)")}
               rows={3}
@@ -276,7 +290,7 @@ const AddJobTitle: React.FC = () => {
             ></textarea>
 
             {errors.responsibilities && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.responsibilities.message}
               </p>
             )}
@@ -342,8 +356,16 @@ const AddJobTitle: React.FC = () => {
                     specificJobTitle,
                   })
                 }
-                className="mt-1 text-black  bg-secondary outline-none border-none"
+                className={`mt-1 text-tblackAF  
+                
+                ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }
+                outline-none border-none`}
                 placeholder={t("Select Permissions...")}
+                styles={selectStyle}
               />
             </div>
           )}
@@ -366,7 +388,14 @@ const AddJobTitle: React.FC = () => {
                 onChange={(selectedOptions) =>
                   setSpecificDept(selectedOptions.map((option) => option.value))
                 }
-                className="mt-1 text-black bg-secondary outline-none border-none"
+                className={`mt-1 text-tblackAF 
+                
+                ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }
+                outline-none border-none`}
                 placeholder={t("Select Accessible Departments...")}
               />
             </div>
@@ -388,7 +417,14 @@ const AddJobTitle: React.FC = () => {
                 onChange={(selectedOptions) =>
                   setSpecificEmp(selectedOptions.map((option) => option.value))
                 }
-                className="mt-1 text-black bg-secondary outline-none border-none"
+                className={`mt-1 text-tblackAF 
+                
+                ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }
+                outline-none border-none`}
                 placeholder={t("Select Accessible Employees...")}
               />
             </div>
@@ -412,7 +448,14 @@ const AddJobTitle: React.FC = () => {
                     selectedOptions.map((option) => option.value)
                   )
                 }
-                className="mt-1 text-black bg-secondary outline-none border-none"
+                className={`mt-1 text-tblackAF 
+                
+                ${
+                  isLightMode
+                    ? "bg-dark  placeholder:text-tdark "
+                    : "bg-secondary"
+                }
+                outline-none border-none`}
                 placeholder={t("Select Accessible Job Titles...")}
               />
             </div>
@@ -424,8 +467,15 @@ const AddJobTitle: React.FC = () => {
             </label>
             <select
               {...register("category")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg  bg-secondary outline-none border-none   focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.category ? "border-high" : "border-border"
+              className={`w-full px-4 py-2 mt-1 rounded-lg  
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none   focus:outline-none focus:ring-2 focus:ring-accent border ${
+                errors.category ? "border-red-500" : "border-border"
               }`}
               onChange={(e) => {
                 setSelectedCategory(e.target.value);
@@ -444,25 +494,32 @@ const AddJobTitle: React.FC = () => {
                 ))}
             </select>
             {errors.category && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.category.message}
               </p>
             )}
           </div>
           <div>
             <label className="block  text-sm font-medium">
-              {t("Parent Department (Optional)")}
+              {t("Department")}
             </label>
             <select
               {...register("department_id")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg   bg-secondary outline-none border-none  focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.department_id ? "border-high" : "border-border"
+              className={`w-full px-4 py-2 mt-1 rounded-lg   
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none  focus:outline-none focus:ring-2 focus:ring-accent border ${
+                errors.department_id ? "border-red-500" : "border-border"
               }`}
               onChange={(e) => {
                 setSelectedDept(e.target.value);
               }}
             >
-              <option value="">{t("Select a parent department")}</option>
+              <option value="">{t("Select a department")}</option>
               {departments &&
                 departments.map((dept) => (
                   <option
@@ -475,7 +532,7 @@ const AddJobTitle: React.FC = () => {
                 ))}
             </select>
             {errors.department_id && (
-              <p className="text-high mt-1 text-sm">
+              <p className="text-red-500 mt-1 text-sm">
                 {errors.department_id.message}
               </p>
             )}
@@ -489,12 +546,21 @@ const AddJobTitle: React.FC = () => {
               type="checkbox"
               checked={isManager}
               onChange={() => setIsManager(!isManager)}
-              className="form-checkbox cursor-pointer h-5 w-5 bg-secondary outline-none border-none"
+              className={`form-checkbox cursor-pointer h-5 w-5 
+              
+              ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }
+              outline-none border-none`}
             />
           </div>
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 
+              ${isLightMode ? " text-tblackAF" : "text-twhite"}
+            rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
               isPendingJobTitle ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingJobTitle}
@@ -508,7 +574,9 @@ const AddJobTitle: React.FC = () => {
               : t("Create Job Title")}
           </button>
           {isErrorJobTitle && (
-            <p className="text-high mt-2 text-center">{errorJobTitle + ""}</p>
+            <p className="text-red-500 mt-2 text-center">
+              {errorJobTitle + ""}
+            </p>
           )}
         </form>
       </div>

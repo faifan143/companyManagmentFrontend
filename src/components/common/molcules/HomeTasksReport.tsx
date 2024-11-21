@@ -1,52 +1,48 @@
+import useHierarchy from "@/hooks/useHierarchy";
 import { ReceiveTaskType } from "@/types/Task.type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import HomeListRow from "../atoms/HomeListRow";
 
 const HomeTasksReport = ({
   tasksData,
+  isCentered = true,
 }: {
   tasksData: ReceiveTaskType[] | undefined;
+  isCentered?: boolean;
 }) => {
   const [status, setStatus] = useState<"upcoming" | "overdue" | "completed">(
     "upcoming"
   );
   const { t } = useTranslation();
+  const { renderHomeTaskWithSubtasks } = useHierarchy();
 
   const currently =
     tasksData &&
     tasksData
       .filter((task) => !task.is_over_due && task.status != "DONE")
-      .map((task, index) => (
-        <>
-          <HomeListRow key={index} task={task} />
-          <div className="w-full h-2 bg-transparent"></div>
-        </>
-      ));
+      .filter((task) => !task.parent_task);
   const overdue =
     tasksData &&
     tasksData
       .filter((task) => task.is_over_due)
-      .map((task, index) => (
-        <>
-          <HomeListRow key={index} task={task} />
-          <div className="w-full h-2 bg-transparent"></div>
-        </>
-      ));
+      .filter((task) => !task.parent_task);
   const completed =
     tasksData &&
     tasksData
       .filter((task) => task.status == "DONE")
-      .map((task, index) => (
-        <>
-          <HomeListRow key={index} task={task} />
-          <div className="w-full h-2 bg-transparent"></div>
-        </>
-      ));
+      .filter((task) => !task.parent_task);
+
+  useEffect(() => {
+    console.log("overdue: ", overdue);
+  }, [overdue]);
 
   return (
     <>
-      <div className="bg-main w-[70%] min-h-64 rounded-md shadow-md mx-auto mt-5 p-5 text-white border border-slate-700">
+      <div
+        className={`bg-main  min-h-64 rounded-md shadow-md ${
+          isCentered ? "mx-auto w-[70%]" : ""
+        }  mt-5 p-5 text-twhite border border-slate-700`}
+      >
         <div className="text-lg font-bold">{t("My Tasks")}</div>
         <div className="flex items-center gap-3 text-sm my-5 font-semibold border-b border-slate-700">
           <div
@@ -54,7 +50,7 @@ const HomeTasksReport = ({
             className={
               status == "upcoming"
                 ? "border-b-[3px] border-slate-700 pb-[3px] "
-                : "cursor-pointer text-slate-400 pb-[5px]"
+                : "cursor-pointer text-tdark pb-[5px]"
             }
           >
             {t("Currently")} {"(" + currently?.length + ")"}
@@ -64,7 +60,7 @@ const HomeTasksReport = ({
             className={
               status == "overdue"
                 ? "border-b-[3px] border-slate-700 pb-[3px]"
-                : "cursor-pointer text-slate-400 pb-[5px]"
+                : "cursor-pointer text-tdark pb-[5px]"
             }
           >
             {t("Overdue")} {"(" + overdue?.length + ")"}
@@ -74,7 +70,7 @@ const HomeTasksReport = ({
             className={
               status == "completed"
                 ? "border-b-[3px] border-slate-700 pb-[3px]"
-                : "cursor-pointer text-slate-400 pb-[5px]"
+                : "cursor-pointer text-tdark pb-[5px]"
             }
           >
             {t("Completed")} {"(" + completed?.length + ")"}
@@ -83,7 +79,10 @@ const HomeTasksReport = ({
         {status == "upcoming" && (
           <div className="w-full">
             {currently && currently.length > 0 ? (
-              currently
+              currently &&
+              currently.map((task) => {
+                return renderHomeTaskWithSubtasks(task, 0);
+              })
             ) : (
               <div className="relative top-1/2 left-1/2 -translate-x-1/2  flex flex-col items-center justify-center gap-5">
                 {t("No Tasks")}
@@ -94,7 +93,8 @@ const HomeTasksReport = ({
         {status == "overdue" && (
           <div className=" h-full">
             {overdue && overdue.length > 0 ? (
-              overdue
+              overdue &&
+              overdue.map((task) => renderHomeTaskWithSubtasks(task, 0))
             ) : (
               <div className="relative top-1/2 left-1/2 -translate-x-1/2  flex flex-col items-center justify-center gap-5">
                 {t("No Tasks")}
@@ -105,7 +105,8 @@ const HomeTasksReport = ({
         {status == "completed" && (
           <div className=" h-full">
             {completed && completed.length > 0 ? (
-              completed
+              completed &&
+              completed.map((task) => renderHomeTaskWithSubtasks(task, 0))
             ) : (
               <div className="relative top-1/2 left-1/2 -translate-x-1/2  flex flex-col items-center justify-center gap-5">
                 {t("No Tasks")}

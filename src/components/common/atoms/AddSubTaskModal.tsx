@@ -30,7 +30,7 @@ const AddSubTaskModal: React.FC<{
 
   const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
-    url: `http://${process.env.BASE_URL}/emp/get-all-emps`,
+    url: `http://${process.env.BASE_URL}/emp/tree`,
     setSnackbarConfig,
   });
   const { mutate: addSection, isPending } = useCreateMutation({
@@ -40,7 +40,7 @@ const AddSubTaskModal: React.FC<{
     setSnackbarConfig,
     onSuccessFn() {
       reset();
-      setInterval(onClose, 1000);
+      setTimeout(onClose, 1000);
     },
   });
 
@@ -48,10 +48,10 @@ const AddSubTaskModal: React.FC<{
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center  z-50">
-        <div className="bg-dark rounded-xl shadow-md w-[400px] text-white space-y-4 p-6 relative">
+        <div className="bg-dark rounded-xl shadow-md w-[400px] text-twhite space-y-4 p-6 relative">
           <button
             onClick={onClose}
-            className="text-white absolute top-4 right-4 text-xl"
+            className="text-twhite absolute top-4 right-4 text-xl"
           >
             &times;
           </button>
@@ -63,7 +63,7 @@ const AddSubTaskModal: React.FC<{
             >
               {/* Task Name Field */}
               <div>
-                <label className="block text-slate-300   text-sm font-medium">
+                <label className="block text-tmid   text-sm font-medium">
                   {t("Task Name")}
                 </label>
                 <input
@@ -84,7 +84,7 @@ const AddSubTaskModal: React.FC<{
 
               {/* Description Field */}
               <div>
-                <label className="block text-slate-300 text-sm font-medium">
+                <label className="block text-tmid text-sm font-medium">
                   {t("Description")}
                 </label>
                 <textarea
@@ -103,7 +103,7 @@ const AddSubTaskModal: React.FC<{
 
               {/* Priority Field */}
               <div>
-                <label className="block text-slate-300 text-sm font-medium">
+                <label className="block text-tmid text-sm font-medium">
                   {t("Priority")}
                 </label>
                 <select
@@ -128,7 +128,7 @@ const AddSubTaskModal: React.FC<{
 
               {/* Due Date Field */}
               <div>
-                <label className="block text-slate-300 text-sm font-medium">
+                <label className="block text-tmid text-sm font-medium">
                   {t("Due Date")}
                 </label>
                 <input
@@ -148,7 +148,7 @@ const AddSubTaskModal: React.FC<{
               {/* Employee Field */}
               {
                 <div>
-                  <label className="block text-slate-300 text-sm font-medium">
+                  <label className="block text-tmid text-sm font-medium">
                     {t("Assigned Employee")}
                   </label>
                   <select
@@ -175,7 +175,7 @@ const AddSubTaskModal: React.FC<{
 
               <button
                 type="submit"
-                className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
+                className={`w-full py-2 mt-4 bg-slate-600 text-twhite rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
                   isPending ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isPending}

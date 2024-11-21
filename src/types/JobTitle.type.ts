@@ -4,7 +4,6 @@ export interface JobTitleType {
   id: string;
   name: string;
   title: string;
-  grade_level: string;
   description: string;
   responsibilities: string[];
   permissions: string[];
@@ -20,7 +19,6 @@ export interface EditJobTitleType {
   id: string;
   name: string;
   title: string;
-  grade_level: string;
   description: string;
   responsibilities: string[];
   permissions: string[];
@@ -45,7 +43,6 @@ export interface JobTitleFormInputs {
   id?: string;
   name: string;
   title: string;
-  grade_level: string;
   description: string;
   responsibilities: string[];
   permissions: string[];

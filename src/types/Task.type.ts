@@ -216,7 +216,7 @@ type TaskEmployeeType = {
   }[];
 };
 
-type TimeLog = {
+export type TimeLog = {
   start: string;
   _id: string;
   end: string;

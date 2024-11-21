@@ -18,10 +18,11 @@ import { EmployeeFormInputs } from "@/types/EmployeeType.type";
 import { JobTitleType } from "@/types/JobTitle.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
+import useCustomTheme from "@/hooks/useCustomTheme";
 const baseUrl = process.env.BASE_URL || "";
 
 const AddEmp: React.FC = () => {
@@ -40,8 +41,9 @@ const AddEmp: React.FC = () => {
   });
   const employeeData = useQueryPageData<EmployeeFormInputs>(reset);
   console.log(employeeData);
+  const { isLightMode } = useCustomTheme();
   const { t } = useTranslation();
-
+  const [selectedDept, setSelectedDept] = useState<string>("");
   const {
     fields: legalDocumentFields,
     append: appendLegalDocument,
@@ -110,7 +112,7 @@ const AddEmp: React.FC = () => {
     useCreateMutation({
       endpoint: endpoint,
       onSuccessMessage: t("Employee added successfully!"),
-      invalidateQueryKeys: ["employees"],
+      invalidateQueryKeys: ["employees", "employeeTree"],
       setSnackbarConfig,
       onSuccessFn: () => {
         setSnackbarConfig({
@@ -157,15 +159,22 @@ const AddEmp: React.FC = () => {
       setValue("job_tasks", employeeData.job_tasks);
       setValue("base_salary", employeeData.base_salary);
       setValue("department_id", employeeData.department.id);
+      setSelectedDept(employeeData.department.id);
       setValue("job_id", employeeData.job.id);
     } else {
       reset();
     }
   }, [employeeData, reset, setValue]);
 
+
+
   return (
     <GridContainer>
-      <div className="bg-droppable-fade text-white p-8 rounded-xl shadow-lg col-span-12 w-full ">
+      <div
+        className={`${
+          isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
+        }  p-8 rounded-xl shadow-lg  w-full  col-span-full  text-twhite`}
+      >
         <h1 className="text-center text-2xl font-bold mb-6">
           {employeeData ? t("Update Employee") : t("Create Employee")}
         </h1>
@@ -179,7 +188,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("name")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.name ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter employee name")}
@@ -194,7 +207,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("email")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter Employee Email")}
@@ -210,7 +227,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("phone")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter Employee phone")}
@@ -229,7 +250,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("password")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter Employee Password")}
@@ -249,7 +274,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("national_id")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.national_id ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter national ID")}
@@ -266,7 +295,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("address")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.address ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter Address")}
@@ -285,7 +318,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("emergency_contact")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.address ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter Address")}
@@ -304,7 +341,11 @@ const AddEmp: React.FC = () => {
             <input
               type="date"
               {...register("dob")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
                 errors.dob ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter employment date")}
@@ -319,7 +360,11 @@ const AddEmp: React.FC = () => {
             <label className="block  text-sm font-medium">{t("Gender")}</label>
             <select
               {...register("gender")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg   placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg   placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.gender ? "border-high" : "border-border"
               }`}
             >
@@ -346,7 +391,11 @@ const AddEmp: React.FC = () => {
             </label>
             <select
               {...register("marital_status")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg   placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-accent border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg   placeholder-textSecondary focus:outline-none focus:ring-2 focus:ring-accent border ${
                 errors.marital_status ? "border-high" : "border-border"
               }`}
             >
@@ -372,7 +421,11 @@ const AddEmp: React.FC = () => {
             <input
               type="date"
               {...register("employment_date")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
                 errors.employment_date ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter employment date")}
@@ -392,7 +445,11 @@ const AddEmp: React.FC = () => {
             <input
               type="number"
               {...register("base_salary")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
                 errors.base_salary ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter base salary")}
@@ -410,10 +467,17 @@ const AddEmp: React.FC = () => {
             </label>
             <select
               {...register("department_id")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
                 errors.department_id ? "border-red-500" : "border-gray-300"
               }`}
-              onChange={(e) => setValue("department_id", e.target.value)}
+              onChange={(e) => {
+                setValue("department_id", e.target.value);
+                setSelectedDept(e.target.value);
+              }}
             >
               <option value="">{t("Select a department")}</option>
               {departments &&
@@ -436,18 +500,24 @@ const AddEmp: React.FC = () => {
             </label>
             <select
               {...register("job_id")}
-              className={`w-full bg-secondary outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none px-4 py-2 mt-1 rounded-lg border ${
                 errors.job_id ? "border-red-500" : "border-gray-300"
               }`}
               onChange={(e) => setValue("job_id", e.target.value)}
             >
               <option value="">{t("Select a job title")}</option>
               {jobs &&
-                jobs.map((job) => (
-                  <option key={job.id} value={job.id}>
-                    {job.title}
-                  </option>
-                ))}
+                jobs
+                  .filter((job) => job.department._id == selectedDept)
+                  .map((job) => (
+                    <option key={job.id} value={job.id}>
+                      {job.name}
+                    </option>
+                  ))}
             </select>
             {errors.job_id && (
               <p className="text-red-500 mt-1 text-sm">
@@ -464,7 +534,11 @@ const AddEmp: React.FC = () => {
             <input
               type="text"
               {...register("job_tasks")}
-              className={`w-full  bg-secondary outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
+              className={`w-full  ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.job_tasks ? "border-red-500" : "border-gray-300"
               }`}
               placeholder={t("Enter job tasks")}
@@ -486,19 +560,31 @@ const AddEmp: React.FC = () => {
                   type="text"
                   {...register(`legal_documents.${index}.name` as const)}
                   placeholder={t("Document Name")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border  bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border  ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="date"
                   {...register(`legal_documents.${index}.validity` as const)}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border  bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border  ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="file"
                   onChange={(e) =>
                     handleFileChange(e, index, "legal_documents", setValue)
                   }
-                  className="w-full px-4 py-2 mt-1 rounded-lg border  bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border  ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
               </div>
               <button
@@ -508,7 +594,7 @@ const AddEmp: React.FC = () => {
                   removeLegalDocument(index);
                   reset(getValues()); // Reset to update the form state
                 }}
-                className="text-white bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
+                className="text-twhite bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
               >
                 X
               </button>
@@ -519,7 +605,7 @@ const AddEmp: React.FC = () => {
             onClick={() =>
               appendLegalDocument({ name: "", validity: "", file: null })
             }
-            className="text-slate-100 block text-sm"
+            className="text-tbright block text-sm"
           >
             {t("Add Legal Document")}
           </button>
@@ -535,25 +621,41 @@ const AddEmp: React.FC = () => {
                     `certifications.${index}.certificate_name` as const
                   )}
                   placeholder={t("Certification Name")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="date"
                   {...register(`certifications.${index}.date` as const)}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="text"
                   {...register(`certifications.${index}.grade` as const)}
                   placeholder={t("Certification Grade")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="file"
                   onChange={(e) =>
                     handleFileChange(e, index, "certifications", setValue)
                   }
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
               </div>
               <button
@@ -563,7 +665,7 @@ const AddEmp: React.FC = () => {
                   removeCertification(index);
                   reset(getValues());
                 }}
-                className="text-white bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
+                className="text-twhite bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
               >
                 X
               </button>
@@ -579,7 +681,7 @@ const AddEmp: React.FC = () => {
                 file: null,
               })
             }
-            className="text-slate-100 block text-sm"
+            className="text-tbright block text-sm"
           >
             {t("Add Certification")}
           </button>
@@ -594,13 +696,21 @@ const AddEmp: React.FC = () => {
                   type="text"
                   {...register(`allowances.${index}.allowance_type` as const)}
                   placeholder={t("Allowance Type")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="number"
                   {...register(`allowances.${index}.amount` as const)}
                   placeholder={t("Amount")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
               </div>
               <button
@@ -609,7 +719,7 @@ const AddEmp: React.FC = () => {
                   removeAllowance(index); // Remove the specific allowance
                   reset(getValues()); // Reset the form to update the state
                 }}
-                className="text-white bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
+                className="text-twhite bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
               >
                 X
               </button>
@@ -618,7 +728,7 @@ const AddEmp: React.FC = () => {
           <button
             type="button"
             onClick={() => appendAllowance({ allowance_type: "", amount: 0 })}
-            className="text-slate-100 block text-sm"
+            className="text-tbright block text-sm"
           >
             {t("Add Allowance")}
           </button>
@@ -634,13 +744,21 @@ const AddEmp: React.FC = () => {
                   type="text"
                   {...register(`incentives.${index}.description` as const)}
                   placeholder={t("Description")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="number"
                   {...register(`incentives.${index}.amount` as const)}
                   placeholder={t("Amount")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
               </div>
               <button
@@ -649,7 +767,7 @@ const AddEmp: React.FC = () => {
                   removeIncentive(index); // Remove the specific incentive
                   reset(getValues()); // Reset the form to update the state
                 }}
-                className="text-white bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
+                className="text-twhite bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
               >
                 X
               </button>
@@ -658,7 +776,7 @@ const AddEmp: React.FC = () => {
           <button
             type="button"
             onClick={() => appendIncentive({ description: "", amount: 0 })}
-            className="text-slate-100 block text-sm"
+            className="text-tbright block text-sm"
           >
             {t("Add Incentive")}
           </button>
@@ -674,7 +792,11 @@ const AddEmp: React.FC = () => {
                   type="text"
                   {...register(`bank_accounts.${index}.bank_name` as const)}
                   placeholder={t("Bank Name")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <input
                   type="text"
@@ -682,7 +804,11 @@ const AddEmp: React.FC = () => {
                     `bank_accounts.${index}.account_number` as const
                   )}
                   placeholder={t("Account Number")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
               </div>
               <button
@@ -691,7 +817,7 @@ const AddEmp: React.FC = () => {
                   removeBankAccount(index); // Remove the specific bank account
                   reset(getValues()); // Reset the form to update the state
                 }}
-                className="text-white bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
+                className="text-twhite bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
               >
                 X
               </button>
@@ -702,7 +828,7 @@ const AddEmp: React.FC = () => {
             onClick={() =>
               appendBankAccount({ bank_name: "", account_number: "" })
             }
-            className="text-slate-100 block text-sm"
+            className="text-tbright block text-sm"
           >
             {t("Add Bank Account")}
           </button>
@@ -718,17 +844,29 @@ const AddEmp: React.FC = () => {
                   type="text"
                   {...register(`evaluations.${index}.evaluation_type` as const)}
                   placeholder={t("Evaluation Type")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <textarea
                   {...register(`evaluations.${index}.description` as const)}
                   placeholder={t("Description")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
                 <textarea
                   {...register(`evaluations.${index}.plan` as const)}
                   placeholder={t("Plan")}
-                  className="w-full px-4 py-2 mt-1 rounded-lg border bg-secondary outline-none border-none"
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
+                    isLightMode
+                      ? "bg-dark  placeholder:text-tdark "
+                      : "bg-secondary"
+                  }  outline-none border-none`}
                 />
               </div>
               <button
@@ -737,7 +875,7 @@ const AddEmp: React.FC = () => {
                   removeEvaluation(index); // Remove the specific evaluation
                   reset(getValues()); // Reset the form to update the state
                 }}
-                className="text-white bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
+                className="text-twhite bg-red-500 font-bold  px-4 py-2 shadow-md rounded-md"
               >
                 X
               </button>
@@ -752,7 +890,7 @@ const AddEmp: React.FC = () => {
                 plan: "",
               })
             }
-            className="text-slate-100 block text-sm"
+            className="text-tbright block text-sm"
           >
             {t("Add Evaluation")}
           </button>
@@ -760,9 +898,12 @@ const AddEmp: React.FC = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition duration-200 ${
-              isPendingEmployee ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full py-2 mt-4 bg-slate-600  rounded-lg font-bold hover:bg-slate-700 transition duration-200
+            
+            
+            ${isLightMode ? " text-tblackAF" : "text-twhite"}
+            
+            ${isPendingEmployee ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={isPendingEmployee}
           >
             {isPendingEmployee

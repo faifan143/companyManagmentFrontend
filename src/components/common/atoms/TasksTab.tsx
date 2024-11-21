@@ -1,42 +1,48 @@
-// components/Tabs.tsx
-import { TabBoardIcon, TabListIcon } from "@/assets";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 
-const TasksTab = ({
+type Tab = {
+  id: string;
+  label: string;
+  icon: string;
+};
+
+type TasksTabProps = {
+  tabs: Tab[];
+  activeTab: string;
+  setActiveTab: Dispatch<SetStateAction<string>>;
+};
+
+const TasksTab: React.FC<TasksTabProps> = ({
+  tabs,
   activeTab,
   setActiveTab,
-}: {
-  activeTab: string;
-  setActiveTab: Dispatch<SetStateAction<"list" | "board">>;
 }) => {
   const { t } = useLanguage();
-  return (
-    <div className="flex gap-4 border-b  text-white border-gray-300  mb-5">
-      <button
-        onClick={() => setActiveTab("list")}
-        className={`pb-2 flex items-center gap-2 ${
-          activeTab === "list"
-            ? "border-b-2 border-slate-300  font-semibold"
-            : ""
-        }`}
-      >
-        <Image src={TabListIcon} width={20} height={20} alt="tab list icon" />
-        <span>{t("List")}</span>
-      </button>
+  const { isLightMode } = useCustomTheme();
 
-      <button
-        onClick={() => setActiveTab("board")}
-        className={`pb-2 flex items-center gap-2 ${
-          activeTab === "board"
-            ? "border-b-2 border-slate-300  font-semibold"
-            : "text-white"
-        }`}
-      >
-        <Image src={TabBoardIcon} width={20} height={20} alt="tab board icon" />
-        <span>{t("Board")}</span>
-      </button>
+  return (
+    <div className={`flex gap-4 border-b text-twhite border-tmid mb-5`}>
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={`pb-2 flex items-center gap-2 ${
+            activeTab === tab.id ? "border-b-2 border-tmid font-semibold" : ""
+          }`}
+        >
+          <Image
+            src={tab.icon}
+            width={20}
+            height={20}
+            alt={`${tab.label} icon`}
+            className={isLightMode ? `bg-tmid p-1 rounded-md` : ""}
+          />
+          <span>{t(tab.label)}</span>
+        </button>
+      ))}
     </div>
   );
 };

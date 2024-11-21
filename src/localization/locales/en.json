@@ -322,6 +322,16 @@
     "Update Job Category": "Update Job Category",
     "Job Category updated successfully!": "Job Category updated successfully!",
     "Categories Management": "Categories Management",
-    "Add Category": "Add Category"
+    "Add Category": "Add Category",
+    "Personal Details": "Personal Details",
+    "Work Details": "Work Details",
+    "Edit Profile": "Edit Profile",
+    "My Projects": "My Projects",
+    "true": "true",
+    "false": "false",
+    "Is Overdue": "Is Overdue",
+    "Project Details": "Project Details",
+    "Tree":"Tree",
+    "Table":"Table"
   }
 }

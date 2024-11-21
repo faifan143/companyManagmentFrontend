@@ -1,4 +1,5 @@
 import { ArrowDownIcon, CheckSlateIcon } from "@/assets";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
 import { getGreeting, getHomeDate } from "@/services/home.service";
@@ -22,6 +23,7 @@ const HomeGlance = ({
     selector: { userInfo },
   } = useRedux((state: RootState) => state.user);
 
+  const { isLightMode } = useCustomTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleScopeChange = (newScope: "weekly" | "monthly") => {
@@ -30,14 +32,14 @@ const HomeGlance = ({
   };
 
   return (
-    <header className="w-fit mx-auto text-white flex flex-col items-center gap-2 mt-20">
+    <header className="w-fit mx-auto text-twhite flex flex-col items-center gap-2 mt-20">
       <div className="text-lg">
         {getHomeDate(currentLanguage as "ar" | "en")}
       </div>
       <div className="text-2xl">
         {getGreeting(t)}, {userInfo ? userInfo.name : "Guest"}
       </div>
-      <div className="bg-dark text-slate-400 rounded-full flex justify-between min-w-[320px] items-center gap-2 p-5">
+      <div className="bg-dark text-tdark rounded-full flex justify-between min-w-[320px] items-center gap-2 p-5">
         {/* Scope Dropdown */}
         <div className="relative">
           <button
@@ -58,17 +60,21 @@ const HomeGlance = ({
               <ul>
                 <li
                   onClick={() => handleScopeChange("weekly")}
-                  className={`px-4 py-2 cursor-pointer hover:bg-slate-700 ${
-                    scope === "weekly" ? "text-white" : "text-slate-400"
-                  }`}
+                  className={`px-4 py-2 cursor-pointer ${
+                    isLightMode
+                      ? "hover:bg-darkest hover:text-tblackAF"
+                      : "hover:bg-slate-700"
+                  }  ${scope === "weekly" ? "text-twhite" : "text-tdark"}`}
                 >
                   {t("My Week")}
                 </li>
                 <li
                   onClick={() => handleScopeChange("monthly")}
-                  className={`px-4 py-2 cursor-pointer hover:bg-slate-700 ${
-                    scope === "monthly" ? "text-white" : "text-slate-400"
-                  }`}
+                  className={`px-4 py-2 cursor-pointer ${
+                    isLightMode
+                      ? "hover:bg-darkest hover:text-tblackAF"
+                      : "hover:bg-slate-700"
+                  }  ${scope === "monthly" ? "text-twhite" : "text-tdark"}`}
                 >
                   {t("My Month")}
                 </li>

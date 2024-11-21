@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ const Login: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId, setEmpId] = useState("");
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { isLightMode } = useCustomTheme();
 
   const {
     register,
@@ -32,7 +34,6 @@ const Login: React.FC = () => {
   } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
   });
-
   const dispatch = useDispatch<AppDispatch>();
   const onSubmit = async (data: LoginFormInputs) => {
     await handleLogin({
@@ -77,9 +78,18 @@ const Login: React.FC = () => {
     }
   }, []);
   return (
-    <div className="flex items-center justify-center min-h-screen bg-radial-light fixed inset-0">
-      <div className="backdrop-blur-md bg-dark text-white p-10 rounded-xl shadow-xl max-w-sm w-full">
-        <h1 className="text-center text-2xl text-white font-bold mb-6">
+    <div
+      className={`flex items-center justify-center min-h-screen
+    
+    ${isLightMode ? "bg-main" : "bg-radial-light"}
+     fixed inset-0`}
+    >
+      <div
+        className={`backdrop-blur-md ${
+          isLightMode ? "bg-secondary" : "bg-dark"
+        }  text-twhite p-10 rounded-xl shadow-xl max-w-sm w-full`}
+      >
+        <h1 className="text-center text-2xl text-twhite font-bold mb-6">
           {t("CompanyManagmentSystem")}
         </h1>
 
@@ -89,7 +99,9 @@ const Login: React.FC = () => {
             <input
               type="email"
               {...register("email")}
-              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg focus:outline-none  border ${
+              className={` ${
+                isLightMode ? "bg-dark" : "bg-secondary"
+              } outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg focus:outline-none  border ${
                 errors.email ? "border-red-600" : "border-[#1b1a40]"
               }`}
               placeholder={t("Enter your email")}
@@ -105,7 +117,9 @@ const Login: React.FC = () => {
             <input
               type="password"
               {...register("password")}
-              className={` bg-secondary outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg focus:outline-none  border ${
+              className={` ${
+                isLightMode ? "bg-dark" : "bg-secondary"
+              } outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg focus:outline-none  border ${
                 errors.password ? "border-red-600" : "border-[#1b1a40]"
               }`}
               placeholder={t("Enter your password")}
@@ -118,7 +132,10 @@ const Login: React.FC = () => {
           </div>
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600 text-white rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 
+                        ${isLightMode ? " text-tblackAF" : "text-twhite"}
+
+            rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}

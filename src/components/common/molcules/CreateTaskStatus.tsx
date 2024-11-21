@@ -72,7 +72,7 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full relative">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-700 hover:text-red-500"
+          className="absolute top-2 right-2 text-tblack hover:text-red-500"
         >
           &times;
         </button>
@@ -89,7 +89,7 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
           })}
         >
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               Task Status Name
             </label>
             <input
@@ -105,7 +105,7 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
             )}
           </div>
           <div>
-            <label className="block text-gray-600 text-sm font-medium">
+            <label className="block text-tdark text-sm font-medium">
               Description
             </label>
             <textarea
@@ -125,7 +125,7 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
 
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-blue-600 text-twhite rounded-lg font-bold hover:bg-blue-700 transition duration-200 ${
               isPendingTaskStatus ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isPendingTaskStatus}

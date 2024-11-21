@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import AddSectionModal from "../atoms/AddSectionModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import ListSection from "../molcules/ListSection";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const ListTasks = ({
   tasksData,
@@ -19,6 +20,7 @@ const ListTasks = ({
   const [tasks, setTasks] = useState<{
     [key: string]: ReceiveTaskType[];
   }>({});
+  const { isLightMode } = useCustomTheme();
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t, currentLanguage } = useLanguage();
   useEffect(() => {
@@ -27,6 +29,7 @@ const ListTasks = ({
       setTasks(categorizedTasks);
     }
   }, [tasksData]);
+
   return (
     <>
       <div className="bg-main  rounded-lg p-4 w-full h-full">
@@ -35,28 +38,28 @@ const ListTasks = ({
             <div
               className={`w-[100%] px-6 py-3 border-y border-slate-500 ${
                 currentLanguage == "en" ? "text-left" : "text-right"
-              } text-md font-bold text-slate-300  `}
+              } text-md font-bold text-tmid  `}
             >
               {t("Task Name")}
             </div>
             <div
               className={`w-[100%] text-center px-6 py-3 border border-slate-500 ${
                 currentLanguage == "en" ? "text-left" : "text-right"
-              } text-md font-bold text-slate-300  `}
+              } text-md font-bold text-tmid  `}
             >
               {t("Due Date")}
             </div>
             <div
               className={`w-[100%] text-center px-6 py-3 border border-slate-500 ${
                 currentLanguage == "en" ? "text-left" : "text-right"
-              } text-md font-bold text-slate-300  `}
+              } text-md font-bold text-tmid  `}
             >
               {t("Status")}
             </div>
             <div
               className={`w-[100%] text-center px-6 py-3 border-y border-slate-500 ${
                 currentLanguage == "en" ? "text-left" : "text-right"
-              } text-md font-bold text-slate-300  `}
+              } text-md font-bold text-tmid  `}
             >
               {t("Actions")}
             </div>
@@ -74,7 +77,11 @@ const ListTasks = ({
         </div>
         <div
           onClick={() => setIsModalOpen(true)}
-          className="rounded-xl shadow-md py-2 px-4 hover:bg-slate-500   hover:text-white  border-dashed border-slate-500 hover:shadow-xl border-2 text-center content-center  w-fit  text-slate-500  cursor-pointer"
+          className={`rounded-xl shadow-md py-2 px-4      border-dashed  hover:shadow-xl border-2 text-center content-center  w-fit ${
+            isLightMode
+              ? "text-darkest hover:bg-darkest border-darkest  hover:text-tblackAF"
+              : "border-slate-500 hover:bg-slate-500 text-tblack hover:text-twhite"
+          }  cursor-pointer`}
         >
           {t("Add section")}
         </div>

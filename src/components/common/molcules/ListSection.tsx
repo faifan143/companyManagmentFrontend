@@ -10,6 +10,7 @@ import AddSectionModal from "../atoms/AddSectionModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import PageSpinner from "../atoms/PageSpinner";
 import useHierarchy from "@/hooks/useHierarchy";
+import useCustomTheme from "@/hooks/useCustomTheme";
 
 const ListSection: React.FC<{
   section: SectionType;
@@ -20,7 +21,8 @@ const ListSection: React.FC<{
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
   const { currentLanguage } = useLanguage();
-  const { buildNestedTaskHierarchy, renderTaskWithSubtasks } = useHierarchy();
+  const { isLightMode } = useCustomTheme();
+  const { renderTaskWithSubtasks } = useHierarchy();
   useEffect(() => {
     if (isMenuOpen) {
       setInterval(() => setIsMenuOpen(false), 5000);
@@ -42,24 +44,31 @@ const ListSection: React.FC<{
       <tr>
         <td
           colSpan={4}
-          className=" py-3 text-left text-sm font-semibold text-slate-400 cursor-pointer"
+          className=" py-3 text-left text-sm font-semibold text-tdark cursor-pointer"
         >
-          <div className="flex items-center gap-2 text-white font-bold text-lg group">
-            <Image
-              src={ArrowDownIcon}
-              alt="arrow icon"
-              width={20}
-              height={20}
-              className={`mr-2 z-0  transform  ${
-                isOpen
-                  ? "rotate-0"
-                  : currentLanguage == "en"
-                  ? "-rotate-90"
-                  : "rotate-90"
-              }`}
+          <div className="flex items-center gap-2 text-twhite font-bold text-lg group">
+            <span
+              className={`flex items-center gap-2 `}
               onClick={() => setIsOpen((prev) => !prev)}
-            />
-            {t(section.name)}
+            >
+              <Image
+                src={ArrowDownIcon}
+                alt="arrow icon"
+                width={20}
+                height={20}
+                className={`mr-2 z-0  transform 
+                ${isLightMode ? `bg-tmid p-1 rounded-md h-[25px] w-[25px]` : ""}
+                
+                ${
+                  isOpen
+                    ? "rotate-0"
+                    : currentLanguage == "en"
+                    ? "-rotate-90"
+                    : "rotate-90"
+                }`}
+              />
+              {t(section.name)}
+            </span>
 
             <div className="relative">
               <Image
@@ -67,14 +76,23 @@ const ListSection: React.FC<{
                 alt="more icon"
                 height={24}
                 width={24}
-                className="opacity-0 group-hover:opacity-100  hover:bg-dark p-1 rounded-md "
+                className="opacity-0 group-hover:opacity-100  group-hover:bg-dark p-1 rounded-md "
                 onClick={() => setIsMenuOpen((prev) => !prev)}
               />
               {isMenuOpen && (
-                <div className="absolute top-8 left-0 w-32 bg-black/80 border border-slate-600 rounded-md shadow-lg z-10">
+                <div
+                  className={`absolute top-8 left-0 w-32
+                  
+                  ${isLightMode ? `bg-darker  ` : "bg-black/80"}
+                   border border-slate-600 rounded-md shadow-lg z-10`}
+                >
                   <ul>
                     <li
-                      className="px-4 py-2 text-sm text-white hover:bg-slate-700 cursor-pointer  flex items-center gap-1 "
+                      className={`px-4 py-2 text-sm ${
+                        isLightMode
+                          ? `text-tblackAF hover:bg-darkest`
+                          : "text-twhite hover:bg-slate-700"
+                      }  cursor-pointer  flex items-center gap-1  `}
                       onClick={() => {
                         setIsRenameOpen(true);
                         setIsMenuOpen(false);
@@ -84,7 +102,11 @@ const ListSection: React.FC<{
                       {t("Rename")}
                     </li>
                     <li
-                      className="px-4 py-2 text-sm text-white hover:bg-slate-700 cursor-pointer  flex items-center gap-1"
+                      className={`px-4 py-2 text-sm ${
+                        isLightMode
+                          ? `text-tblackAF hover:bg-darkest`
+                          : "text-twhite hover:bg-slate-700"
+                      }  cursor-pointer  flex items-center gap-1`}
                       onClick={() => {
                         console.log("Delete clicked");
                         deleteSection({});
@@ -111,9 +133,9 @@ const ListSection: React.FC<{
         ))} */}
       {isOpen &&
         tasks &&
-        buildNestedTaskHierarchy(tasks).map((task) =>
-          renderTaskWithSubtasks(task, 0)
-        )}
+        tasks
+          .filter((task) => !task.parent_task)
+          .map((task) => renderTaskWithSubtasks(task, 0))}
 
       {isRenameOpen && (
         <>
