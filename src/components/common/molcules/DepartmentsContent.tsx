@@ -1,24 +1,23 @@
+import { PencilIcon } from "@/assets";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { CircularProgress } from "@mui/material";
+import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import { PencilIcon, TrashIcon } from "@/assets";
-import Image from "next/image";
-import useCustomTheme from "@/hooks/useCustomTheme";
 
 const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t } = useTranslation();
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["department_updatesss"]);
-  const hasDeletePermission = usePermissions(["department_delete"]);
   const { handleEditClick } = useSetPageData<DepartmentType>(
     "/departments/add-department"
   );
@@ -69,7 +68,7 @@ const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
               <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Parent Department")}
               </th>
-              {(isAdmin || hasEditPermission || hasDeletePermission) && (
+              {(isAdmin || hasEditPermission) && (
                 <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Actions")}
                 </th>
@@ -96,7 +95,7 @@ const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
                     ? department.parent_department.name
                     : "None"}
                 </td>
-                {(isAdmin || hasEditPermission || hasDeletePermission) && (
+                {(isAdmin || hasEditPermission) && (
                   <td className="py-3 px-4 flex gap-2 justify-center">
                     {(isAdmin || hasEditPermission) && (
                       <div
@@ -112,17 +111,19 @@ const DepartmentsContent = ({ selectedOption }: { selectedOption: string }) => {
                         />
                       </div>
                     )}
-                    {(isAdmin || hasDeletePermission) && (
-                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                        {/* {t("Delete")} */}
-                        <Image
-                          src={TrashIcon}
-                          alt="delete icon"
-                          height={20}
-                          width={20}
-                        />
-                      </div>
-                    )}
+                    {
+                      // (isAdmin || hasDeletePermission) && (
+                      //   <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                      //     {/* {t("Delete")} */}
+                      //     <Image
+                      //       src={TrashIcon}
+                      //       alt="delete icon"
+                      //       height={20}
+                      //       width={20}
+                      //     />
+                      //   </div>
+                      // )
+                    }
                   </td>
                 )}
               </tr>

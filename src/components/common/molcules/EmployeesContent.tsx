@@ -1,19 +1,19 @@
 "use client";
 
+import { PencilIcon } from "@/assets";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
+import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import { PencilIcon, TrashIcon } from "@/assets";
-import Image from "next/image";
-import useCustomTheme from "@/hooks/useCustomTheme";
 
 const EmployeesContent: React.FC<{
   selectedOption: string;
@@ -21,7 +21,6 @@ const EmployeesContent: React.FC<{
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["emp_update"]);
-  const hasDeletePermission = usePermissions(["emp_delete"]);
   const { isLightMode } = useCustomTheme();
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
@@ -85,7 +84,7 @@ const EmployeesContent: React.FC<{
                 <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                   {t("Job")}
                 </th>
-                {(isAdmin || hasEditPermission || hasDeletePermission) && (
+                {(isAdmin || hasEditPermission) && (
                   <th className=" text-center py-3 px-4 uppercase font-semibold text-sm">
                     {t("Actions")}
                   </th>
@@ -115,7 +114,7 @@ const EmployeesContent: React.FC<{
                   <td className="text-center py-3 px-4">
                     {employee.job.title}
                   </td>
-                  {(isAdmin || hasEditPermission || hasDeletePermission) && (
+                  {(isAdmin || hasEditPermission) && (
                     <td className="text-center py-3 px-4 flex gap-2">
                       {(isAdmin || hasEditPermission) && (
                         <div
@@ -131,17 +130,19 @@ const EmployeesContent: React.FC<{
                           />
                         </div>
                       )}
-                      {(isAdmin || hasDeletePermission) && (
-                        <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                          {/* {t("Delete")} */}
-                          <Image
-                            src={TrashIcon}
-                            alt="delete icon"
-                            height={20}
-                            width={20}
-                          />
-                        </div>
-                      )}
+                      {
+                        // (isAdmin || hasDeletePermission) && (
+                        //   <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                        //     {/* {t("Delete")} */}
+                        //     <Image
+                        //       src={TrashIcon}
+                        //       alt="delete icon"
+                        //       height={20}
+                        //       width={20}
+                        //     />
+                        //   </div>
+                        // )
+                      }
                     </td>
                   )}
                 </tr>

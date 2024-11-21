@@ -1,11 +1,12 @@
 "use client";
 
-import { PencilIcon, TrashIcon } from "@/assets";
+import { PencilIcon } from "@/assets";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
@@ -20,12 +21,10 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import useCustomTheme from "@/hooks/useCustomTheme";
 const JobCategoryContent = () => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["job_title_category_update"]);
-  const hasDeletePermission = usePermissions(["job_title_category_delete"]);
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const {
     data: categories,
@@ -105,7 +104,7 @@ const JobCategoryContent = () => {
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Required Skills")}
               </th>
-              {(isAdmin || hasEditPermission || hasDeletePermission) && (
+              {(isAdmin || hasEditPermission) && (
                 <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                   {t("Actions")}
                 </th>
@@ -175,13 +174,14 @@ const JobCategoryContent = () => {
                     ) : (
                       <ul className="list-disc ml-4">
                         {categories &&
+                          category.required_skills.length > 0 &&
                           category.required_skills.map((skill, index) => (
                             <li key={index}>{skill}</li>
                           ))}
                       </ul>
                     )}
                   </td>
-                  {(isAdmin || hasEditPermission || hasDeletePermission) && (
+                  {(isAdmin || hasEditPermission) && (
                     <td className="py-3 px-4 flex gap-2">
                       {(isAdmin || hasEditPermission) && (
                         <div
@@ -197,17 +197,19 @@ const JobCategoryContent = () => {
                           />
                         </div>
                       )}
-                      {(isAdmin || hasDeletePermission) && (
-                        <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                          {/* {t("Delete")} */}
-                          <Image
-                            src={TrashIcon}
-                            alt="delete icon"
-                            height={20}
-                            width={20}
-                          />
-                        </div>
-                      )}
+                      {
+                        // (isAdmin || hasDeletePermission) && (
+                        //   <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                        //     {/* {t("Delete")} */}
+                        //     <Image
+                        //       src={TrashIcon}
+                        //       alt="delete icon"
+                        //       height={20}
+                        //       width={20}
+                        //     />
+                        //   </div>
+                        // )
+                      }
                     </td>
                   )}
                 </tr>

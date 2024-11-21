@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "@/assets";
+import { PencilIcon } from "@/assets";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
@@ -234,15 +234,17 @@ const ProjectsContent = () => {
                           width={20}
                         />
                       </div>
-                      <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                        {/* {t("Delete")} */}
-                        <Image
-                          src={TrashIcon}
-                          alt="delete icon"
-                          height={20}
-                          width={20}
-                        />
-                      </div>
+                      {
+                        // <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
+                        //           {/* {t("Delete")} */}
+                        //           <Image
+                        //             src={TrashIcon}
+                        //             alt="delete icon"
+                        //             height={20}
+                        //             width={20}
+                        //           />
+                        //         </div>
+                      }
                     </td>
                   )}
                 </tr>
