@@ -16,6 +16,7 @@ import {
 import { JobCategoryFormInputs } from "@/types/JobCategory.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -34,7 +35,7 @@ const AddJobCategory: React.FC = () => {
   const [newExperience, setNewExperience] = useState("");
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -89,6 +90,8 @@ const AddJobCategory: React.FC = () => {
           : t("Job Category created successfully!"),
         severity: "success",
       });
+
+      setTimeout(() => router.back(), 1000);
     },
   });
 

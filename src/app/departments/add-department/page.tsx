@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+
 "use client";
 
 import { XIcon } from "@/assets";
@@ -30,6 +31,7 @@ import useQueryPageData from "@/hooks/useQueryPageData";
 import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
+import { useRouter } from "next/navigation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -56,6 +58,8 @@ const AddDept: React.FC = () => {
     defaultValues: {},
   });
   const { t } = useTranslation();
+  const router = useRouter();
+
   const departmentData = useQueryPageData<DepartmentFormInputs>(reset);
   console.log(departmentData);
   const { isLightMode } = useCustomTheme();
@@ -123,6 +127,7 @@ const AddDept: React.FC = () => {
         developmentPrograms: [],
       });
       setSelectedFiles([]);
+      setTimeout(() => router.back(), 1000);
     },
   });
 
@@ -279,26 +284,26 @@ const AddDept: React.FC = () => {
             </div>
             {/*  */}
           </div>
-            <div>
-              <label className="text-tmid block text-sm font-medium">
-                {t("Main Tasks")}
-              </label>
-              <textarea
-                {...register("mainTasks")}
-                className={`    ${
-                  isLightMode
-                    ? "bg-dark  placeholder:text-tdark "
-                    : "bg-secondary"
-                }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
-                placeholder={t("Enter main tasks")}
-                rows={1}
-              />
-              {errors.mainTasks && (
-                <p className="text-red-500 mt-1 text-sm">
-                  {errors.mainTasks.message}
-                </p>
-              )}
-            </div>
+          <div>
+            <label className="text-tmid block text-sm font-medium">
+              {t("Main Tasks")}
+            </label>
+            <textarea
+              {...register("mainTasks")}
+              className={`    ${
+                isLightMode
+                  ? "bg-dark  placeholder:text-tdark "
+                  : "bg-secondary"
+              }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg border `}
+              placeholder={t("Enter main tasks")}
+              rows={1}
+            />
+            {errors.mainTasks && (
+              <p className="text-red-500 mt-1 text-sm">
+                {errors.mainTasks.message}
+              </p>
+            )}
+          </div>
 
           <div>
             <label className="text-tmid block text-sm font-medium">

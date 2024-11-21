@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import ChatModal from "../../atoms/ChatModal";
 import { sidebarItems } from "./data";
+import Tooltip from "../../Tooltip";
 
 const Sidebar = ({
   isExpanded,
@@ -66,14 +67,16 @@ const Sidebar = ({
               passHref
               onClick={() => handleTabClick(item.path)}
             >
-              <SidebarItem
-                key={item.label}
-                icon={item.icon}
-                label={t(item.label)}
-                isExpanded={isExpanded}
-                isSelected={selectedTab === item.path}
-                onClick={() => {}}
-              />
+              <Tooltip content={item.label} position="right">
+                <SidebarItem
+                  key={item.label}
+                  icon={item.icon}
+                  label={t(item.label)}
+                  isExpanded={isExpanded}
+                  isSelected={selectedTab === item.path}
+                  onClick={() => {}}
+                />
+              </Tooltip>
             </Link>
           ))}
           <div className="h-[1px] w-full bg-slate-200"></div>

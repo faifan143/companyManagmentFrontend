@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
@@ -23,10 +24,13 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
+import { useRouter } from "next/navigation";
 const baseUrl = process.env.BASE_URL || "";
 
 const AddEmp: React.FC = () => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -123,6 +127,8 @@ const AddEmp: React.FC = () => {
           severity: "success",
         });
         reset();
+
+        setTimeout(() => router.back(), 1000);
       },
     });
 

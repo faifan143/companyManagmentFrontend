@@ -15,6 +15,7 @@ import { ProjectType } from "@/types/Project.type";
 import { TaskFormInputs } from "@/types/Task.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -29,6 +30,8 @@ const AddTask: React.FC = () => {
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
+  const router = useRouter();
+
   const { isLightMode } = useCustomTheme();
   const {
     register,
@@ -82,6 +85,8 @@ const AddTask: React.FC = () => {
         severity: "success",
       });
       reset();
+
+      setTimeout(() => router.back(), 1000);
     },
   });
 

@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
 import { selectStyle } from "@/utils/SelectStyle";
 import useCustomTheme from "@/hooks/useCustomTheme";
+import { useRouter } from "next/navigation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -46,6 +47,8 @@ const AddJobTitle: React.FC = () => {
   const [responsibilities, setResponsibilities] = useState<string[]>([]);
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t } = useTranslation();
+  const router = useRouter();
+
   const { isLightMode } = useCustomTheme();
   const {
     register,
@@ -117,6 +120,8 @@ const AddJobTitle: React.FC = () => {
           : "Job Title created successfully!",
         severity: "success",
       });
+
+      setTimeout(() => router.back(), 1000);
     },
   });
 
