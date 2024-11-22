@@ -42,7 +42,8 @@ const TasksView: React.FC = () => {
   } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks", selectedOption],
     url: `http://${process.env.BASE_URL}/tasks/${
-      isAdmin ? "get-all-tasks" : selectedOption
+      // isAdmin ? "get-all-tasks" :
+      selectedOption
     }`,
     setSnackbarConfig,
     nestedData: true,

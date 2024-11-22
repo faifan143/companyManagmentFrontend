@@ -202,7 +202,7 @@ const AddTask: React.FC = () => {
               }`}
             >
               <option className="" value="">
-                {t("Select a department (optional)")}
+                {t("Select a priority ")}
               </option>
               {["HIGH", "MEDIUM", "LOW"].map((priority, index) => (
                 <option className="text-tmid" key={index} value={priority}>
