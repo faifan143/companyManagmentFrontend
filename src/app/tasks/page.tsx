@@ -35,9 +35,11 @@ const TasksView: React.FC = () => {
   );
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
 
-  const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<
-    ReceiveTaskType[]
-  >({
+  const {
+    data: tasksData,
+    isLoading: isTasksLoading,
+    refetch,
+  } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks", selectedOption],
     url: `http://${process.env.BASE_URL}/tasks/${
       isAdmin ? "get-all-tasks" : selectedOption
@@ -112,7 +114,7 @@ const TasksView: React.FC = () => {
               {canViewSpecific && (
                 <option value="get-emp-tasks">{t("My Tasks")}</option>
               )}
-              {canViewSpecific && isPrimary && (
+              {canViewSpecific && (isPrimary || isAdmin) && (
                 <option value="get-my-dept-tasks">
                   {t("My Department Tasks")}
                 </option>
@@ -170,8 +172,10 @@ const TasksView: React.FC = () => {
         {activeTab === "board" && (
           <GridContainer>
             <TasksContent
+              refetching={refetch}
               tasksData={tasksData?.flatMap((task) => [task, ...task.subTasks])}
               sections={sections}
+              selectedOption={selectedOption}
             />
           </GridContainer>
         )}

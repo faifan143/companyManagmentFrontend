@@ -106,11 +106,7 @@ export const onDragEnd = async ({
   setMessage: (msg: string) => void;
 }) => {
   const { destination, source } = result;
-  console.log("destination: ", destination);
-  console.log("source: ", source);
-
   if (!destination) return;
-
   if (
     destination.droppableId === source.droppableId &&
     destination.index === source.index
@@ -120,9 +116,7 @@ export const onDragEnd = async ({
 
   const start = tasks[source.droppableId];
   const finish = tasks[destination.droppableId] ?? [];
-  console.log("start  task: ", start);
 
-  // Check if start and finish are defined to avoid undefined errors
   if (!start || !finish) {
     console.error(
       "Invalid source or destination droppableId  :  start = ",

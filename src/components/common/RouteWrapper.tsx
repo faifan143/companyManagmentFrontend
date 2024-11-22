@@ -37,7 +37,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 
   return (
     <>
-      {isLoading && <PageSpinner />}
+      {isLoading && <PageSpinner  />}
       <Link href={href} className={className} onClick={handleRoute}>
         {children}
       </Link>

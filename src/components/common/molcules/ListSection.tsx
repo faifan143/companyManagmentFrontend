@@ -44,7 +44,7 @@ const ListSection: React.FC<{
       <tr>
         <td
           colSpan={4}
-          className=" py-3 text-left text-sm font-semibold text-tdark cursor-pointer"
+          className=" py-3 text-left text-sm font-semibold text-tdark cursor-pointer "
         >
           <div className="flex items-center gap-2 text-twhite font-bold text-lg group">
             <span
@@ -56,9 +56,9 @@ const ListSection: React.FC<{
                 alt="arrow icon"
                 width={20}
                 height={20}
-                className={`mr-2 z-0  transform 
+                className={`mr-2  transform 
+                z-auto
                 ${isLightMode ? `bg-tmid p-1 rounded-md h-[25px] w-[25px]` : ""}
-                
                 ${
                   isOpen
                     ? "rotate-0"
@@ -70,7 +70,7 @@ const ListSection: React.FC<{
               {t(section.name)}
             </span>
 
-            <div className="relative">
+            <div className="">
               <Image
                 src={ThreeDotsIcon}
                 alt="more icon"

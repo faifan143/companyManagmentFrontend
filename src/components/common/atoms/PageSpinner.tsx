@@ -8,7 +8,7 @@ const PageSpinner = ({ title }: { title?: string }) => {
   const { t } = useTranslation();
   return (
     <div className="fixed inset-0  bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-[rgba(0,0,0,0.7)] backdrop-blur-[25px] rounded-lg shadow-lg p-8 flex flex-col justify-center items-center ">
+      <div className="bg-[rgba(0,0,0,0.7)] backdrop-blur-[25px] rounded-lg shadow-lg p-8 flex flex-col justify-center items-center z-50 ">
         <svg width={0} height={0}>
           <defs>
             <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">

@@ -6,18 +6,29 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { categorizeTasks, onDragEnd } from "@/services/task.service";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import { useTranslation } from "react-i18next";
+import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
+import PageSpinner from "../atoms/PageSpinner";
 
 const TasksContent = ({
   tasksData,
   sections,
+  refetching,
+  selectedOption,
 }: {
   sections: SectionType[] | undefined;
   tasksData: ReceiveTaskType[] | undefined;
+  selectedOption: string;
+  refetching: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<ReceiveTaskType[], Error>>;
 }) => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const queryClient = useQueryClient();
@@ -25,13 +36,14 @@ const TasksContent = ({
   const [tasks, setTasks] = useState<{
     [key: string]: ReceiveTaskType[];
   }>({});
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   useEffect(() => {
     if (tasksData) {
       const categorizedTasks = categorizeTasks(tasksData);
       setTasks(categorizedTasks);
     }
-  }, []);
+  }, [tasksData]);
 
   if (!tasksData || tasksData.length === 0) {
     return (
@@ -43,7 +55,28 @@ const TasksContent = ({
   return (
     <>
       <DragDropContext
-        onDragEnd={(result) => {
+        // onDragEnd={(result) => {
+        //   onDragEnd({
+        //     result,
+        //     tasks,
+        //     setTasks,
+        //     setMessage(msg) {
+        //       setSnackbarConfig({
+        //         open: true,
+        //         message: msg,
+        //         severity: "error",
+        //       });
+        //     },
+        //   });
+        //   setIsUpdating(true);
+        //   queryClient.invalidateQueries({ queryKey: ["tasks"] }).then(() => {
+        //     setIsUpdating(true);
+        //     refetching().then(() => {
+        //       setIsUpdating(false);
+        //     });
+        //   });
+        // }}
+        onDragEnd={async (result) => {
           onDragEnd({
             result,
             tasks,
@@ -56,7 +89,28 @@ const TasksContent = ({
               });
             },
           });
-          queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+          setIsUpdating(true);
+          try {
+            await queryClient.invalidateQueries({
+              queryKey: ["tasks", selectedOption],
+            });
+            await refetching();
+
+            if (tasksData) {
+              const categorizedTasks = categorizeTasks(tasksData);
+              setTasks(categorizedTasks);
+            }
+          } catch (error) {
+            console.error("Error refetching tasks:", error);
+            setSnackbarConfig({
+              open: true,
+              message: t("Failed to update tasks."),
+              severity: "error",
+            });
+          } finally {
+            setIsUpdating(false);
+          }
         }}
       >
         {sections &&
@@ -75,6 +129,8 @@ const TasksContent = ({
               />
             );
           })}
+
+        {isUpdating && <PageSpinner />}
       </DragDropContext>
 
       <CustomizedSnackbars

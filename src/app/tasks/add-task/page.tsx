@@ -3,7 +3,6 @@
 
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
@@ -27,8 +26,6 @@ const AddTask: React.FC = () => {
   const [isEmployeeDisabled, setIsEmployeeDisabled] = useState(false);
   const [isDepartmentDisabled, setIsDepartmentDisabled] = useState(false);
   const [isProjectDisabled, setIsProjectDisabled] = useState(false);
-  const isAdmin = useRolePermissions("admin");
-  const isPrimary = useRolePermissions("primary_user");
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -61,11 +58,10 @@ const AddTask: React.FC = () => {
     url: `http://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
+
   const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
-    url: `http://${baseUrl}/emp/${
-      isAdmin ? "get-all-emps" : isPrimary ? "get-my-emps" : "view"
-    }`,
+    url: `http://${baseUrl}/emp/tree`,
     setSnackbarConfig,
   });
 
@@ -94,12 +90,13 @@ const AddTask: React.FC = () => {
     if (selectedEmployee) {
       setIsDepartmentDisabled(true);
       setIsProjectDisabled(true);
+    } else if (selectedDepartment && selectedProject) {
+      setIsEmployeeDisabled(true);
     } else if (selectedDepartment) {
       setIsEmployeeDisabled(true);
       setIsProjectDisabled(true);
     } else if (selectedProject) {
       setIsEmployeeDisabled(true);
-      setIsDepartmentDisabled(true);
     } else {
       setIsEmployeeDisabled(false);
       setIsDepartmentDisabled(false);
@@ -225,6 +222,7 @@ const AddTask: React.FC = () => {
             <label className="block text-tmid text-sm font-medium">
               {t("Due Date")}
             </label>
+
             <input
               type="date"
               {...register("due_date")}
@@ -240,6 +238,7 @@ const AddTask: React.FC = () => {
               </p>
             )}
           </div>
+
           {/* Project Field */}
           {!isProjectDisabled && (
             <div>

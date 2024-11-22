@@ -1,27 +1,23 @@
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import { useRedux } from "@/hooks/useRedux";
 import { refreshAuthToken } from "@/state/slices/userSlice";
 import { RootState } from "@/state/store";
 import Cookies from "js-cookie";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, Suspense, useEffect, useState } from "react";
 import NewHeader from "../common/atoms/NewHeader";
 import PageSpinner from "../common/atoms/PageSpinner";
 import Sidebar from "../common/molcules/Sidebar/Sidebar";
 const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
-  const {
-    loading: navigating,
-    replaceWithLoading,
-    navigateWithLoading,
-  } = useNavigationWithLoading();
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const {
     selector: { isAuthenticated, loading },
     dispatch,
   } = useRedux((state: RootState) => state.user);
+
   const { getDir, t } = useLanguage();
   useCustomTheme();
 
@@ -32,7 +28,7 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
       console.log("Checking refresh token : ", refreshToken);
 
       if (!refreshToken) {
-        replaceWithLoading("/auth");
+        router.replace("/auth");
         return;
       }
       try {
@@ -41,18 +37,18 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
         console.log("Error refreshing token: " + error);
         Cookies.remove("refresh_token");
         Cookies.remove("access_token");
-        navigateWithLoading("/auth");
+        router.push("/auth");
       }
     };
 
     checkAuth();
-  }, [dispatch]);
+  }, [dispatch, router]);
 
   useEffect(() => {
     if (isAuthenticated) {
       const storedTab = localStorage.getItem("selectedTab");
       if (storedTab && storedTab !== pathname) {
-        replaceWithLoading(storedTab);
+        router.replace(storedTab);
       }
     }
   }, [isAuthenticated]);
@@ -69,8 +65,6 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
         "bg-main"
       }`}
     >
-      {navigating && <PageSpinner />}
-
       <div className="flex h-full w-full">
         {isAuthenticated && <NewHeader setIsExpanded={setIsSidebarExpanded} />}
         {isAuthenticated && (

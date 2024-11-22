@@ -32,7 +32,7 @@ const HomeGlance = ({
   };
 
   return (
-    <header className="w-fit mx-auto text-twhite flex flex-col items-center gap-2 mt-20">
+    <header className="w-fit mx-auto text-twhite flex flex-col items-center gap-2 mt-20 ">
       <div className="text-lg">
         {getHomeDate(currentLanguage as "ar" | "en")}
       </div>
@@ -41,10 +41,10 @@ const HomeGlance = ({
       </div>
       <div className="bg-dark text-tdark rounded-full flex justify-between min-w-[320px] items-center gap-2 p-5">
         {/* Scope Dropdown */}
-        <div className="relative">
+        <div>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer "
           >
             {scope === "weekly" ? t("My Week") : t("My Month")}
             <Image

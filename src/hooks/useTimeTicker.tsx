@@ -176,7 +176,6 @@ const useTimeTicker = (taskId: string, timeLogs: TimeLog[]) => {
   }, [isRunning[taskId], taskId, timers, stableSetElapsedTime]);
 
   const makeApiCall = async (endpoint: string) => {
-    setIsMakingAPICall(true);
     try {
       const token = Cookies.get("access_token");
       if (!token) {
@@ -204,6 +203,8 @@ const useTimeTicker = (taskId: string, timeLogs: TimeLog[]) => {
   };
 
   const startTaskTicker = async () => {
+    setIsMakingAPICall(true);
+
     const response = await makeApiCall("start");
     if (response.success) {
       stableStartTimer(taskId);
@@ -212,6 +213,8 @@ const useTimeTicker = (taskId: string, timeLogs: TimeLog[]) => {
   };
 
   const pauseTaskTicker = async () => {
+    setIsMakingAPICall(true);
+
     const response = await makeApiCall("pause");
     if (response.success) {
       stablePauseTimer(taskId);

@@ -16,6 +16,7 @@ export default function RootLayout({
         <link rel="icon" href="" />
       </head>
       <body className="bg-main">
+        
         <LayoutProviders>{children}</LayoutProviders>
       </body>
     </html>

@@ -1,5 +1,8 @@
 import * as yup from "yup";
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
 export const addTaskSchema = yup.object().shape({
   name: yup.string().required("Task name is required"),
   description: yup.string().required("Description is required"),
@@ -9,7 +12,8 @@ export const addTaskSchema = yup.object().shape({
   due_date: yup
     .date()
     .required("Due date is required")
-    .typeError("Invalid date format"),
+    .typeError("Invalid date format")
+    .min(today, "Due date cannot be in the past"),
   files: yup.array().of(yup.string()),
   isRecurring: yup.boolean(),
   intervalInDays: yup
@@ -50,7 +54,8 @@ export const addSubTaskSchema = yup.object().shape({
   due_date: yup
     .date()
     .required("Due date is required")
-    .typeError("Invalid date format"),
+    .typeError("Invalid date format")
+    .min(today, "Due date cannot be in the past"),
 });
 
 export const addTaskPopupSchema = yup.object().shape({

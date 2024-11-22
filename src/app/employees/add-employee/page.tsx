@@ -30,8 +30,8 @@ const baseUrl = process.env.BASE_URL || "";
 const AddEmp: React.FC = () => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const router = useRouter();
-  const [legalFileNames, setLegalFileNames] = useState({}); // Track file names by document index
-  const [certificationFileNames, setCertificationFileNames] = useState({}); // Track file names by document index
+  const [legalFileNames, setLegalFileNames] = useState({});
+  const [certificationFileNames, setCertificationFileNames] = useState({});
 
   const {
     register,
@@ -168,8 +168,28 @@ const AddEmp: React.FC = () => {
       setValue("department_id", employeeData.department.id);
       setSelectedDept(employeeData.department.id);
       setValue("job_id", employeeData.job.id);
+
+      if (employeeData.legal_documents) {
+        const legalFiles = {};
+        employeeData.legal_documents.forEach((doc, index) => {
+          if (doc.file) legalFiles[index] = doc.file;
+        });
+        console.log("legalFiles  :  ", legalFiles);
+
+        setLegalFileNames({ legal_documents: legalFiles });
+      }
+
+      if (employeeData.certifications) {
+        const certFiles = {};
+        employeeData.certifications.forEach((cert, index) => {
+          if (cert.file) certFiles[index] = cert.file;
+        });
+        setCertificationFileNames({ certifications: certFiles });
+      }
     } else {
       reset();
+      setLegalFileNames({});
+      setCertificationFileNames({});
     }
   }, [employeeData, reset, setValue]);
 
@@ -694,17 +714,7 @@ const AddEmp: React.FC = () => {
                       : "bg-secondary"
                   }  outline-none border-none`}
                 />
-                {/* <input
-                  type="file"
-                  onChange={(e) =>
-                    handleFileChange(e, index, "certifications", setValue)
-                  }
-                  className={`w-full px-4 py-2 mt-1 rounded-lg border ${
-                    isLightMode
-                      ? "bg-dark  placeholder:text-tdark "
-                      : "bg-secondary"
-                  }  outline-none border-none`}
-                /> */}
+
                 <FileUpload
                   index={index}
                   fieldName="certifications"
@@ -979,20 +989,21 @@ const FileUpload = ({
   setFileNames,
   handleFileChange,
   isLightMode,
-  fieldName, // The name of the field being uploaded
+  fieldName,
 }) => {
   const handleFileSelect = (e) => {
-    const file = e.target.files[0]; // Get the selected file
+    const file = e.target.files[0];
     if (file) {
+      handleChange(index, file);
       setFileNames((prev) => ({
         ...prev,
         [fieldName]: {
           ...(prev[fieldName] || {}),
           [index]: file.name,
         },
-      })); // Update file name for this field and index
+      }));
     }
-    handleFileChange(e); // Call parent handler
+    handleFileChange(e);
   };
 
   return (
@@ -1015,7 +1026,7 @@ const FileUpload = ({
         id={`fileInput-${fieldName}-${index}`}
         type="file"
         style={{ display: "none" }}
-        onChange={handleFileSelect} // Handle file selection
+        onChange={handleFileSelect}
       />
     </div>
   );
