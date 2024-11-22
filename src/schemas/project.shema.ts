@@ -10,13 +10,14 @@ export const addProjectSchema = yup.object().shape({
   members: yup.array().of(yup.string()).nullable(),
 
   startDate: yup
-    .string()
+    .date()
     .required("Start date is required")
     .transform((value, originalValue) => {
       if (!originalValue) return null;
       const date = new Date(originalValue);
       return date;
-    }),
+    })
+    .min(today, "Due date cannot be in the past"),
   endDate: yup
     .date()
     .required("End date is required")

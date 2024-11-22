@@ -1,3 +1,70 @@
+// {/* Main Dropdown */}
+// {showMainSelect && (
+//   <select
+//     className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+//     value={myProj ? "my-project-tasks" : selectedOption}
+//     onChange={(e) => {
+//       const value = e.target.value;
+//       setMyProj(value === "my-project-tasks");
+//       setMyDept(value === "get-my-dept-tasks");
+//       if (
+//         value !== "my-project-tasks" &&
+//         value !== "get-my-dept-tasks"
+//       )
+//         setSelectedOption(value);
+//     }}
+//   >
+//     {canViewTasks && <option value="">{t("My Tasks")}</option>}
+//     {canViewTasks && (isPrimary || isAdmin) && (
+//       <option value="get-my-dept-tasks">
+//         {t("Department Tasks")}
+//       </option>
+//     )}
+//     {canViewTasks && (
+//       <option value="my-project-tasks">{t("Project Tasks")}</option>
+//     )}
+//   </select>
+// )}
+
+// {/* Project-Specific Dropdown */}
+// {myProj && projects && projects?.length > 0 && (
+//   <select
+//     className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+//     onChange={(e) => setSelectedProj(e.target.value)}
+//   >
+//     <option value="">{t("Select a project")}</option>
+//     {projects.map((proj) => (
+//       <option key={proj._id} value={proj._id}>
+//         {proj.name}
+//       </option>
+//     ))}
+//   </select>
+// )}
+
+// {/* Departments Dropdown */}
+// {(myDept || selectedProj) && deptTree && deptTree?.length > 0 && (
+//   <select
+//     className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+//     onChange={(e) => {
+//       console.log(`Selected department: ${e.target.value}`);
+
+//       const value = e.target.value;
+
+//       if (myProj && selectedProj)
+//         setSelectedOption(
+//           "departmentId=" + value + "&projectId=" + selectedProj
+//         );
+//       setSelectedOption("departmentId=" + value);
+//     }}
+//   >
+//     <option value="">{t("Select a department")}</option>
+//     {deptTree.map((dTree) => (
+//       <option key={dTree.id} value={dTree.id}>
+//         {dTree.name}
+//       </option>
+//     ))}
+//   </select>
+// )}
 "use client";
 
 import { TabBoardIcon, TabListIcon, TreeIcon } from "@/assets";
@@ -26,40 +93,47 @@ import React, { useState } from "react";
 const TasksView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("list");
   const [myProj, setMyProj] = useState(false);
+  const [myDept, setMyDept] = useState(false);
+  const [selectedProj, setSelectedProj] = useState<string | null>(null);
+  const [selectedDept, setSelectedDept] = useState<string | null>(null);
+
   const { t } = useLanguage();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const [selectedOption, setSelectedOption] = useState(
     // isPrimary ? "get-my-dept-tasks" :
-    "get-emp-tasks"
+    ""
   );
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
 
-  const {
-    data: tasksData,
-    isLoading: isTasksLoading,
-    refetch,
-  } = useCustomQuery<ReceiveTaskType[]>({
+  const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<{
+    info: ReceiveTaskType[];
+    tree: TreeDTO[];
+  }>({
     queryKey: ["tasks", selectedOption],
-    url: `http://${process.env.BASE_URL}/tasks/${
-      // isAdmin ? "get-all-tasks" :
-      selectedOption
-    }`,
+    url: `http://${process.env.BASE_URL}/tasks/tree?${selectedOption}`,
     setSnackbarConfig,
-    nestedData: true,
   });
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `http://${process.env.BASE_URL}/projects/${
-      isAdmin ? "get-all-projects" : "get-emp-project"
+      isAdmin
+        ? "get-all-projects"
+        : isPrimary
+        ? "get-manager-project"
+        : "get-emp-project"
     }`,
     setSnackbarConfig,
   });
 
-  const { data: tasksTree } = useCustomQuery<TreeDTO[]>({
-    queryKey: ["tasksTree"],
-    url: `http://${process.env.BASE_URL}/tasks/tree`,
+  const { data: deptTree } = useCustomQuery<TreeDTO[]>({
+    queryKey: ["deptTree", selectedProj ?? ""],
+    url: `http://${process.env.BASE_URL}/${
+      selectedProj
+        ? `projects/project-departments-tree/${selectedProj}`
+        : "department/tree"
+    }`,
     setSnackbarConfig,
   });
 
@@ -72,8 +146,8 @@ const TasksView: React.FC = () => {
   >({
     queryKey: ["sections", selectedOption],
     url: `http://${process.env.BASE_URL}/sections/${
-      myProj
-        ? `project/${selectedOption.split("/").pop()}`
+      myProj && myDept
+        ? `department/${selectedDept}`
         : selectedOption == "get-my-dept-tasks"
         ? `manager-section`
         : `department/${selector}`
@@ -81,9 +155,9 @@ const TasksView: React.FC = () => {
     setSnackbarConfig,
   });
 
-  const canViewSpecific = usePermissions(["task_search_and_view"]);
+  const canViewTasks = usePermissions(["task_search_and_view"]);
 
-  const showMainSelect = canViewSpecific || isPrimary || isAdmin;
+  const showMainSelect = canViewTasks || isPrimary || isAdmin;
 
   return (
     <GridContainer>
@@ -97,52 +171,78 @@ const TasksView: React.FC = () => {
           {t("Tasks")}
         </h1>
         <div className="flex justify-center items-center gap-5">
-          {/* Main Dropdown */}
+          {/* Departments Dropdown */}
+          {(myDept || myProj) && (
+            <select
+              className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedDept(value);
+                const deptOption = `departmentId=${value}`;
+                const projOption = selectedProj
+                  ? `&projectId=${selectedProj}`
+                  : "";
+                setSelectedOption(deptOption + projOption);
+              }}
+            >
+              <option value="">{t("Select a department")}</option>
+              {deptTree &&
+                deptTree.map((dTree) => (
+                  <option key={dTree.id} value={dTree.id}>
+                    {dTree.name}
+                  </option>
+                ))}
+            </select>
+          )}
 
+          {/* Project-Specific Dropdown */}
+          {myProj && (
+            <select
+              className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
+              onChange={(e) => setSelectedProj(e.target.value)}
+            >
+              <option value="">{t("Select a project")}</option>
+              {projects &&
+                projects.map((proj) => (
+                  <option key={proj._id} value={proj._id}>
+                    {proj.name}
+                  </option>
+                ))}
+            </select>
+          )}
+
+          {/* Main Dropdown */}
           {showMainSelect && (
             <select
               className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-              value={myProj ? "my-project-tasks" : selectedOption}
+              defaultValue={selectedOption}
               onChange={(e) => {
-                if (e.target.value === "my-project-tasks") {
-                  setMyProj(true);
-                } else {
-                  setMyProj(false);
-                  setSelectedOption(e.target.value);
+                const value = e.target.value;
+                setMyProj(value === "my-project-tasks");
+                setMyDept(value === "get-my-dept-tasks");
+                if (
+                  value !== "my-project-tasks" &&
+                  value !== "get-my-dept-tasks"
+                ) {
+                  setSelectedOption(value);
                 }
+                setSelectedProj(null);
+                setSelectedDept(null);
               }}
             >
-              {canViewSpecific && (
-                <option value="get-emp-tasks">{t("My Tasks")}</option>
-              )}
-              {canViewSpecific && (isPrimary || isAdmin) && (
+              {canViewTasks && <option value="">{t("My Tasks")}</option>}
+              {canViewTasks && (isPrimary || isAdmin) && (
                 <option value="get-my-dept-tasks">
-                  {t("My Department Tasks")}
+                  {t("Department Tasks")}
                 </option>
               )}
-              {canViewSpecific && (
+              {canViewTasks && (
                 <option value="my-project-tasks">{t("Project Tasks")}</option>
               )}
             </select>
           )}
 
-          {/* Project-Specific Dropdown */}
-          {myProj && projects && projects.length > 0 && (
-            <select
-              className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-              onChange={(e) =>
-                setSelectedOption(`get-project-tasks/${e.target.value}`)
-              }
-            >
-              <option value="">{t("Select a project")}</option>
-              {projects?.map((proj) => (
-                <option key={proj._id} value={proj._id}>
-                  {proj.name}
-                </option>
-              ))}
-            </select>
-          )}
-
+          {/* Add Task Button */}
           {(isAdmin || isPrimary) && (
             <RouteWrapper href="/tasks/add-task">
               <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
@@ -166,22 +266,30 @@ const TasksView: React.FC = () => {
         />
         {activeTab === "list" && (
           <TaskList
-            tasksData={tasksData?.flatMap((task) => [task, ...task.subTasks])}
+            tasksData={tasksData?.info.flatMap((task) => [
+              task,
+              ...task.subTasks,
+            ])}
             sections={sections}
           />
         )}
         {activeTab === "board" && (
           <GridContainer>
             <TasksContent
-              refetching={refetch}
-              tasksData={tasksData?.flatMap((task) => [task, ...task.subTasks])}
+              tasksData={tasksData?.info.flatMap((task) => [
+                task,
+                ...task.subTasks,
+              ])}
               sections={sections}
-              selectedOption={selectedOption}
             />
           </GridContainer>
         )}
-        {activeTab === "tree" && tasksTree && (
-          <HierarchyTree data={tasksTree} width="100%" isDraggable={true} />
+        {activeTab === "tree" && tasksData && (
+          <HierarchyTree
+            data={tasksData.tree}
+            width="100%"
+            isDraggable={true}
+          />
         )}
       </div>
 

@@ -6,11 +6,7 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { categorizeTasks, onDragEnd } from "@/services/task.service";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
-import {
-  QueryObserverResult,
-  RefetchOptions,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
@@ -20,15 +16,9 @@ import PageSpinner from "../atoms/PageSpinner";
 const TasksContent = ({
   tasksData,
   sections,
-  refetching,
-  selectedOption,
 }: {
   sections: SectionType[] | undefined;
   tasksData: ReceiveTaskType[] | undefined;
-  selectedOption: string;
-  refetching: (
-    options?: RefetchOptions
-  ) => Promise<QueryObserverResult<ReceiveTaskType[], Error>>;
 }) => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const queryClient = useQueryClient();
@@ -77,32 +67,27 @@ const TasksContent = ({
         //   });
         // }}
         onDragEnd={async (result) => {
-          onDragEnd({
-            result,
-            tasks,
-            setTasks,
-            setMessage(msg) {
-              setSnackbarConfig({
-                open: true,
-                message: msg,
-                severity: "error",
-              });
-            },
-          });
-
-          setIsUpdating(true);
           try {
-            await queryClient.invalidateQueries({
-              queryKey: ["tasks", selectedOption],
-            });
-            await refetching();
+            setIsUpdating(true); // Indicate the start of the update
 
-            if (tasksData) {
-              const categorizedTasks = categorizeTasks(tasksData);
-              setTasks(categorizedTasks);
-            }
+            // Perform the drag operation
+            await onDragEnd({
+              result,
+              tasks,
+              setTasks,
+              setMessage: (msg) => {
+                setSnackbarConfig({
+                  open: true,
+                  message: msg,
+                  severity: "error",
+                });
+              },
+            });
+
+            await queryClient.invalidateQueries({ queryKey: ["tasks"] });
           } catch (error) {
-            console.error("Error refetching tasks:", error);
+            console.error("Error during drag operation:", error);
+
             setSnackbarConfig({
               open: true,
               message: t("Failed to update tasks."),
