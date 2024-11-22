@@ -1,3 +1,4 @@
+import { TreeDTO } from "@/components/common/HierarchyTree";
 import {
   HandleDeleteStatusClick,
   HandleEditStatusClickProps,
@@ -218,4 +219,31 @@ export const getPriorityDashColor = (priority: string) => {
     // default:
     //   return "border-slate-600";
   }
+};
+
+export type OriginalTaskTree = {
+  id: string;
+  name: string;
+  subTask?: OriginalTaskTree[];
+};
+
+export const flattenTasks = (
+  tasks: OriginalTaskTree[],
+  parentId: string | null = null
+): TreeDTO[] => {
+  const flatTasks: TreeDTO[] = [];
+
+  tasks.forEach((task) => {
+    flatTasks.push({
+      id: task.id,
+      name: task.name,
+      parentId: parentId,
+    });
+
+    if (task.subTask && task.subTask.length > 0) {
+      flatTasks.push(...flattenTasks(task.subTask, task.id));
+    }
+  });
+
+  return flatTasks;
 };

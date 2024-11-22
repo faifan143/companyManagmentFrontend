@@ -84,11 +84,12 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
+import { flattenTasks, OriginalTaskTree } from "@/services/task.service";
 import { RootState } from "@/state/store";
 import { ProjectType } from "@/types/Project.type";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const TasksView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("list");
@@ -108,7 +109,7 @@ const TasksView: React.FC = () => {
 
   const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<{
     info: ReceiveTaskType[];
-    tree: TreeDTO[];
+    tree: OriginalTaskTree[];
   }>({
     queryKey: ["tasks", selectedOption],
     url: `http://${process.env.BASE_URL}/tasks/tree?${selectedOption}`,
@@ -144,16 +145,20 @@ const TasksView: React.FC = () => {
   const { data: sections, isLoading: isSectionsLoading } = useCustomQuery<
     SectionType[]
   >({
-    queryKey: ["sections", selectedOption],
+    queryKey: ["sections", selectedOption, selectedDept ?? "one"],
     url: `http://${process.env.BASE_URL}/sections/${
       myProj && myDept
         ? `department/${selectedDept}`
-        : selectedOption == "get-my-dept-tasks"
-        ? `manager-section`
+        : myDept
+        ? `department/${selectedDept}`
         : `department/${selector}`
     }`,
     setSnackbarConfig,
   });
+
+  useEffect(() => {
+    console.log(selectedOption);
+  }, [selectedOption]);
 
   const canViewTasks = usePermissions(["task_search_and_view"]);
 
@@ -177,6 +182,8 @@ const TasksView: React.FC = () => {
               className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
               onChange={(e) => {
                 const value = e.target.value;
+
+
                 setSelectedDept(value);
                 const deptOption = `departmentId=${value}`;
                 const projOption = selectedProj
@@ -286,7 +293,7 @@ const TasksView: React.FC = () => {
         )}
         {activeTab === "tree" && tasksData && (
           <HierarchyTree
-            data={tasksData.tree}
+            data={flattenTasks(tasksData.tree)}
             width="100%"
             isDraggable={true}
           />

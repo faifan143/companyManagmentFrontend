@@ -54,8 +54,12 @@ const AddTask: React.FC = () => {
   });
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
-    queryKey: ["departments"],
-    url: `http://${baseUrl}/department/tree`,
+    queryKey: ["departments", selectedProject ?? "two"],
+    url: `http://${baseUrl}/${
+      !isProjectDisabled && selectedProject
+        ? `projects/project-departments-tree/${selectedProject}`
+        : "department/tree"
+    }`,
     setSnackbarConfig,
   });
 
@@ -68,7 +72,7 @@ const AddTask: React.FC = () => {
   const { mutate: addTask, isPending } = useCreateMutation({
     endpoint: selectedEmployee
       ? `/tasks/create`
-      : selectedDepartment
+      : selectedDepartment && isProjectDisabled
       ? `/tasks/create-task-department`
       : `/tasks/create-task-project`,
     onSuccessMessage: t("Task added successfully!"),
@@ -109,11 +113,15 @@ const AddTask: React.FC = () => {
       getErrorMessages({ errors, setSnackbarConfig });
     }
   }, [errors, setSnackbarConfig]);
+
   const target = selectedEmployee
     ? { emp: getValues("emp") }
-    : selectedDepartment
+    : selectedDepartment && isProjectDisabled
     ? { department_id: getValues("department_id") }
-    : { project_id: getValues("project_id") };
+    : {
+        project_id: getValues("project_id"),
+        department_id: getValues("department_id"),
+      };
 
   return (
     <GridContainer>
