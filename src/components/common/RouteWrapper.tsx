@@ -24,7 +24,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 
   const handleRoute = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    if (href != pathname) setIsLoading(true);
     if (onClick) onClick();
     router.push(href);
   };
@@ -37,7 +37,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 
   return (
     <>
-      {isLoading && <PageSpinner  />}
+      {isLoading && <PageSpinner />}
       <Link href={href} className={className} onClick={handleRoute}>
         {children}
       </Link>
