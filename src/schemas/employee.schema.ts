@@ -15,8 +15,6 @@ export const addEmpSchema = yup.object().shape({
       "Employment date must be in YYYY-MM-DD format"
     ),
   base_salary: yup.number().required("Base salary is required"),
-
-  //
   dob: yup
     .string()
     .required("Date of birth is required")
@@ -29,12 +27,12 @@ export const addEmpSchema = yup.object().shape({
     .string()
     .required("Email is required")
     .email("Invalid email format"),
-  password: yup.string().required("password is required"),
+  password: yup.string().nullable(),
+
   department_id: yup.string().required("Department ID is required"),
   job_id: yup.string().required("Job ID is required"),
   job_tasks: yup.string().required("Job tasks is required"),
   emergency_contact: yup.string().required("emergency contact is required"),
-
   legal_documents: yup
     .array()
     .of(

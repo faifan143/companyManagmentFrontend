@@ -108,15 +108,15 @@ const ProjectsContent = () => {
                     isLightMode
                       ? "hover:bg-darker text-blackAF"
                       : "hover:bg-slate-700 text-twhite"
-                  }  group transition-colors`}
-                  onClick={() =>
-                    navigateWithLoading("/projects/details/" + project._id)
-                  }
+                  }  group transition-colors  cursor-pointer`}
                 >
                   <td
                     className={`py-3 px-4 text-center ${
                       isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
+                    onClick={() =>
+                      navigateWithLoading("/projects/details/" + project._id)
+                    }
                   >
                     {project.name}
                   </td>
@@ -124,10 +124,18 @@ const ProjectsContent = () => {
                     className={` py-3 px-4 text-center ${
                       isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
+                    onClick={() =>
+                      navigateWithLoading("/projects/details/" + project._id)
+                    }
                   >
                     {project.description}
                   </td>
-                  <td className="py-3 px-4 text-center ">
+                  <td
+                    className="py-3 px-4 text-center "
+                    onClick={() =>
+                      navigateWithLoading("/projects/details/" + project._id)
+                    }
+                  >
                     {project.departments.length === 1 ? (
                       <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
                         {project.departments[0].name}
@@ -200,7 +208,11 @@ const ProjectsContent = () => {
                     )}
                   </td> */}
 
-                  <td>
+                  <td
+                    onClick={() =>
+                      navigateWithLoading("/projects/details/" + project._id)
+                    }
+                  >
                     <div
                       className={`  border-2  border-purple-500/30  bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
                     >
@@ -211,7 +223,11 @@ const ProjectsContent = () => {
                     </div>
                   </td>
 
-                  <td>
+                  <td
+                    onClick={() =>
+                      navigateWithLoading("/projects/details/" + project._id)
+                    }
+                  >
                     <div
                       className={`border-2  border-yellow-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold  ${
                         isDueSoon(project.endDate) ? "flash" : ""

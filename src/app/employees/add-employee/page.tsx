@@ -30,6 +30,8 @@ const baseUrl = process.env.BASE_URL || "";
 const AddEmp: React.FC = () => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const router = useRouter();
+  const [legalFileNames, setLegalFileNames] = useState({}); // Track file names by document index
+  const [certificationFileNames, setCertificationFileNames] = useState({}); // Track file names by document index
 
   const {
     register,
@@ -44,7 +46,6 @@ const AddEmp: React.FC = () => {
     defaultValues: {},
   });
   const employeeData = useQueryPageData<EmployeeFormInputs>(reset);
-  console.log(employeeData);
   const { isLightMode } = useCustomTheme();
   const { t } = useTranslation();
   const [selectedDept, setSelectedDept] = useState<string>("");
@@ -246,12 +247,14 @@ const AddEmp: React.FC = () => {
               </p>
             )}
           </div>
+
           {/* Passwword Field */}
           <div>
             <label className="block  text-sm font-medium">
               {t("Password")}
             </label>
             <input
+              disabled={!!employeeData}
               type="text"
               {...register("password")}
               className={`w-full  ${
@@ -261,7 +264,11 @@ const AddEmp: React.FC = () => {
               }  outline-none border-none   px-4 py-2 mt-1 rounded-lg border ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder={t("Enter Employee Password")}
+              placeholder={
+                employeeData
+                  ? t("Can't Update Employee Password")
+                  : t("Enter Employee Password")
+              }
             />
             {errors.password && (
               <p className="text-red-500 mt-1 text-sm">
@@ -470,6 +477,7 @@ const AddEmp: React.FC = () => {
               {t("Department")}
             </label>
             <select
+              disabled={!!employeeData}
               {...register("department_id")}
               className={`w-full ${
                 isLightMode
@@ -503,6 +511,7 @@ const AddEmp: React.FC = () => {
               {t("Job Title")}
             </label>
             <select
+              disabled={!!employeeData}
               {...register("job_id")}
               className={`w-full ${
                 isLightMode
@@ -589,16 +598,35 @@ const AddEmp: React.FC = () => {
                       : "bg-secondary"
                   }  outline-none border-none`}
                 />
+
+                {/* <div
+                  className={`w-full px-4 py-2 mt-1 rounded-lg border-2 border-dashed border-tmid text-center text-tmid cursor-pointer ${
+                    isLightMode
+                      ? "bg-dark placeholder:text-tdark"
+                      : "bg-secondary"
+                  } outline-none`}
+                  onClick={() =>
+                    document.getElementById(`fileInput${index}`).click()
+                  }
+                >
+                  {fileNames[index] || "Add File"}{" "}
+                </div>
                 <input
+                  id={`fileInput${index}`}
                   type="file"
-                  onChange={(e) =>
+                  style={{ display: "none" }}
+                  onChange={(e) => handleFileSelect(e, index)} // Handle file selection
+                /> */}
+
+                <FileUpload
+                  index={index}
+                  fieldName="legal_documents"
+                  fileNames={legalFileNames}
+                  setFileNames={setLegalFileNames}
+                  handleFileChange={(e) =>
                     handleFileChange(e, index, "legal_documents", setValue)
                   }
-                  className={`w-full px-4 py-2 mt-1 rounded-lg border  ${
-                    isLightMode
-                      ? "bg-dark  placeholder:text-tdark "
-                      : "bg-secondary"
-                  }  outline-none border-none`}
+                  isLightMode={isLightMode}
                 />
               </div>
               <button
@@ -666,7 +694,7 @@ const AddEmp: React.FC = () => {
                       : "bg-secondary"
                   }  outline-none border-none`}
                 />
-                <input
+                {/* <input
                   type="file"
                   onChange={(e) =>
                     handleFileChange(e, index, "certifications", setValue)
@@ -676,6 +704,16 @@ const AddEmp: React.FC = () => {
                       ? "bg-dark  placeholder:text-tdark "
                       : "bg-secondary"
                   }  outline-none border-none`}
+                /> */}
+                <FileUpload
+                  index={index}
+                  fieldName="certifications"
+                  fileNames={certificationFileNames}
+                  setFileNames={setCertificationFileNames}
+                  handleFileChange={(e) =>
+                    handleFileChange(e, index, "certifications", setValue)
+                  }
+                  isLightMode={isLightMode}
                 />
               </div>
               <button
@@ -934,3 +972,51 @@ const AddEmp: React.FC = () => {
 };
 
 export default AddEmp;
+
+const FileUpload = ({
+  index,
+  fileNames,
+  setFileNames,
+  handleFileChange,
+  isLightMode,
+  fieldName, // The name of the field being uploaded
+}) => {
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (file) {
+      setFileNames((prev) => ({
+        ...prev,
+        [fieldName]: {
+          ...(prev[fieldName] || {}),
+          [index]: file.name,
+        },
+      })); // Update file name for this field and index
+    }
+    handleFileChange(e); // Call parent handler
+  };
+
+  return (
+    <div>
+      {/* Display File Upload Div */}
+      <div
+        className={`w-full px-4 py-2 mt-1 rounded-lg border-2 border-dashed border-tmid text-center text-tmid cursor-pointer ${
+          isLightMode ? "bg-dark placeholder:text-tdark" : "bg-secondary"
+        } outline-none`}
+        onClick={() =>
+          document.getElementById(`fileInput-${fieldName}-${index}`).click()
+        }
+      >
+        {fileNames[fieldName]?.[index] || "Add File"}{" "}
+        {/* Show file name or placeholder */}
+      </div>
+
+      {/* Hidden File Input */}
+      <input
+        id={`fileInput-${fieldName}-${index}`}
+        type="file"
+        style={{ display: "none" }}
+        onChange={handleFileSelect} // Handle file selection
+      />
+    </div>
+  );
+};

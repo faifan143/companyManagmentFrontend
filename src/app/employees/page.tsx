@@ -3,9 +3,9 @@
 
 import { TableIcon, TreeIcon } from "@/assets";
 import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
+import RouteWrapper from "@/components/common/RouteWrapper";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
-import PageSpinner from "@/components/common/atoms/PageSpinner";
 import TasksTab from "@/components/common/atoms/TasksTab";
 import CreateEmployee from "@/components/common/molcules/CreateEmployee";
 import EmployeesContent from "@/components/common/molcules/EmployeesContent";
@@ -14,7 +14,6 @@ import {
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeFormInputs } from "@/types/EmployeeType.type";
 import React, { useState } from "react";
@@ -25,7 +24,7 @@ const EmployeesView: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<EmployeeFormInputs | null>(null);
-  const { loading, navigateWithLoading } = useNavigationWithLoading();
+
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const empLink = isAdmin ? "get-all-emps" : "get-my-emps";
@@ -44,8 +43,6 @@ const EmployeesView: React.FC = () => {
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
-        {loading && <PageSpinner />}
-
         <h1 className="text-3xl font-bold text-twhite text-center ">
           {t("Employees Management")}
         </h1>
@@ -72,15 +69,14 @@ const EmployeesView: React.FC = () => {
           )}
 
           {isAdmin && (
-            <button
-              className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
-              onClick={() => {
-                setEditData(null);
-                navigateWithLoading("/employees/add-employee");
-              }}
+            <RouteWrapper
+              href="/employees/add-employee"
+              onClick={() => setEditData(null)}
             >
-              {t("Add Employee")}
-            </button>
+              <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
+                {t("Add Employee")}
+              </div>
+            </RouteWrapper>
           )}
         </div>
       </div>
@@ -97,7 +93,7 @@ const EmployeesView: React.FC = () => {
           <EmployeesContent selectedOption={selectedOption} />
         )}
         {activeTab == "tree" && employeesTree && (
-          <HierarchyTree data={employeesTree} width="100%" />
+          <HierarchyTree data={employeesTree} width="100%" isDraggable={true} />
         )}
       </div>
 

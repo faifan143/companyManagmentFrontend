@@ -102,11 +102,11 @@ export const useCreateMutation = <
         queryClient.invalidateQueries(key);
       });
     },
-    onError: (error: unknown) => {
+    onError: (error: any) => {
       console.error(t("Error during the create/add request:"), error);
       setSnackbarConfig({
         open: true,
-        message: `${t("Error")}: ${error || t("An error occurred")}`,
+        message: `${t("Error")}: ${error.message || t("An error occurred")}`,
         severity: "error",
       });
     },

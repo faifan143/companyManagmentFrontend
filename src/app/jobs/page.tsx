@@ -1,19 +1,17 @@
 "use client";
 
 import GridContainer from "@/components/common/atoms/GridContainer";
-import PageSpinner from "@/components/common/atoms/PageSpinner";
 import JobTitleContent from "@/components/common/molcules/JobTitleContent";
+import RouteWrapper from "@/components/common/RouteWrapper";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const JobTitlesView: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState("get-job-titles");
-  const { loading, navigateWithLoading } = useNavigationWithLoading();
   const isAdmin = useRolePermissions("admin");
   const { t } = useTranslation();
 
@@ -24,7 +22,6 @@ const JobTitlesView: React.FC = () => {
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
-        {loading && <PageSpinner />}
         <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Job Titles")}
         </h1>
@@ -45,14 +42,11 @@ const JobTitlesView: React.FC = () => {
           )}
           {isAdmin && (
             <>
-              <button
-                className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
-                onClick={() => {
-                  navigateWithLoading("/jobs/add-title");
-                }}
-              >
-                {t("Add Job Title")}
-              </button>
+              <RouteWrapper href="/jobs/add-title">
+                <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
+                  {t("Add Job Title")}
+                </div>
+              </RouteWrapper>
             </>
           )}
         </div>

@@ -3,16 +3,15 @@
 import { TableIcon, TreeIcon } from "@/assets";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
-import PageSpinner from "@/components/common/atoms/PageSpinner";
 import TasksTab from "@/components/common/atoms/TasksTab";
 import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 import DepartmentsContent from "@/components/common/molcules/DepartmentsContent";
+import RouteWrapper from "@/components/common/RouteWrapper";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import React, { useState } from "react";
@@ -36,13 +35,11 @@ const DepartmentsView: React.FC = () => {
     url: `http://${process.env.BASE_URL}/department/tree`,
     setSnackbarConfig,
   });
-  const { loading, navigateWithLoading } = useNavigationWithLoading();
 
   const showSelect = isAdmin || (canViewSpecificDepartments && isPrimary);
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
-        {loading && <PageSpinner />}
         <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Departments")}
         </h1>
@@ -63,15 +60,14 @@ const DepartmentsView: React.FC = () => {
           )}
 
           {isAdmin && (
-            <button
-              className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
-              onClick={() => {
-                setEditData(null);
-                navigateWithLoading("/departments/add-department");
-              }}
+            <RouteWrapper
+              href="/departments/add-department"
+              onClick={() => setEditData(null)}
             >
-              {t("Add Department")}
-            </button>
+              <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
+                {t("Add Department")}
+              </div>
+            </RouteWrapper>
           )}
         </div>
       </div>
@@ -90,7 +86,11 @@ const DepartmentsView: React.FC = () => {
         {activeTab == "tree" && (
           <>
             {departmentsTree && (
-              <HierarchyTree data={departmentsTree} width="100%" />
+              <HierarchyTree
+                data={departmentsTree}
+                width="100%"
+                isDraggable={true}
+              />
             )}
           </>
         )}

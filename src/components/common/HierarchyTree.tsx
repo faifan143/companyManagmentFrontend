@@ -3,10 +3,14 @@
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
+  applyEdgeChanges,
+  applyNodeChanges,
   Background,
   Edge,
+  EdgeChange,
   Handle,
   Node,
+  NodeChange,
   NodeProps,
   Position,
 } from "reactflow";
@@ -26,6 +30,7 @@ export type TreeDTO = {
 // };
 
 type HierarchyTreeProps = {
+  isDraggable?: boolean;
   data: TreeDTO[];
   nodeStyles?: (isLightMode: boolean, isManager?: boolean) => string; // Function for custom node styles
   nodeColors?: { target: string; source: string }; // Custom colors for target/source handles
@@ -85,6 +90,7 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
   width = "70%",
   lightMode = false,
   onPress,
+  isDraggable = false,
 }) => {
   const CustomNode = ({ data }: NodeProps) => {
     return (
@@ -120,16 +126,16 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
     }
   }, [data]);
 
-  // const onNodesChange = useCallback(
-  //   (changes: NodeChange[]) =>
-  //     setNodes((nds) => applyNodeChanges(changes, nds)),
-  //   []
-  // );
-  // const onEdgesChange = useCallback(
-  //   (changes: EdgeChange[]) =>
-  //     setEdges((eds) => applyEdgeChanges(changes, eds)),
-  //   []
-  // );
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) =>
+      setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) =>
+      setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -145,16 +151,30 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
     <div
       className={`h-[500px] w-[${width}] border-4 border-slate-600 rounded-3xl shadow-lg`}
     >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodeClick={onNodeClick}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-      >
-        <Background />
-      </ReactFlow>
+      {isDraggable ? (
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+        >
+          <Background />
+        </ReactFlow>
+      ) : (
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodeClick={onNodeClick}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+        >
+          <Background />
+        </ReactFlow>
+      )}
     </div>
   );
 };

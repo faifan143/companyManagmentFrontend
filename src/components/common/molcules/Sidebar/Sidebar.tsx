@@ -5,13 +5,13 @@ import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { RootState } from "@/state/store";
 import Image from "next/image";
-import Link from "next/link";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import ChatModal from "../../atoms/ChatModal";
-import { sidebarItems } from "./data";
+import RouteWrapper from "../../RouteWrapper";
 import Tooltip from "../../Tooltip";
+import { sidebarItems } from "./data";
 
 const Sidebar = ({
   isExpanded,
@@ -59,12 +59,11 @@ const Sidebar = ({
           isLightMode ? "bg-darkest" : "bg-main"
         }   ${isExpanded ? "w-[350px] backdrop-blur" : "w-[92px]"}`}
       >
-        <div className="sidebar flex flex-col space-y-4 py-4">
-          {visibleItems.map((item) => (
-            <Link
-              key={item.label}
+        <div className="sidebar flex flex-col items-center space-y-4 py-4">
+          {visibleItems.map((item, index) => (
+            <RouteWrapper
               href={item.path}
-              passHref
+              key={index}
               onClick={() => handleTabClick(item.path)}
             >
               <Tooltip content={item.label} position="right">
@@ -77,7 +76,7 @@ const Sidebar = ({
                   onClick={() => {}}
                 />
               </Tooltip>
-            </Link>
+            </RouteWrapper>
           ))}
           <div className="h-[1px] w-full bg-slate-200"></div>
           <SidebarItem

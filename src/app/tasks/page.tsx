@@ -8,13 +8,13 @@ import TasksTab from "@/components/common/atoms/TasksTab";
 import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 import TaskList from "@/components/common/organisms/TaskList";
 import TasksContent from "@/components/common/organisms/TasksContent";
+import RouteWrapper from "@/components/common/RouteWrapper";
 import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
 import { RootState } from "@/state/store";
@@ -24,7 +24,6 @@ import { ReceiveTaskType } from "@/types/Task.type";
 import React, { useState } from "react";
 
 const TasksView: React.FC = () => {
-  const { loading, navigateWithLoading } = useNavigationWithLoading();
   const [activeTab, setActiveTab] = useState<string>("list");
   const [myProj, setMyProj] = useState(false);
   const { t } = useLanguage();
@@ -86,8 +85,6 @@ const TasksView: React.FC = () => {
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
-        {loading && <PageSpinner />}
-
         {isSectionsLoading ? (
           <PageSpinner title={t("sections Loading ...")} />
         ) : (
@@ -144,13 +141,11 @@ const TasksView: React.FC = () => {
           )}
 
           {(isAdmin || isPrimary) && (
-            <button
-              type="button"
-              className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
-              onClick={() => navigateWithLoading("/tasks/add-task")}
-            >
-              {t("Add Task")}
-            </button>
+            <RouteWrapper href="/tasks/add-task">
+              <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
+                {t("Add Task")}
+              </div>
+            </RouteWrapper>
           )}
         </div>
       </div>
@@ -181,7 +176,7 @@ const TasksView: React.FC = () => {
           </GridContainer>
         )}
         {activeTab === "tree" && tasksTree && (
-          <HierarchyTree data={tasksTree} width="100%" />
+          <HierarchyTree data={tasksTree} width="100%" isDraggable={true} />
         )}
       </div>
 
