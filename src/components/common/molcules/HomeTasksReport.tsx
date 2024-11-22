@@ -43,7 +43,7 @@ const HomeTasksReport = ({
           isCentered ? "mx-auto w-[70%]" : ""
         }  mt-5 p-5 text-twhite border border-slate-700`}
       >
-        <div className="text-lg font-bold">{t("My Tasks")}</div>
+        <div className="text-lg font-bold">{t("Tasks")}</div>
         <div className="flex items-center gap-3 text-sm my-5 font-semibold border-b border-slate-700">
           <div
             onClick={() => setStatus("upcoming")}
