@@ -9,29 +9,27 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
+import useQueryPageData from "@/hooks/useQueryPageData";
+import useSnackbar from "@/hooks/useSnackbar";
+import { addDeptSchema } from "@/schemas/department.schema";
+import {
+  handleAddCategory,
+  handleAddNumericOwner,
+  handleManualSubmit,
+} from "@/services/department.service";
 import {
   DepartmentFormInputs,
   DepartmentType,
 } from "@/types/DepartmentType.type";
 import { JobCategoryType } from "@/types/JobTitle.type";
-import { addDeptSchema } from "@/schemas/department.schema";
+import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import {
-  handleAddCategory,
-  handleAddNumericOwner,
-  handleFileChange,
-  handleManualSubmit,
-  handleRemoveFile,
-} from "@/services/department.service";
-import getErrorMessages from "@/utils/handleErrorMessages";
-import useQueryPageData from "@/hooks/useQueryPageData";
 import { useTranslation } from "react-i18next";
-import useSnackbar from "@/hooks/useSnackbar";
-import useCustomTheme from "@/hooks/useCustomTheme";
-import { useRouter } from "next/navigation";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -398,7 +396,7 @@ const AddDept: React.FC = () => {
 
           {/* Supporting Files Section */}
           <div>
-            <div className="block text-tmid text-sm font-medium">
+            {/* <div className="block text-tmid text-sm font-medium">
               {t("Supporting Files")}
             </div>
 
@@ -406,16 +404,16 @@ const AddDept: React.FC = () => {
               hidden
               id="file-id"
               type="file"
-              multiple // Allow multiple files
-              onChange={(e) => handleFileChange(e, setSelectedFiles)} // Handle file selection
+              multiple
+              onChange={(e) => handleFileChange(e, setSelectedFiles)} 
               className={`    ${
                 isLightMode
                   ? "bg-dark  placeholder:text-tdark "
                   : "bg-secondary"
               }  w-full  bg-secondary border-none outline-none  px-4 py-2 mt-1 rounded-lg `}
-            />
+            /> */}
             {/* Display selected file names */}
-            {selectedFiles.map((file, index) => (
+            {/* {selectedFiles.map((file, index) => (
               <div key={index} className="flex gap-4 items-center">
                 <span>{file.name}</span>
                 <Image
@@ -434,7 +432,7 @@ const AddDept: React.FC = () => {
               className="text-sm text-tbright underline cursor-pointer"
             >
               {t("Attach Supporting File")}
-            </label>
+            </label> */}
           </div>
 
           {/* Required Reports Section */}

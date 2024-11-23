@@ -59,7 +59,7 @@ const Sidebar = ({
           isLightMode ? "bg-darkest" : "bg-main"
         }   ${isExpanded ? "w-[350px] backdrop-blur" : "w-[92px]"}`}
       >
-        <div className="sidebar flex flex-col items-center space-y-4 py-4">
+        <div className="sidebar flex flex-col space-y-4 py-4">
           {visibleItems.map((item, index) => (
             <RouteWrapper
               href={item.path}
@@ -79,13 +79,16 @@ const Sidebar = ({
             </RouteWrapper>
           ))}
           <div className="h-[1px] w-full bg-slate-200"></div>
-          <SidebarItem
-            icon={ChatsIcon}
-            label={t(`Department Chat`)}
-            isExpanded={isExpanded}
-            isSelected={isChatOpen}
-            onClick={() => setIsChatOpen((prev) => !prev)}
-          />
+          <div className="flex justify-start">
+            <SidebarItem
+              icon={ChatsIcon}
+              label={t(`Department Chat`)}
+              isExpanded={isExpanded}
+              isSelected={isChatOpen}
+              onClick={() => setIsChatOpen((prev) => !prev)}
+            
+            />
+          </div>
           <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </div>
       </div>

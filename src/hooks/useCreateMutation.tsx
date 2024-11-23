@@ -103,10 +103,14 @@ export const useCreateMutation = <
       });
     },
     onError: (error: any) => {
-      console.error(t("Error during the create/add request:"), error);
+      const errorMessage =
+        error?.response?.data?.error || t("An error occurred");
+
+      console.error("Detailed Error:", errorMessage);
+
       setSnackbarConfig({
         open: true,
-        message: `${t("Error")}: ${error.message || t("An error occurred")}`,
+        message: errorMessage,
         severity: "error",
       });
     },
