@@ -25,6 +25,9 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
   const handleRoute = (e: React.MouseEvent) => {
     e.preventDefault();
     if (href != pathname) setIsLoading(true);
+    console.log("pathname : ", pathname);
+    console.log("href : ", href);
+
     if (onClick) onClick();
     router.push(href);
   };

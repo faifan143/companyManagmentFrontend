@@ -7,14 +7,14 @@ import {
 } from "@/assets";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import { logout } from "@/state/slices/userSlice";
 import { AppDispatch, RootState } from "@/state/store";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import PageSpinner from "./PageSpinner";
+import RouteWrapper from "../RouteWrapper";
 
 const NewHeader = ({
   setIsExpanded,
@@ -26,8 +26,7 @@ const NewHeader = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, navigateWithLoading, replaceWithLoading } =
-    useNavigationWithLoading();
+  const router = useRouter();
   const { isLightMode, toggleThemes } = useCustomTheme();
   const { toggleLanguage, getDir } = useLanguage();
 
@@ -39,19 +38,12 @@ const NewHeader = ({
     setIsExpanded((prev) => !prev);
   };
 
-  const handleProfile = () => {
-    console.log("Profile clicked");
-    navigateWithLoading("/profile");
-    setIsDropdownOpen(false);
-  };
-
   return (
     <div
       className={`${
         isLightMode ? "bg-darkest" : "bg-main"
       } fixed top-0 right-0 left-0  py-2 px-[2%] flex justify-between items-center border-b border-slate-600  z-20`}
     >
-      {loading && <PageSpinner />}
       <Image
         src={MoreIcon}
         alt="more icon"
@@ -109,20 +101,24 @@ const NewHeader = ({
       {isDropdownOpen && (
         <div className="absolute -top-1 right-9 z-10 mt-12 min-w-32 bg-secondary shadow-md rounded-lg ">
           <ul className="flex flex-col text-twhite">
-            <li
-              onClick={handleProfile}
-              className={`px-4 py-2 ${
-                isLightMode
-                  ? "hover:bg-darkest hover:text-tblackAF"
-                  : "hover:bg-tblack"
-              }   rounded-t-lg cursor-pointer`}
+            <RouteWrapper
+              href="/profile"
+              onClick={() => setIsDropdownOpen(false)}
             >
-              {t("Profile")}
-            </li>
+              <li
+                className={`px-4 py-2 ${
+                  isLightMode
+                    ? "hover:bg-darkest hover:text-tblackAF"
+                    : "hover:bg-tblack"
+                }   rounded-t-lg cursor-pointer`}
+              >
+                {t("Profile")}
+              </li>
+            </RouteWrapper>
             <li
               onClick={() => {
                 dispatch(logout());
-                replaceWithLoading("/auth");
+                router.replace("/auth");
               }}
               className={`px-4 py-2 ${
                 isLightMode

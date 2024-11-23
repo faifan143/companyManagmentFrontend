@@ -34,9 +34,9 @@ const ProfileProjectsReport = () => {
 
         <div className="w-full">
           {projects &&
-            projects.map((project) => (
+            projects.map((project, index) => (
               <div
-                key={project._id}
+                key={index}
                 className="hover:bg-slate-700 transition-colors my-2  px-4 bg-dark rounded-md flex items-center justify-between group"
               >
                 <div
@@ -57,7 +57,7 @@ const ProfileProjectsReport = () => {
                       <div className="flex justify-center -space-x-4" dir="ltr">
                         {project.departments.slice(0, 3).map((dept, index) => (
                           <div
-                            key={dept.id}
+                            key={index}
                             className={`relative ${
                               collabColors[index % collabColors.length]
                             } cursor-pointer text-twhite rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
@@ -72,7 +72,7 @@ const ProfileProjectsReport = () => {
                         ))}
                         {project.departments.length > 3 && (
                           <div
-                            className="relative text-twhite bg-slate-600/50 cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
+                            className="relative text-twhite  cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
                             title={project.departments
                               .slice(3)
                               .map((dept) => dept.name)
@@ -108,7 +108,7 @@ const ProfileProjectsReport = () => {
                         ))}
                         {project.members.length > 3 && (
                           <div
-                            className="relative text-twhite bg-slate-600/50 cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold shadow-lg"
+                            className="relative text-twhite  cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold shadow-lg"
                             title={project.members
                               .slice(3)
                               .map((member) => member.name)
