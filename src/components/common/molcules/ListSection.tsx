@@ -1,16 +1,16 @@
 import { ArrowDownIcon, PencilIcon, ThreeDotsIcon, TrashIcon } from "@/assets";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomTheme from "@/hooks/useCustomTheme";
+import useHierarchy from "@/hooks/useHierarchy";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
-import { SectionType } from "@/types/Section.type";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { SectionType } from "@/types/section.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import AddSectionModal from "../atoms/AddSectionModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import PageSpinner from "../atoms/PageSpinner";
-import useHierarchy from "@/hooks/useHierarchy";
-import useCustomTheme from "@/hooks/useCustomTheme";
 
 const ListSection: React.FC<{
   section: SectionType;
@@ -22,7 +22,7 @@ const ListSection: React.FC<{
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
   const { currentLanguage } = useLanguage();
   const { isLightMode } = useCustomTheme();
-  const { renderTaskWithSubtasks } = useHierarchy();
+  const { renderTaskWithSubtasks, organizeTasksByHierarchy } = useHierarchy();
   useEffect(() => {
     if (isMenuOpen) {
       setInterval(() => setIsMenuOpen(false), 5000);
@@ -133,9 +133,9 @@ const ListSection: React.FC<{
         ))} */}
       {isOpen &&
         tasks &&
-        tasks
-          .filter((task) => !task.parent_task)
-          .map((task) => renderTaskWithSubtasks(task, 0))}
+        organizeTasksByHierarchy(tasks).map((task) =>
+          renderTaskWithSubtasks(task, 0)
+        )}
 
       {isRenameOpen && (
         <>

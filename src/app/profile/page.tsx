@@ -12,7 +12,7 @@ import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate } from "@/services/task.service";
 import { RootState } from "@/state/store";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 
 const Profile = () => {
   const { selector: info } = useRedux(

@@ -10,6 +10,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import userReducer from "./slices/userSlice";
+import wrapperReducer from "./slices/wrapper.slice";
 import themeReducer from "./slices/themeSlice";
 
 const persistConfig = {
@@ -21,6 +22,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   user: userReducer,
   theme: themeReducer,
+  wrapper: wrapperReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

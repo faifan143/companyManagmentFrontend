@@ -1,7 +1,7 @@
 import useHierarchy from "@/hooks/useHierarchy";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import GridContainer from "../atoms/GridContainer";
 
@@ -12,7 +12,7 @@ const ListTasks = ({
 }) => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t, currentLanguage } = useLanguage();
-  const { renderTaskWithSubtasks } = useHierarchy();
+  const { renderTaskWithSubtasks, organizeTasksByHierarchy } = useHierarchy();
 
   return (
     <>
@@ -44,7 +44,9 @@ const ListTasks = ({
             </div>
             <div>
               {tasksData && tasksData.length > 0 ? (
-                tasksData.map((task) => renderTaskWithSubtasks(task, 0))
+                organizeTasksByHierarchy(tasksData).map((task) =>
+                  renderTaskWithSubtasks(task, 0)
+                )
               ) : (
                 <div className="text-center mx-auto text-twhite">
                   {t("No Tasks")}

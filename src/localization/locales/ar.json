@@ -330,6 +330,13 @@
     "Is Overdue": "هل تعدى الموعد النهائي",
     "Project Details": "تفاصيل المشروع",
     "Tree": "شجرة",
-    "Table": "جدول"
+    "Table": "جدول",
+    "Rate your experience": "قيّم تجربتك",
+    "Your rating:": "تقييمك:",
+    "of": "من",
+    "Select your rating": "اختر تقييمك",
+    "Cancel": "إلغاء",
+    "Submit": "إرسال",
+    "Rate this Task": "قيّم هذه المهمة"
   }
 }

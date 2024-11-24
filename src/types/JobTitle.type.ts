@@ -1,4 +1,4 @@
-import { DepartmentType } from "./DepartmentType.type";
+import { DepartmentType } from "./departmentType.type";
 
 export interface JobTitleType {
   id: string;

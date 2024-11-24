@@ -4,8 +4,8 @@ import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addSubTaskSchema } from "@/schemas/task.schema";
-import { EmployeeType } from "@/types/EmployeeType.type";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
+import { EmpTree } from "@/types/trees/emp.tree.type";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -28,14 +28,12 @@ const AddSubTaskModal: React.FC<{
   });
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
 
-  const { data: employees } = useCustomQuery<EmployeeType[]>({
+  const { data: employees } = useCustomQuery<{ tree: EmpTree[] }>({
     queryKey: ["employees"],
     url: `http://${process.env.BASE_URL}/emp/tree`,
     setSnackbarConfig,
   });
 
-
-  
   const { mutate: addSection, isPending } = useCreateMutation({
     endpoint: `/tasks/add-subtask/${parentTask?.id}`,
     onSuccessMessage: `SubTask Added successfully!`,
@@ -162,9 +160,10 @@ const AddSubTaskModal: React.FC<{
                   >
                     <option value="">{t("Select an employee")}</option>
                     {employees &&
-                      employees.map((emp) => (
+                      employees.tree &&
+                      employees.tree.map((emp) => (
                         <option key={emp.id} value={emp.id}>
-                          {emp.name}
+                          {emp.name + " - " + emp.title}
                         </option>
                       ))}
                   </select>

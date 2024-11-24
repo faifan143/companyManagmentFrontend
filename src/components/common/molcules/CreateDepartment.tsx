@@ -10,7 +10,7 @@ import {
   CreateDepartmentProps,
   DepartmentFormInputs,
   DepartmentType,
-} from "@/types/DepartmentType.type";
+} from "@/types/departmentType.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";

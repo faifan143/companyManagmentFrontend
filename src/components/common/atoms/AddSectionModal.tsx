@@ -3,7 +3,7 @@ import { useCreateMutation } from "@/hooks/useCreateMutation";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
 import { RootState } from "@/state/store";
-import { SectionType } from "@/types/Section.type";
+import { SectionType } from "@/types/section.type";
 import Image from "next/image";
 import React, { ChangeEvent, useState } from "react";
 import CustomizedSnackbars from "./CustomizedSnackbars";

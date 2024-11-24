@@ -15,7 +15,7 @@ import {
   getPriorityBorderColor,
   isDueSoon,
 } from "@/services/task.service";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import Image from "next/image";
 import React, { useState } from "react";
 import CustomizedSnackbars from "./CustomizedSnackbars";

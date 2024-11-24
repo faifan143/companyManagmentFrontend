@@ -1,5 +1,5 @@
 import useHierarchy from "@/hooks/useHierarchy";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -14,23 +14,15 @@ const HomeTasksReport = ({
     "upcoming"
   );
   const { t } = useTranslation();
-  const { renderHomeTaskWithSubtasks } = useHierarchy();
+  const { renderHomeTaskWithSubtasks, organizeTasksByHierarchy } =
+    useHierarchy();
 
   const currently =
     tasksData &&
-    tasksData
-      .filter((task) => !task.is_over_due && task.status != "DONE")
-      .filter((task) => !task.parent_task);
-  const overdue =
-    tasksData &&
-    tasksData
-      .filter((task) => task.is_over_due)
-      .filter((task) => !task.parent_task);
+    tasksData.filter((task) => !task.is_over_due && task.status != "DONE");
+  const overdue = tasksData && tasksData.filter((task) => task.is_over_due);
   const completed =
-    tasksData &&
-    tasksData
-      .filter((task) => task.status == "DONE")
-      .filter((task) => !task.parent_task);
+    tasksData && tasksData.filter((task) => task.status == "DONE");
 
   useEffect(() => {
     console.log("overdue: ", overdue);
@@ -79,10 +71,9 @@ const HomeTasksReport = ({
         {status == "upcoming" && (
           <div className="w-full">
             {currently && currently.length > 0 ? (
-              currently &&
-              currently.map((task) => {
-                return renderHomeTaskWithSubtasks(task, 0);
-              })
+              organizeTasksByHierarchy(currently).map((task) =>
+                renderHomeTaskWithSubtasks(task, 0)
+              )
             ) : (
               <div className="relative top-1/2 left-1/2 -translate-x-1/2  flex flex-col items-center justify-center gap-5">
                 {t("No Tasks")}
@@ -93,8 +84,9 @@ const HomeTasksReport = ({
         {status == "overdue" && (
           <div className=" h-full">
             {overdue && overdue.length > 0 ? (
-              overdue &&
-              overdue.map((task) => renderHomeTaskWithSubtasks(task, 0))
+              organizeTasksByHierarchy(overdue).map((task) =>
+                renderHomeTaskWithSubtasks(task, 0)
+              )
             ) : (
               <div className="relative top-1/2 left-1/2 -translate-x-1/2  flex flex-col items-center justify-center gap-5">
                 {t("No Tasks")}
@@ -105,8 +97,9 @@ const HomeTasksReport = ({
         {status == "completed" && (
           <div className=" h-full">
             {completed && completed.length > 0 ? (
-              completed &&
-              completed.map((task) => renderHomeTaskWithSubtasks(task, 0))
+              organizeTasksByHierarchy(completed).map((task) =>
+                renderHomeTaskWithSubtasks(task, 0)
+              )
             ) : (
               <div className="relative top-1/2 left-1/2 -translate-x-1/2  flex flex-col items-center justify-center gap-5">
                 {t("No Tasks")}

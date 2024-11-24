@@ -17,8 +17,8 @@ import {
   getDepartmentOptions,
   handlePermissionsChange,
 } from "@/services/job.service";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { JobCategoryType, JobTitleFormInputs } from "@/types/JobTitle.type";
+import { DepartmentType } from "@/types/departmentType.type";
+import { JobCategoryType, JobTitleFormInputs } from "@/types/jobTitle.type";
 import { permissionsArray } from "@/utils/all_permissions";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import Select from "react-select";
@@ -59,7 +59,6 @@ const AddJobTitle: React.FC = () => {
   } = useForm<JobTitleFormInputs>({
     resolver: yupResolver(addTitleSchema),
     defaultValues: {
-      name: "",
       title: "",
       category: "",
       description: "",
@@ -100,7 +99,6 @@ const AddJobTitle: React.FC = () => {
     onSuccessFn() {
       reset({
         id: "",
-        name: "",
         title: "",
         description: "",
         responsibilities: [],
@@ -195,29 +193,6 @@ const AddJobTitle: React.FC = () => {
             });
           })}
         >
-          <div>
-            <label className="block  text-sm font-medium">
-              {t("Job Title Name")}
-            </label>
-            <input
-              type="text"
-              {...register("name")}
-              className={` 
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.name ? "border-red-500" : "border-border"
-              }`}
-              placeholder={t("Enter job title name")}
-            />
-            {errors.name && (
-              <p className="text-red-500 mt-1 text-sm">{errors.name.message}</p>
-            )}
-          </div>
           <div>
             <label className="block  text-sm font-medium">{t("Title")}</label>
             <input

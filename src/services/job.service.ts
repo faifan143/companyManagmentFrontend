@@ -1,9 +1,9 @@
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
 import {
   AddEducationHandlerParams,
   AddExperienceHandlerParams,
-} from "@/types/JobCategory.type";
-import { HandlePermissionsChangeParams } from "@/types/JobTitle.type";
+} from "@/types/jobCategory.type";
+import { HandlePermissionsChangeParams } from "@/types/jobTitle.type";
 
 export const addEducationService = ({
   newEducation,

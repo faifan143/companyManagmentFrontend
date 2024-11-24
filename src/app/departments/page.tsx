@@ -4,7 +4,7 @@ import { TableIcon, TreeIcon } from "@/assets";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import TasksTab from "@/components/common/atoms/TasksTab";
-import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
+import DepartmentHierarchyTree from "@/components/common/DepartmentsHierarchyTree";
 import DepartmentsContent from "@/components/common/molcules/DepartmentsContent";
 import RouteWrapper from "@/components/common/RouteWrapper";
 import {
@@ -13,16 +13,15 @@ import {
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
+import { DeptTree } from "@/types/trees/department.tree.type";
+import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import CreateDepartment from "../../components/common/molcules/CreateDepartment";
 
 const DepartmentsView: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("table");
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
-  const [editData, setEditData] = useState<DepartmentType | null>(null);
   const [selectedOption, setSelectedOption] = useState("get-departments");
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
@@ -30,13 +29,38 @@ const DepartmentsView: React.FC = () => {
   const canViewSpecificDepartments = usePermissions([
     "department_view_specific",
   ]);
-  const { data: departmentsTree } = useCustomQuery<TreeDTO[]>({
-    queryKey: ["departmentsTree"],
+  const { data: departments, isLoading } = useCustomQuery<{
+    info: DepartmentType[];
+    tree: DeptTree[];
+  }>({
+    queryKey: ["departments"],
     url: `http://${process.env.BASE_URL}/department/tree`,
     setSnackbarConfig,
   });
 
   const showSelect = isAdmin || (canViewSpecificDepartments && isPrimary);
+
+  if (isLoading) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+        <CircularProgress size={100} />
+      </div>
+    );
+  }
+
+  if (
+    !departments ||
+    !departments.info ||
+    !departments.tree ||
+    departments.info.length == 0 ||
+    departments.tree.length == 0
+  ) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+        {t("No Departments")}
+      </div>
+    );
+  }
   return (
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
@@ -60,10 +84,7 @@ const DepartmentsView: React.FC = () => {
           )}
 
           {isAdmin && (
-            <RouteWrapper
-              href="/departments/add-department"
-              onClick={() => setEditData(null)}
-            >
+            <RouteWrapper href="/departments/add-department">
               <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
                 {t("Add Department")}
               </div>
@@ -81,26 +102,17 @@ const DepartmentsView: React.FC = () => {
           setActiveTab={setActiveTab}
         />
         {activeTab == "table" && (
-          <DepartmentsContent selectedOption={selectedOption} />
+          <DepartmentsContent departmentsData={departments.info} />
         )}
         {activeTab == "tree" && (
           <>
-            {departmentsTree && (
-              <HierarchyTree
-                data={departmentsTree}
-                width="100%"
-                isDraggable={true}
-              />
+            {departments.tree && (
+              <DepartmentHierarchyTree data={departments.tree} width="100%" />
             )}
           </>
         )}
       </div>
 
-      <CreateDepartment
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        departmentData={editData}
-      />
       <CustomizedSnackbars
         open={snackbarConfig.open}
         message={snackbarConfig.message}

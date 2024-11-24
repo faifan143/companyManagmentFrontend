@@ -21,8 +21,8 @@ import {
 import {
   DepartmentFormInputs,
   DepartmentType,
-} from "@/types/DepartmentType.type";
-import { JobCategoryType } from "@/types/JobTitle.type";
+} from "@/types/departmentType.type";
+import { JobCategoryType } from "@/types/jobTitle.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";

@@ -11,12 +11,26 @@ export const selectStyle = {
   menu: (base) => ({
     ...base,
     backgroundColor: "var(--color-dark)",
+    color: "var(--color-twhite)",
   }),
-
+  menuList: (base) => ({
+    ...base,
+    color: "white",
+  }),
   option: (base, state) => ({
     ...base,
-
-    color: state.isFocused ? "black" : "white",
+    backgroundColor: state.isFocused
+      ? "var(--color-secondary)"
+      : "var(--color-dark)",
+    color: "var(--color-twhite)",
     cursor: "pointer",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "var(--color-twhite)",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "var(--color-twhite)",
   }),
 };
