@@ -7,7 +7,7 @@ import { useRedux } from "@/hooks/useRedux";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { ChatMessage, ChatModalProps } from "@/types/Chat.type";
+import { ChatMessage, ChatModalProps } from "@/types/chat.type";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import useLanguage from "@/hooks/useLanguage";

@@ -5,9 +5,8 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addProjectSchema } from "@/schemas/project.shema";
-import { getDepartmentOptions } from "@/services/project.service";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { ProjectType } from "@/types/Project.type";
+import { ProjectType } from "@/types/project.type";
+import { DeptTree } from "@/types/trees/department.tree.type";
 import { selectStyle } from "@/utils/SelectStyle";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
@@ -28,7 +27,8 @@ const AddProjectModal: React.FC<{
     formState: { errors },
     reset,
   } = useForm({
-    resolver: yupResolver(addProjectSchema),
+    resolver: yupResolver(addProjectSchema(!!projectData)),
+    context: { isEditing: !!projectData },
   });
   const { isLightMode } = useCustomTheme();
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
@@ -36,12 +36,12 @@ const AddProjectModal: React.FC<{
   // const isPrimary = useRolePermissions("primary_user");
 
   const { data: departments, isError: isDeptError } = useCustomQuery<
-    DepartmentType[]
+    DeptTree[]
   >({
     queryKey: ["departments"],
     url: `http://${process.env.BASE_URL}/department/${
       // isAdmin || isPrimary ? "get-departments" : "view"
-      "tree"
+      "get-level-one"
     }`,
     setSnackbarConfig,
   });
@@ -194,7 +194,14 @@ const AddProjectModal: React.FC<{
                       label:
                         departments?.find((dept) => dept.id === id)?.name || "",
                     }))}
-                    options={getDepartmentOptions(departments)}
+                    options={
+                      departments
+                        ? departments.map((dept) => ({
+                            value: dept.id,
+                            label: dept.name,
+                          }))
+                        : []
+                    }
                     onChange={(selectedOptions) => {
                       setSelectedDepartments(
                         selectedOptions.map((option) => option.value)

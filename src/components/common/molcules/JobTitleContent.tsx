@@ -8,17 +8,14 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
-import { JobTitleType } from "@/types/JobTitle.type";
+import { JobTitleType } from "@/types/jobTitle.type";
 import {
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  CircularProgress
 } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
+import CustomModal from "../CustomModal";
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
@@ -89,9 +86,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
             }  `}
           >
             <tr>
-              <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
-                {t("Name")}
-              </th>
+           
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Title")}
               </th>
@@ -125,7 +120,6 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                     : "hover:bg-slate-700 text-twhite"
                 }  group transition-colors`}
               >
-                <td className="py-3 px-4 text-center">{jobTitle.name}</td>
                 <td className="py-3 px-4 text-center">{jobTitle.title}</td>
                 <td className="py-3 px-4 text-center">
                   {jobTitle.description}
@@ -210,7 +204,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
       </div>
 
       {/* Modal for Permissions */}
-      <Dialog
+      {/* <Dialog
         open={isModalOpen}
         onClose={handleCloseModal}
         maxWidth="sm"
@@ -238,7 +232,16 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
             {t("Close")}
           </div>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
+
+      <CustomModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={t("Permissions")}
+        content={modalContent}
+        language={currentLanguage as "en" | "ar"}
+        actionText={t("Close")}
+      />
 
       <CustomizedSnackbars
         open={snackbarConfig.open}

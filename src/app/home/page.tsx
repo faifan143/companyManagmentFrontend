@@ -6,46 +6,27 @@ import GridContainer from "@/components/common/atoms/GridContainer";
 import HomeGlance from "@/components/common/atoms/HomeGlance";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
+import ProfileProjectsReport from "@/components/common/molcules/ProfileProjectsReport";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import { useState } from "react";
 
 const Home = () => {
   const [scope, setScope] = useState<"weekly" | "monthly">("weekly");
-  const isAdmin = useRolePermissions("admin");
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
-
+  const isSecondary = useRolePermissions("secondary_user");
   const { data: tasksData, isLoading } = useCustomQuery<ReceiveTaskType[]>({
-    queryKey: [
-      "tasks",
-      isAdmin
-        ? "get-all-tasks"
-        : scope == "weekly"
-        ? "weekly-tasks"
-        : "monthly-tasks",
-    ],
+    queryKey: ["tasks", scope == "weekly" ? "weekly-tasks" : "monthly-tasks"],
     url: `http://${process.env.BASE_URL}/tasks/${
-      isAdmin
-        ? "get-all-tasks"
-        : scope == "weekly"
-        ? "weekly-tasks"
-        : "monthly-tasks"
+      scope == "weekly" ? "weekly-tasks" : "monthly-tasks"
     }`,
     setSnackbarConfig,
     nestedData: true,
   });
 
   if (isLoading) return <PageSpinner />;
-
-  if (isLoading) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <PageSpinner />
-      </div>
-    );
-  }
 
   return (
     <GridContainer>
@@ -59,7 +40,7 @@ const Home = () => {
         />
 
         <HomeTasksReport tasksData={tasksData} />
-
+        {!isSecondary && <ProfileProjectsReport isCentered={true} />}
         <CustomizedSnackbars
           open={snackbarConfig.open}
           message={snackbarConfig.message}

@@ -11,7 +11,6 @@ export const addCategorySchema = yup.object().shape({
 });
 
 export const addTitleSchema = yup.object().shape({
-  name: yup.string().required("Job title name is required"),
   title: yup.string().required("Title is required"),
   description: yup.string().required("Description is required"),
   responsibilities: yup

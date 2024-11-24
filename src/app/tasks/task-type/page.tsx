@@ -4,7 +4,7 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
 import { handleEditTypeClick } from "@/services/task.service";
-import { ITaskType } from "@/types/Task.type";
+import { ITaskType } from "@/types/task.type";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useState } from "react";

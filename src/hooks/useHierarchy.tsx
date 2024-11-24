@@ -1,41 +1,46 @@
 import HomeListRow from "@/components/common/atoms/HomeListRow";
 import ListRow from "@/components/common/atoms/ListRow";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ExtendedReceiveTaskType, ReceiveTaskType } from "@/types/task.type";
 import React from "react";
 
 const useHierarchy = () => {
-  const buildNestedTaskHierarchy = (
-    tasks: ReceiveTaskType[] | undefined
-  ): ReceiveTaskType[] => {
-    const taskMap: Record<string, ReceiveTaskType> = {}; // Map for quick lookup
-    const rootTasks: ReceiveTaskType[] = []; // Array for top-level tasks
+  const renderedTasks = new Set<string>(); // Track rendered task IDs
 
-    // Step 1: Populate the task map
-    tasks!.forEach((task) => {
-      // Clone the task and ensure subTasks is initialized
-      taskMap[task.id] = { ...task, subTasks: [] };
+  function organizeTasksByHierarchy(
+    tasks: ReceiveTaskType[]
+  ): ExtendedReceiveTaskType[] {
+    // Create a map to store tasks by their ID for quick access
+    const taskMap = new Map<string, ExtendedReceiveTaskType>();
+
+    // Add a `subTasks` array to each task
+    tasks.forEach((task) => {
+      taskMap.set(task.id, { ...task, subTasks: [] });
     });
 
-    // Step 2: Iterate over tasks and build the hierarchy
-    tasks!.forEach((task) => {
+    // Final array to store top-level tasks
+    const rootTasks: ExtendedReceiveTaskType[] = [];
+
+    // Iterate through the tasks to build the hierarchy
+    tasks.forEach((task) => {
       if (task.parent_task) {
-        // If the task has a parent, add it as a subtask of the parent
-        const parentTask = taskMap[task.parent_task];
+        // Find the parent and add the current task to its subTasks
+        const parentTask = taskMap.get(task.parent_task);
         if (parentTask) {
-          parentTask.subTasks.push(taskMap[task.id]);
+          parentTask.subTasks!.push(taskMap.get(task.id)!);
         }
       } else {
-        // If no parent, it's a top-level task
-        rootTasks.push(taskMap[task.id]);
+        // If no parent_task, it's a root task
+        rootTasks.push(taskMap.get(task.id)!);
       }
     });
 
-    return rootTasks; // Return the hierarchy
-  };
+    return rootTasks;
+  }
 
-  const renderedTasks = new Set<string>(); // Track rendered task IDs
-
-  const renderTaskWithSubtasks = (task: ReceiveTaskType, level: number) => {
+  const renderTaskWithSubtasks = (
+    task: ExtendedReceiveTaskType,
+    level: number
+  ) => {
     if (renderedTasks.has(task.id)) return null;
     renderedTasks.add(task.id);
 
@@ -50,7 +55,10 @@ const useHierarchy = () => {
       </React.Fragment>
     );
   };
-  const renderHomeTaskWithSubtasks = (task: ReceiveTaskType, level: number) => {
+  const renderHomeTaskWithSubtasks = (
+    task: ExtendedReceiveTaskType,
+    level: number
+  ) => {
     if (renderedTasks.has(task.id)) return null;
     renderedTasks.add(task.id);
 
@@ -67,7 +75,7 @@ const useHierarchy = () => {
     );
   };
   return {
-    buildNestedTaskHierarchy,
+    organizeTasksByHierarchy,
     renderTaskWithSubtasks,
     renderHomeTaskWithSubtasks,
   };

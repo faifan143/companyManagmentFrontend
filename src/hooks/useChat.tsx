@@ -1,5 +1,5 @@
 import { socket } from "@/socket";
-import { SocketEvent, UseChat } from "@/types/Chat.type";
+import { SocketEvent, UseChat } from "@/types/chat.type";
 import { useEffect, useState, useRef } from "react";
 
 const useChat = (): UseChat => {

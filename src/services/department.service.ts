@@ -2,7 +2,7 @@
 import {
   DepartmentFormInputs,
   HandleManualSubmitOptions,
-} from "@/types/DepartmentType.type";
+} from "@/types/departmentType.type";
 import { Dispatch, SetStateAction } from "react";
 import { UseFormSetValue } from "react-hook-form";
 

@@ -41,7 +41,7 @@ const HomeGlance = ({
       </div>
       <div className="bg-dark text-tdark rounded-full flex justify-between min-w-[320px] items-center gap-2 p-5">
         {/* Scope Dropdown */}
-        <div>
+        <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-2 cursor-pointer "
