@@ -1,7 +1,7 @@
 import { TreeDTO } from "@/components/common/HierarchyTree";
-import { DepartmentType } from "./DepartmentType.type";
-import { EmployeeType } from "./EmployeeType.type";
-import { SectionType } from "./Section.type";
+import { DepartmentType } from "./departmentType.type";
+import { EmployeeType } from "./employeeType.type";
+import { SectionType } from "./section.type";
 import { ReceiveTaskType } from "./Task.type";
 
 export type ProjectType = {

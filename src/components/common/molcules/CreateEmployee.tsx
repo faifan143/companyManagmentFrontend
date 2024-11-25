@@ -4,7 +4,7 @@
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
 import { JobTitleType } from "@/types/JobTitle.type";
 import { addEmpPopupSchema } from "@/schemas/employee.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,7 +14,7 @@ import Modal from "react-modal";
 import {
   CreateEmployeeProps,
   EmployeeFormInputs,
-} from "@/types/EmployeeType.type";
+} from "@/types/employeeType.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import useSnackbar from "@/hooks/useSnackbar";
 

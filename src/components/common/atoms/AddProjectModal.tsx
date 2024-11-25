@@ -6,7 +6,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addProjectSchema } from "@/schemas/project.shema";
 import { getDepartmentOptions } from "@/services/project.service";
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
 import { ProjectType } from "@/types/Project.type";
 import { selectStyle } from "@/utils/SelectStyle";
 import { yupResolver } from "@hookform/resolvers/yup";

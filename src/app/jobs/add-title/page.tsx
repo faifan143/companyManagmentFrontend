@@ -17,7 +17,7 @@ import {
   getDepartmentOptions,
   handlePermissionsChange,
 } from "@/services/job.service";
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
 import { JobCategoryType, JobTitleFormInputs } from "@/types/JobTitle.type";
 import { permissionsArray } from "@/utils/all_permissions";
 import getErrorMessages from "@/utils/handleErrorMessages";

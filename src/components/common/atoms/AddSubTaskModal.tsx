@@ -4,7 +4,7 @@ import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addSubTaskSchema } from "@/schemas/task.schema";
-import { EmployeeType } from "@/types/EmployeeType.type";
+import { EmployeeType } from "@/types/employeeType.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
@@ -34,8 +34,6 @@ const AddSubTaskModal: React.FC<{
     setSnackbarConfig,
   });
 
-
-  
   const { mutate: addSection, isPending } = useCreateMutation({
     endpoint: `/tasks/add-subtask/${parentTask?.id}`,
     onSuccessMessage: `SubTask Added successfully!`,

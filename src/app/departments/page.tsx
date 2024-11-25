@@ -13,7 +13,7 @@ import {
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CreateDepartment from "../../components/common/molcules/CreateDepartment";

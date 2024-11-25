@@ -1,7 +1,7 @@
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
 import { categorizeTasks } from "@/services/task.service";
-import { SectionType } from "@/types/Section.type";
+import { SectionType } from "@/types/section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { useEffect, useState } from "react";
 import AddSectionModal from "../atoms/AddSectionModal";

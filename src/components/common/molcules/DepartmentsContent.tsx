@@ -7,7 +7,7 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
-import { DepartmentType } from "@/types/DepartmentType.type";
+import { DepartmentType } from "@/types/departmentType.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";

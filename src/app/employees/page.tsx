@@ -15,7 +15,7 @@ import {
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
-import { EmployeeFormInputs } from "@/types/EmployeeType.type";
+import { EmployeeFormInputs } from "@/types/employeeType.type";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 

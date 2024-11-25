@@ -87,7 +87,7 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { flattenTasks, OriginalTaskTree } from "@/services/task.service";
 import { RootState } from "@/state/store";
 import { ProjectType } from "@/types/Project.type";
-import { SectionType } from "@/types/Section.type";
+import { SectionType } from "@/types/section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import React, { useEffect, useState } from "react";
 
@@ -182,7 +182,6 @@ const TasksView: React.FC = () => {
               className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
               onChange={(e) => {
                 const value = e.target.value;
-
 
                 setSelectedDept(value);
                 const deptOption = `departmentId=${value}`;

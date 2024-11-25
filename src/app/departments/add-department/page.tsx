@@ -21,7 +21,7 @@ import {
 import {
   DepartmentFormInputs,
   DepartmentType,
-} from "@/types/DepartmentType.type";
+} from "@/types/departmentType.type";
 import { JobCategoryType } from "@/types/JobTitle.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";

@@ -14,8 +14,8 @@ import {
   handleFileChange,
   handleFormSubmit,
 } from "@/services/employee.service";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { EmployeeFormInputs } from "@/types/EmployeeType.type";
+import { DepartmentType } from "@/types/departmentType.type";
+import { EmployeeFormInputs } from "@/types/employeeType.type";
 import { JobTitleType } from "@/types/JobTitle.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";

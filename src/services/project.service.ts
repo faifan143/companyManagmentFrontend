@@ -1,5 +1,5 @@
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { EmployeeType } from "@/types/EmployeeType.type";
+import { DepartmentType } from "@/types/departmentType.type";
+import { EmployeeType } from "@/types/employeeType.type";
 
 export const getDepartmentOptions = (
   departments: DepartmentType[] | undefined

@@ -2,7 +2,7 @@ import { ArrowDownIcon, PencilIcon, ThreeDotsIcon, TrashIcon } from "@/assets";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
-import { SectionType } from "@/types/Section.type";
+import { SectionType } from "@/types/section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
