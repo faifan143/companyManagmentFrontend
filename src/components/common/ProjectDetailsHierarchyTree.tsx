@@ -1,46 +1,29 @@
 "use client";
 
+import { DeptTree } from "@/types/trees/department.tree.type";
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
-  applyEdgeChanges,
-  applyNodeChanges,
   Background,
   Edge,
-  EdgeChange,
   Handle,
   Node,
-  NodeChange,
   NodeProps,
-  Position,
+  Position
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-export type TreeDTO = {
-  id: string;
-  name: string;
-  parentId: string | null;
-  is_manager?: boolean;
+type ProjectDetailsHierarchyTreeProps = {
+  data: DeptTree[];
+  nodeStyles?: (isLightMode: boolean, isManager?: boolean) => string; 
+  nodeColors?: { target: string; source: string }; 
+  height?: number; 
+  width?: string; 
+  lightMode?: boolean; 
+  onPress: (deptId: string) => void;
 };
 
-// type NodeData = {
-//   id: string;
-//   label: string;
-//   parentId?: string;
-// };
-
-type HierarchyTreeProps = {
-  isDraggable?: boolean;
-  data: TreeDTO[];
-  nodeStyles?: (isLightMode: boolean, isManager?: boolean) => string; // Function for custom node styles
-  nodeColors?: { target: string; source: string }; // Custom colors for target/source handles
-  height?: number; // Height of the hierarchy container
-  width?: string; // Width of the hierarchy container
-  lightMode?: boolean; // Light or dark mode
-  onPress?: (deptId: string) => void;
-};
-
-const generateLayout = (data: TreeDTO[]) => {
+const generateLayout = (data: DeptTree[]) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   dagreGraph.setGraph({ rankdir: "TB", align: "UL", marginx: 50, marginy: 50 });
@@ -54,7 +37,7 @@ const generateLayout = (data: TreeDTO[]) => {
       id: item.id,
       type: "custom",
 
-      data: { label: item.name, is_manager: item.is_manager },
+      data: { label: item.name },
       position: { x: 0, y: 0 },
     });
 
@@ -78,7 +61,7 @@ const generateLayout = (data: TreeDTO[]) => {
   return { nodes, edges };
 };
 
-const HierarchyTree: React.FC<HierarchyTreeProps> = ({
+const ProjectDetailsHierarchyTree: React.FC<ProjectDetailsHierarchyTreeProps> = ({
   data,
   nodeStyles = (isLightMode, isManager) =>
     `relative min-w-[120px] text-center shadow-md ${
@@ -90,11 +73,10 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
   width = "70%",
   lightMode = false,
   onPress,
-  isDraggable = false,
 }) => {
   const CustomNode = ({ data }: NodeProps) => {
     return (
-      <div className={nodeStyles(lightMode, data.is_manager)}>
+      <div className={nodeStyles(lightMode)}>
         <strong>{data.label}</strong>
         <Handle
           type="target"
@@ -126,22 +108,13 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
     }
   }, [data]);
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) =>
-      setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
-  );
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) =>
-      setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
+
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
       console.log("Node clicked:", node);
       if (onPress) {
-        onPress(node.id); // Trigger custom click handler with node ID
+        onPress(node.id);
       }
     },
     [onPress]
@@ -151,19 +124,7 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
     <div
       className={`h-[500px] w-[${width}] border-4 border-slate-600 rounded-3xl shadow-lg`}
     >
-      {isDraggable ? (
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          fitView
-          fitViewOptions={{ padding: 0.2 }}
-        >
-          <Background />
-        </ReactFlow>
-      ) : (
+      {
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -174,9 +135,9 @@ const HierarchyTree: React.FC<HierarchyTreeProps> = ({
         >
           <Background />
         </ReactFlow>
-      )}
+      }
     </div>
   );
 };
 
-export default HierarchyTree;
+export default ProjectDetailsHierarchyTree;

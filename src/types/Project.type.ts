@@ -1,8 +1,8 @@
-import { TreeDTO } from "@/components/common/HierarchyTree";
 import { DepartmentType } from "./departmentType.type";
 import { EmployeeType } from "./employeeType.type";
 import { SectionType } from "./section.type";
-import { ReceiveTaskType } from "./Task.type";
+import { ReceiveTaskType } from "./task.type";
+import { DeptTree } from "./trees/department.tree.type";
 
 export type ProjectType = {
   _id: string;
@@ -21,7 +21,7 @@ export type ProjectDetailsType = {
   _id: string;
   name: string;
   description: string;
-  departments: TreeDTO[];
+  departments: DeptTree[];
   members: EmployeeType[];
   startDate: string;
   endDate: string;

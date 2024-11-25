@@ -5,7 +5,7 @@ import TaskColumn from "@/components/common/organisms/TaskColumn";
 import useSnackbar from "@/hooks/useSnackbar";
 import { categorizeTasks, onDragEnd } from "@/services/task.service";
 import { SectionType } from "@/types/section.type";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
@@ -45,32 +45,9 @@ const TasksContent = ({
   return (
     <>
       <DragDropContext
-        // onDragEnd={(result) => {
-        //   onDragEnd({
-        //     result,
-        //     tasks,
-        //     setTasks,
-        //     setMessage(msg) {
-        //       setSnackbarConfig({
-        //         open: true,
-        //         message: msg,
-        //         severity: "error",
-        //       });
-        //     },
-        //   });
-        //   setIsUpdating(true);
-        //   queryClient.invalidateQueries({ queryKey: ["tasks"] }).then(() => {
-        //     setIsUpdating(true);
-        //     refetching().then(() => {
-        //       setIsUpdating(false);
-        //     });
-        //   });
-        // }}
         onDragEnd={async (result) => {
           try {
-            setIsUpdating(true); // Indicate the start of the update
-
-            // Perform the drag operation
+            setIsUpdating(true);
             await onDragEnd({
               result,
               tasks,

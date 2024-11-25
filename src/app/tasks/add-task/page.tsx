@@ -9,15 +9,17 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskSchema } from "@/schemas/task.schema";
 import { DepartmentType } from "@/types/departmentType.type";
-import { EmployeeType } from "@/types/employeeType.type";
-import { ProjectType } from "@/types/Project.type";
-import { TaskFormInputs } from "@/types/Task.type";
+import { ProjectType } from "@/types/project.type";
+import { TaskFormInputs } from "@/types/task.type";
+import { EmpTree } from "@/types/trees/emp.tree.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Select from "react-select";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { selectStyle } from "@/utils/SelectStyle";
 const baseUrl = process.env.BASE_URL || "";
 
 const AddTask: React.FC = () => {
@@ -26,6 +28,7 @@ const AddTask: React.FC = () => {
   const [isEmployeeDisabled, setIsEmployeeDisabled] = useState(false);
   const [isDepartmentDisabled, setIsDepartmentDisabled] = useState(false);
   const [isProjectDisabled, setIsProjectDisabled] = useState(false);
+
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -41,6 +44,7 @@ const AddTask: React.FC = () => {
     resolver: yupResolver(addTaskSchema) as any,
     defaultValues: {},
   });
+  const [selectedEmp, setSelectedEmp] = useState<any>(null); // State for single selected employee
 
   const selectedEmployee = watch("emp");
   const selectedDepartment = watch("department_id");
@@ -63,7 +67,7 @@ const AddTask: React.FC = () => {
     setSnackbarConfig,
   });
 
-  const { data: employees } = useCustomQuery<EmployeeType[]>({
+  const { data: employees } = useCustomQuery<EmpTree[]>({
     queryKey: ["employees"],
     url: `http://${baseUrl}/emp/tree`,
     setSnackbarConfig,
@@ -314,7 +318,7 @@ const AddTask: React.FC = () => {
           )}
 
           {/* Employee Field */}
-          {!isEmployeeDisabled && (
+          {/* {!isEmployeeDisabled && (
             <div>
               <label className="block text-tmid text-sm font-medium">
                 {t("Assigned Employee")}
@@ -332,9 +336,9 @@ const AddTask: React.FC = () => {
                   {t("Select an employee (optional)")}
                 </option>
                 {employees &&
-                  employees.map((emp: any) => (
+                  employees.map((emp) => (
                     <option className="" key={emp.id} value={emp.id}>
-                      {emp.name}
+                      {emp.name + " - " + emp.title}
                     </option>
                   ))}
               </select>
@@ -342,6 +346,45 @@ const AddTask: React.FC = () => {
                 <p className="text-red-500 mt-1 text-sm">
                   {errors.emp.message}
                 </p>
+              )}
+            </div>
+          )} */}
+          {!isEmployeeDisabled && (
+            <div>
+              <label className="block text-tmid text-sm font-medium">
+                {t("Assigned Employee")}
+              </label>
+              {employees && (
+                <>
+                  <Select
+                    options={
+                      employees?.map((employee) => ({
+                        value: employee.id,
+                        label: `${employee.name} - ${employee.title}`,
+                      })) || []
+                    }
+                    value={selectedEmp}
+                    onChange={(selected) => {
+                      setSelectedEmp(selected);
+
+                      register("emp").onChange({
+                        target: {
+                          value: selected?.value || null,
+                          name: "emp",
+                        },
+                      });
+                    }}
+                    className="mt-1 text-tblackAF"
+                    placeholder={t("Select Employee")}
+                    styles={selectStyle}
+                  />
+
+                  {errors.emp && (
+                    <p className="text-red-500 mt-1 text-sm">
+                      {errors.emp.message}
+                    </p>
+                  )}
+                </>
               )}
             </div>
           )}

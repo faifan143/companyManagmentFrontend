@@ -5,7 +5,7 @@ import { refreshAuthToken } from "@/state/slices/userSlice";
 import { RootState } from "@/state/store";
 import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, Suspense, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import NewHeader from "../common/atoms/NewHeader";
 import PageSpinner from "../common/atoms/PageSpinner";
 import Sidebar from "../common/molcules/Sidebar/Sidebar";
@@ -77,7 +77,7 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
           dir={getDir()}
           className={`transition-all bg-main mt-[49px] duration-300 py-5  w-full`}
         >
-          <Suspense fallback={<PageSpinner />}>{children}</Suspense>
+          {children}
         </div>
       </div>
     </div>

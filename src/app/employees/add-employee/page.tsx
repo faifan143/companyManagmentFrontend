@@ -16,7 +16,7 @@ import {
 } from "@/services/employee.service";
 import { DepartmentType } from "@/types/departmentType.type";
 import { EmployeeFormInputs } from "@/types/employeeType.type";
-import { JobTitleType } from "@/types/JobTitle.type";
+import { JobTitleType } from "@/types/jobTitle.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";

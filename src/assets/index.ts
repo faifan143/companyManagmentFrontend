@@ -32,3 +32,4 @@ export { default as LightModeIcon } from "./icons/lightmode-icon.svg";
 export { default as DarkModeIcon } from "./icons/darkmode-icon.svg";
 export { default as TableIcon } from "./icons/table-icon.svg";
 export { default as TreeIcon } from "./icons/tree-icon.svg";
+export { default as StarIcon } from "./icons/star-icon.svg";

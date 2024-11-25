@@ -3,7 +3,7 @@ import {
   AddEducationHandlerParams,
   AddExperienceHandlerParams,
 } from "@/types/jobCategory.type";
-import { HandlePermissionsChangeParams } from "@/types/JobTitle.type";
+import { HandlePermissionsChangeParams } from "@/types/jobTitle.type";
 
 export const addEducationService = ({
   newEducation,

@@ -2,12 +2,11 @@
 "use client";
 
 import { TableIcon, TreeIcon } from "@/assets";
-import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
+import EmployeeHierarchyTree from "@/components/common/EmployeesHierarchyTree";
 import RouteWrapper from "@/components/common/RouteWrapper";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import TasksTab from "@/components/common/atoms/TasksTab";
-import CreateEmployee from "@/components/common/molcules/CreateEmployee";
 import EmployeesContent from "@/components/common/molcules/EmployeesContent";
 import {
   usePermissions,
@@ -15,15 +14,14 @@ import {
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
-import { EmployeeFormInputs } from "@/types/employeeType.type";
+import { EmployeeType } from "@/types/employeeType.type";
+import { EmpTree } from "@/types/trees/emp.tree.type";
+import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const EmployeesView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("table");
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editData, setEditData] = useState<EmployeeFormInputs | null>(null);
 
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
@@ -34,11 +32,29 @@ const EmployeesView: React.FC = () => {
   const showSelect = isAdmin || canViewSpecific || isPrimary;
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
 
-  const { data: employeesTree } = useCustomQuery<TreeDTO[]>({
-    queryKey: ["employeeTree"],
+  const { data: employees, isLoading } = useCustomQuery<{
+    info: EmployeeType[];
+    tree: EmpTree[];
+  }>({
+    queryKey: ["employees"],
     url: `http://${process.env.BASE_URL}/emp/tree`,
     setSnackbarConfig,
   });
+  if (isLoading) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+        <CircularProgress size={100} />
+      </div>
+    );
+  }
+
+  if (!employees || employees.info.length === 0) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+        {t("No Employees")}
+      </div>
+    );
+  }
 
   return (
     <GridContainer>
@@ -69,10 +85,7 @@ const EmployeesView: React.FC = () => {
           )}
 
           {isAdmin && (
-            <RouteWrapper
-              href="/employees/add-employee"
-              onClick={() => setEditData(null)}
-            >
+            <RouteWrapper href="/employees/add-employee">
               <div className="bg-secondary text-twhite px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200">
                 {t("Add Employee")}
               </div>
@@ -90,18 +103,12 @@ const EmployeesView: React.FC = () => {
           setActiveTab={setActiveTab}
         />
         {activeTab == "table" && (
-          <EmployeesContent selectedOption={selectedOption} />
+          <EmployeesContent employeesData={employees.info} />
         )}
-        {activeTab == "tree" && employeesTree && (
-          <HierarchyTree data={employeesTree} width="100%" isDraggable={true} />
+        {activeTab == "tree" && employees && (
+          <EmployeeHierarchyTree data={employees.tree} width="100%" />
         )}
       </div>
-
-      <CreateEmployee
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        employeeData={editData}
-      />
 
       <CustomizedSnackbars
         open={snackbarConfig.open}

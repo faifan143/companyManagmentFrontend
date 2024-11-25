@@ -248,6 +248,27 @@ export type ReceiveTaskType = {
   startTime: string;
   timeLogs: TimeLog[];
   section: Section;
-  subTasks: ReceiveTaskType[];
   parent_task?: string;
+  rate?: number;
+};
+export type ExtendedReceiveTaskType = {
+  id: string;
+  name: string;
+  description: string;
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  emp: TaskEmployeeType;
+  assignee: TaskEmployeeType;
+  status: "PENDING" | "ONGOING" | "ON_TEST" | "DONE" | string;
+  createdAt: string;
+  updatedAt: string;
+  due_date: string;
+  files: string[];
+  is_over_due: boolean;
+  totalTimeSpent: number;
+  startTime: string;
+  timeLogs: TimeLog[];
+  section: Section;
+  parent_task?: string;
+  rate?: number;
+  subTasks: ExtendedReceiveTaskType[];
 };

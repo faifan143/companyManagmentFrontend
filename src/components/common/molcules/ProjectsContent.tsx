@@ -3,16 +3,15 @@ import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useNavigationWithLoading from "@/hooks/useNavigationWithLoading";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
-import { ProjectType } from "@/types/Project.type";
+import { ProjectType } from "@/types/project.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import AddProjectModal from "../atoms/AddProjectModal";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
-import PageSpinner from "../atoms/PageSpinner";
+import RouteWrapper from "../RouteWrapper";
 
 export const collabColors = [
   "border-2  border-blue-500 ",
@@ -30,7 +29,6 @@ const ProjectsContent = () => {
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { isLightMode } = useCustomTheme();
-  const { loading, navigateWithLoading } = useNavigationWithLoading();
   const { data: projects, isLoading } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `http://${process.env.BASE_URL}/projects/${
@@ -66,8 +64,6 @@ const ProjectsContent = () => {
 
   return (
     <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
-      {loading && <PageSpinner />}
-
       <div className="overflow-x-auto rounded-lg shadow-md">
         <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
           <thead
@@ -114,62 +110,62 @@ const ProjectsContent = () => {
                     className={`py-3 px-4 text-center ${
                       isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
-                    onClick={() =>
-                      navigateWithLoading("/projects/details/" + project._id)
-                    }
                   >
-                    {project.name}
+                    <RouteWrapper href={"/projects/details/" + project._id}>
+                      {project.name}
+                    </RouteWrapper>
                   </td>
                   <td
                     className={` py-3 px-4 text-center ${
                       isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
-                    onClick={() =>
-                      navigateWithLoading("/projects/details/" + project._id)
-                    }
                   >
-                    {project.description}
+                    <RouteWrapper href={"/projects/details/" + project._id}>
+                      {project.description}
+                    </RouteWrapper>
                   </td>
-                  <td
-                    className="py-3 px-4 text-center "
-                    onClick={() =>
-                      navigateWithLoading("/projects/details/" + project._id)
-                    }
-                  >
-                    {project.departments.length === 1 ? (
-                      <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
-                        {project.departments[0].name}
-                      </div>
-                    ) : (
-                      <div className="flex justify-center -space-x-4" dir="ltr">
-                        {project.departments.slice(0, 3).map((dept, index) => (
-                          <div
-                            key={dept.id}
-                            className={`   ${
-                              collabColors[index % collabColors.length]
-                            } cursor-pointer  rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
-                            title={dept.name}
-                          >
-                            {dept.name
-                              .split(" ")
-                              .map((word) => word[0])
-                              .join("")
-                              .toUpperCase()}
-                          </div>
-                        ))}
-                        {project.departments.length > 3 && (
-                          <div
-                            className="     cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
-                            title={project.departments
-                              .slice(3)
-                              .map((dept) => dept.name)
-                              .join(", ")}
-                          >
-                            +{project.departments.length - 3}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  <td className="py-3 px-4 text-center ">
+                    <RouteWrapper href={"/projects/details/" + project._id}>
+                      {project.departments.length === 1 ? (
+                        <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
+                          {project.departments[0].name}
+                        </div>
+                      ) : (
+                        <div
+                          className="flex justify-center -space-x-4"
+                          dir="ltr"
+                        >
+                          {project.departments
+                            .slice(0, 3)
+                            .map((dept, index) => (
+                              <div
+                                key={dept.id}
+                                className={`   ${
+                                  collabColors[index % collabColors.length]
+                                } cursor-pointer  rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
+                                title={dept.name}
+                              >
+                                {dept.name
+                                  .split(" ")
+                                  .map((word) => word[0])
+                                  .join("")
+                                  .toUpperCase()}
+                              </div>
+                            ))}
+                          {project.departments.length > 3 && (
+                            <div
+                              className="     cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
+                              title={project.departments
+                                .slice(3)
+                                .map((dept) => dept.name)
+                                .join(", ")}
+                            >
+                              +{project.departments.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </RouteWrapper>
                   </td>
                   {/* <td className="py-3 px-4 text-center">
                     {project.members.length === 1 ? (
@@ -208,36 +204,31 @@ const ProjectsContent = () => {
                     )}
                   </td> */}
 
-                  <td
-                    onClick={() =>
-                      navigateWithLoading("/projects/details/" + project._id)
-                    }
-                  >
-                    <div
-                      className={`  border-2  border-purple-500/30  bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
-                    >
-                      {formatDate(
-                        project.startDate,
-                        currentLanguage as "en" | "ar"
-                      )}
-                    </div>
+                  <td>
+                    <RouteWrapper href={"/projects/details/" + project._id}>
+                      <div
+                        className={`  border-2  border-purple-500/30  bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
+                      >
+                        {formatDate(
+                          project.startDate,
+                          currentLanguage as "en" | "ar"
+                        )}
+                      </div>
+                    </RouteWrapper>
                   </td>
-
-                  <td
-                    onClick={() =>
-                      navigateWithLoading("/projects/details/" + project._id)
-                    }
-                  >
-                    <div
-                      className={`border-2  border-yellow-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold  ${
-                        isDueSoon(project.endDate) ? "flash" : ""
-                      }`}
-                    >
-                      {formatDate(
-                        project.endDate,
-                        currentLanguage as "en" | "ar"
-                      )}
-                    </div>
+                  <td>
+                    <RouteWrapper href={"/projects/details/" + project._id}>
+                      <div
+                        className={`border-2  border-yellow-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold  ${
+                          isDueSoon(project.endDate) ? "flash" : ""
+                        }`}
+                      >
+                        {formatDate(
+                          project.endDate,
+                          currentLanguage as "en" | "ar"
+                        )}
+                      </div>
+                    </RouteWrapper>
                   </td>
                   {(isAdmin || isPrimary) && (
                     <td className="py-3 px-4 flex gap-2 justify-center">

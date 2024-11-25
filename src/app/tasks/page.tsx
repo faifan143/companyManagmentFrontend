@@ -72,10 +72,10 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
 import TasksTab from "@/components/common/atoms/TasksTab";
-import HierarchyTree, { TreeDTO } from "@/components/common/HierarchyTree";
 import TaskList from "@/components/common/organisms/TaskList";
 import TasksContent from "@/components/common/organisms/TasksContent";
 import RouteWrapper from "@/components/common/RouteWrapper";
+import TaskHierarchyTree from "@/components/common/TasksHierarchyTree";
 import {
   usePermissions,
   useRolePermissions,
@@ -84,11 +84,12 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
-import { flattenTasks, OriginalTaskTree } from "@/services/task.service";
 import { RootState } from "@/state/store";
-import { ProjectType } from "@/types/Project.type";
+import { ProjectType } from "@/types/project.type";
 import { SectionType } from "@/types/section.type";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
+import { DeptTree } from "@/types/trees/department.tree.type";
+import { TaskTree } from "@/types/trees/task.tree.type";
 import React, { useEffect, useState } from "react";
 
 const TasksView: React.FC = () => {
@@ -106,10 +107,9 @@ const TasksView: React.FC = () => {
     ""
   );
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
-
   const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<{
     info: ReceiveTaskType[];
-    tree: OriginalTaskTree[];
+    tree: TaskTree[];
   }>({
     queryKey: ["tasks", selectedOption],
     url: `http://${process.env.BASE_URL}/tasks/tree?${selectedOption}`,
@@ -119,17 +119,14 @@ const TasksView: React.FC = () => {
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `http://${process.env.BASE_URL}/projects/${
-      isAdmin
-        ? "get-all-projects"
-        : isPrimary
-        ? "get-manager-project"
-        : "get-emp-project"
+      // isAdmin ? "get-all-projects" :
+      "get-manager-project"
     }`,
     setSnackbarConfig,
   });
 
-  const { data: deptTree } = useCustomQuery<TreeDTO[]>({
-    queryKey: ["deptTree", selectedProj ?? ""],
+  const { data: deptTree } = useCustomQuery<{ tree: DeptTree[] }>({
+    queryKey: ["deptTree", selectedProj ?? "three"],
     url: `http://${process.env.BASE_URL}/${
       selectedProj
         ? `projects/project-departments-tree/${selectedProj}`
@@ -193,7 +190,8 @@ const TasksView: React.FC = () => {
             >
               <option value="">{t("Select a department")}</option>
               {deptTree &&
-                deptTree.map((dTree) => (
+                deptTree.tree &&
+                deptTree.tree.map((dTree) => (
                   <option key={dTree.id} value={dTree.id}>
                     {dTree.name}
                   </option>
@@ -271,31 +269,15 @@ const TasksView: React.FC = () => {
           setActiveTab={setActiveTab}
         />
         {activeTab === "list" && (
-          <TaskList
-            tasksData={tasksData?.info.flatMap((task) => [
-              task,
-              ...task.subTasks,
-            ])}
-            sections={sections}
-          />
+          <TaskList tasksData={tasksData?.info} sections={sections} />
         )}
         {activeTab === "board" && (
           <GridContainer>
-            <TasksContent
-              tasksData={tasksData?.info.flatMap((task) => [
-                task,
-                ...task.subTasks,
-              ])}
-              sections={sections}
-            />
+            <TasksContent tasksData={tasksData?.info} sections={sections} />
           </GridContainer>
         )}
         {activeTab === "tree" && tasksData && (
-          <HierarchyTree
-            data={flattenTasks(tasksData.tree)}
-            width="100%"
-            isDraggable={true}
-          />
+          <TaskHierarchyTree data={tasksData.tree} width="100%" />
         )}
       </div>
 

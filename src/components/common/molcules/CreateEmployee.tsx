@@ -5,7 +5,7 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { DepartmentType } from "@/types/departmentType.type";
-import { JobTitleType } from "@/types/JobTitle.type";
+import { JobTitleType } from "@/types/jobTitle.type";
 import { addEmpPopupSchema } from "@/schemas/employee.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";

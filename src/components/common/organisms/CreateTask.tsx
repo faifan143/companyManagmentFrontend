@@ -8,7 +8,7 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskPopupSchema } from "@/schemas/task.schema";
 import { DepartmentType } from "@/types/departmentType.type";
 import { EmployeeType } from "@/types/employeeType.type";
-import { CreateTaskProps, TaskFormInputs } from "@/types/Task.type";
+import { CreateTaskProps, TaskFormInputs } from "@/types/task.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";

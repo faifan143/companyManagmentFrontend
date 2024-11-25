@@ -5,19 +5,17 @@ import {
   usePermissions,
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
-import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeType } from "@/types/employeeType.type";
-import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const EmployeesContent: React.FC<{
-  selectedOption: string;
-}> = ({ selectedOption }) => {
+  employeesData: EmployeeType[];
+}> = ({ employeesData }) => {
   const { t } = useTranslation();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["emp_update"]);
@@ -28,31 +26,9 @@ const EmployeesContent: React.FC<{
     "/employees/add-employee"
   );
 
-  const { data: employees, isLoading } = useCustomQuery<EmployeeType[]>({
-    queryKey: ["employees", selectedOption],
-    url: `http://${process.env.BASE_URL}/emp/${selectedOption}`,
-    setSnackbarConfig,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
-      </div>
-    );
-  }
-
-  if (!employees || employees.length === 0) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        {t("No Employees")}
-      </div>
-    );
-  }
-
   return (
     <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12 ">
-      {employees && employees.length > 0 ? (
+      {employeesData && employeesData.length > 0 ? (
         <div className="overflow-x-auto rounded-lg shadow-md">
           <table className="min-w-full bg-main rounded-lg text-twhite shadow-md">
             <thead
@@ -92,7 +68,7 @@ const EmployeesContent: React.FC<{
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee) => (
+              {employeesData.map((employee) => (
                 <tr
                   key={employee.id}
                   className={` ${
@@ -101,7 +77,9 @@ const EmployeesContent: React.FC<{
                       : "hover:bg-slate-700 text-twhite"
                   }  group transition-colors`}
                 >
-                  <td className="text-center py-3 px-4">{employee.name}</td>
+                  <td className="text-center py-3 px-4">
+                    {employee.name + " - " + employee.job.title}
+                  </td>
                   <td className="text-center py-3 px-4">
                     {new Date(employee.dob).toLocaleDateString()}
                   </td>

@@ -21,6 +21,7 @@ import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
 import useTimeTicker from "@/hooks/useTimeTicker";
+import StarRating from "@/components/common/StarsRating";
 import {
   formatDate,
   getPriorityColor,
@@ -28,7 +29,7 @@ import {
   updateTaskData,
 } from "@/services/task.service";
 import { RootState } from "@/state/store";
-import { ReceiveTaskType } from "@/types/Task.type";
+import { ReceiveTaskType } from "@/types/task.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
@@ -61,6 +62,9 @@ const ListTaskDetails: React.FC<{
     "ON_TEST",
     "DONE",
   ];
+
+  const [isRatingOpen, setIsRatingOpen] = useState(false);
+
   const { selector: userId } = useRedux(
     (state: RootState) => state.user.userInfo?.id
   );
@@ -255,7 +259,7 @@ const ListTaskDetails: React.FC<{
                 isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
               } text-twhite py-2 px-3 w-fit mx-auto rounded-md  text-sm font-semibold`}
             >
-              {task.emp.name}
+              {task.emp.name + " - " + task.emp.job.title}
             </div>
           </div>
         )}
@@ -328,8 +332,23 @@ const ListTaskDetails: React.FC<{
                 <div
                   key={option}
                   onClick={() => {
-                    setSelectedStatus(option);
-                    setStatusMenuOpen(false);
+                    if (option == "DONE") {
+                      if (userId == task?.assignee._id) {
+                        setSelectedStatus(option);
+
+                        setStatusMenuOpen(false);
+                        setIsRatingOpen(true);
+                      } else {
+                        setSnackbarConfig({
+                          open: true,
+                          message: t("You can't change the status to DONE"),
+                          type: "warning",
+                        });
+                      }
+                    } else {
+                      setSelectedStatus(option);
+                      setStatusMenuOpen(false);
+                    }
                   }}
                   className="px-4 py-2 rounded-md hover:bg-gray-500 cursor-pointer"
                 >
@@ -339,6 +358,26 @@ const ListTaskDetails: React.FC<{
             </div>
           )}
         </div>
+        <StarRating
+          max={5}
+          defaultValue={3}
+          size={32}
+          isRatingOpen={isRatingOpen}
+          setIsRatingOpen={setIsRatingOpen}
+          onSubmit={(rating) =>
+            updateTaskData(task?.id, {
+              rating,
+            }).then(() => {
+              console.log("Rating updated");
+              setSnackbarConfig({
+                open: true,
+                message: t("Rating updated"),
+                type: "success",
+              });
+            })
+          }
+          title={t("Rate this Task")}
+        />
         {/* time tracking */}
         <div
           ref={statusRef}

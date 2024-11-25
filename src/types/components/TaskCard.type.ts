@@ -1,4 +1,4 @@
-import { ReceiveTaskType } from "../Task.type";
+import { ReceiveTaskType } from "../task.type";
 
 export interface TaskCardProps {
   taskId: string;

@@ -331,7 +331,14 @@
     "false": "false",
     "Is Overdue": "Is Overdue",
     "Project Details": "Project Details",
-    "Tree":"Tree",
-    "Table":"Table"
+    "Tree": "Tree",
+    "Table": "Table",
+    "Rate your experience": "Rate your experience",
+    "Your rating:": "Your rating:",
+    "of": "of",
+    "Select your rating": "Select your rating",
+    "Cancel": "Cancel",
+    "Submit": "Submit",
+    "Rate this Task": "Rate this Task"
   }
 }
