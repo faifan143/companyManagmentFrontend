@@ -4,7 +4,7 @@
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskStatusSchema } from "@/schemas/task.schema";
-import { CreateTaskStatusProps, TaskStatusFormInputs } from "@/types/task.type";
+import { CreateTaskStatusProps, TaskStatusFormInputs } from "@/types/Task.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";

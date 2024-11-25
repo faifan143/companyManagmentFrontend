@@ -4,8 +4,8 @@
 import TaskColumn from "@/components/common/organisms/TaskColumn";
 import useSnackbar from "@/hooks/useSnackbar";
 import { categorizeTasks, onDragEnd } from "@/services/task.service";
-import { SectionType } from "@/types/section.type";
-import { ReceiveTaskType } from "@/types/task.type";
+import { SectionType } from "@/types/Section.type";
+import { ReceiveTaskType } from "@/types/Task.type";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";

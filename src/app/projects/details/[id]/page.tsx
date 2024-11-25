@@ -11,7 +11,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate } from "@/services/task.service";
-import { ProjectDetailsType } from "@/types/project.type";
+import { ProjectDetailsType } from "@/types/Project.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useRouter } from "next/navigation";
 

@@ -10,7 +10,7 @@ import ProfileProjectsReport from "@/components/common/molcules/ProfileProjectsR
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
-import { ReceiveTaskType } from "@/types/task.type";
+import { ReceiveTaskType } from "@/types/Task.type";
 import { useState } from "react";
 
 const Home = () => {

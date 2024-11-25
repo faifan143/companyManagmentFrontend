@@ -13,7 +13,7 @@ import {
   addEducationService,
   addExperienceService,
 } from "@/services/job.service";
-import { JobCategoryFormInputs } from "@/types/jobCategory.type";
+import { JobCategoryFormInputs } from "@/types/JobCategory.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";

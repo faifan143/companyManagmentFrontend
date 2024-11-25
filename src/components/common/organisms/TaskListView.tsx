@@ -1,7 +1,7 @@
 import useHierarchy from "@/hooks/useHierarchy";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
-import { ReceiveTaskType } from "@/types/task.type";
+import { ReceiveTaskType } from "@/types/Task.type";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import GridContainer from "../atoms/GridContainer";
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LoginResponse, UserType } from "@/types/loginResponse.type";
+import { LoginResponse, UserType } from "@/types/LoginResponse.type";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";

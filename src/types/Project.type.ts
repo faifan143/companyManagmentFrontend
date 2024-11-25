@@ -1,8 +1,8 @@
-import { DepartmentType } from "./departmentType.type";
-import { EmployeeType } from "./employeeType.type";
-import { SectionType } from "./section.type";
-import { ReceiveTaskType } from "./task.type";
-import { DeptTree } from "./trees/department.tree.type";
+import { DepartmentType } from "./DepartmentType.type";
+import { EmployeeType } from "./EmployeeType.type";
+import { SectionType } from "./Section.type";
+import { ReceiveTaskType } from "./Task.type";
+import { DeptTree } from "./trees/Department.tree.type";
 
 export type ProjectType = {
   _id: string;

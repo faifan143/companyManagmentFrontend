@@ -5,7 +5,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
-import { ProjectType } from "@/types/project.type";
+import { ProjectType } from "@/types/Project.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";

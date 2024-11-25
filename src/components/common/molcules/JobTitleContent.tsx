@@ -8,10 +8,8 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
-import { JobTitleType } from "@/types/jobTitle.type";
-import {
-  CircularProgress
-} from "@mui/material";
+import { JobTitleType } from "@/types/JobTitle.type";
+import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
@@ -86,7 +84,6 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
             }  `}
           >
             <tr>
-           
               <th className="text-center  py-3 px-4 uppercase font-semibold text-sm">
                 {t("Title")}
               </th>

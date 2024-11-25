@@ -5,7 +5,7 @@ import {
   getPriorityBorderColor,
   isDueSoon,
 } from "@/services/task.service";
-import { ReceiveTaskType } from "@/types/task.type";
+import { ReceiveTaskType } from "@/types/Task.type";
 import React, { useState } from "react";
 import ListTaskDetails from "./ListTaskDetails";
 import useLanguage from "@/hooks/useLanguage";

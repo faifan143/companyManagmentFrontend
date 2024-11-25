@@ -4,7 +4,7 @@
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskTypeSchema } from "@/schemas/task.schema";
-import { CreateTaskTypeProps, TaskTypeFormInputs } from "@/types/task.type";
+import { CreateTaskTypeProps, TaskTypeFormInputs } from "@/types/Task.type";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";

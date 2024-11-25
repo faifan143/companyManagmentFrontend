@@ -10,7 +10,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
-import { JobCategoryType } from "@/types/jobTitle.type";
+import { JobCategoryType } from "@/types/JobTitle.type";
 import {
   CircularProgress,
   Dialog,

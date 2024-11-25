@@ -3,7 +3,7 @@ import {
   HandleEditStatusClickProps,
   HandleEditTypeClickProps,
   ReceiveTaskType,
-} from "@/types/task.type";
+} from "@/types/Task.type";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Dispatch, SetStateAction } from "react";

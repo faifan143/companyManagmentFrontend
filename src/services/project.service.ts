@@ -1,5 +1,4 @@
-import { EmployeeType } from "@/types/employeeType.type";
-
+import { EmployeeType } from "@/types/EmployeeType.type";
 
 export const getEmployeeOptions = (employees: EmployeeType[] | undefined) =>
   employees

@@ -251,6 +251,7 @@ export type ReceiveTaskType = {
   parent_task?: string;
   rate?: number;
 };
+
 export type ExtendedReceiveTaskType = {
   id: string;
   name: string;

@@ -111,7 +111,7 @@
 // export default useTimeTicker;
 
 import { useTaskTimer } from "@/components/Providers/TaskTimerContext";
-import { TimeLog } from "@/types/task.type";
+import { TimeLog } from "@/types/Task.type";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";

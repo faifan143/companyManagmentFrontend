@@ -3,7 +3,7 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
-import { ProjectType } from "@/types/project.type";
+import { ProjectType } from "@/types/Project.type";
 import { collabColors } from "./ProjectsContent";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import RouteWrapper from "../RouteWrapper";

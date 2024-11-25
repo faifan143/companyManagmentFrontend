@@ -85,11 +85,11 @@ import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
 import useSnackbar from "@/hooks/useSnackbar";
 import { RootState } from "@/state/store";
-import { ProjectType } from "@/types/project.type";
-import { SectionType } from "@/types/section.type";
-import { ReceiveTaskType } from "@/types/task.type";
-import { DeptTree } from "@/types/trees/department.tree.type";
-import { TaskTree } from "@/types/trees/task.tree.type";
+import { ProjectType } from "@/types/Project.type";
+import { SectionType } from "@/types/Section.type";
+import { ReceiveTaskType } from "@/types/Task.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
+import { TaskTree } from "@/types/trees/Task.tree.type";
 import React, { useEffect, useState } from "react";
 
 const TasksView: React.FC = () => {

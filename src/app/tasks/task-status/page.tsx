@@ -2,7 +2,7 @@
 
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import { ITaskStatus } from "@/types/task.type";
+import { ITaskStatus } from "@/types/Task.type";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useState } from "react";

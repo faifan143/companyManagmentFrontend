@@ -1,4 +1,4 @@
-import { ReceiveTaskType } from "../task.type";
+import { ReceiveTaskType } from "../Task.type";
 
 export type DeptTree = {
   id: string;

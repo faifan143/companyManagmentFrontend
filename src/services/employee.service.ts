@@ -3,7 +3,7 @@ import {
   EmployeeFormInputs,
   HandleDeleteEmployeeClick,
   HandleSubmitOptions,
-} from "@/types/employeeType.type";
+} from "@/types/EmployeeType.type";
 import axios from "axios";
 import { UseFormSetValue } from "react-hook-form";
 import Cookies from "js-cookie";

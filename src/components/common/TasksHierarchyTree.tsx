@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskTree } from "@/types/trees/task.tree.type";
+import { TaskTree } from "@/types/trees/Task.tree.type";
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
@@ -16,7 +16,6 @@ import ReactFlow, {
   Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
-
 
 type TaskHierarchyTreeProps = {
   data: TaskTree[];
@@ -70,9 +69,7 @@ const TaskHierarchyTree: React.FC<TaskHierarchyTreeProps> = ({
   nodeStyles = (isLightMode) =>
     `relative min-w-[120px] text-center shadow-md ${
       isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
-    } border-2 ${
-       "border-yellow-500/50"
-    } text-twhite rounded-lg py-3 px-5`,
+    } border-2 ${"border-yellow-500/50"} text-twhite rounded-lg py-3 px-5`,
   nodeColors = { target: "#4A90E2", source: "#4A90E2" },
   width = "70%",
   lightMode = false,
@@ -122,23 +119,21 @@ const TaskHierarchyTree: React.FC<TaskHierarchyTreeProps> = ({
     []
   );
 
-
   return (
     <div
       className={`h-[500px] w-[${width}] border-4 border-slate-600 rounded-3xl shadow-lg`}
     >
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          fitView
-          fitViewOptions={{ padding: 0.2 }}
-        >
-          <Background />
-        </ReactFlow>
-     
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+      >
+        <Background />
+      </ReactFlow>
     </div>
   );
 };

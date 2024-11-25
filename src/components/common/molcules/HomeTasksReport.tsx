@@ -1,5 +1,5 @@
 import useHierarchy from "@/hooks/useHierarchy";
-import { ReceiveTaskType } from "@/types/task.type";
+import { ReceiveTaskType } from "@/types/Task.type";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 

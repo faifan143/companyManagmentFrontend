@@ -8,7 +8,7 @@ import {
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useSetPageData from "@/hooks/useSetPageData";
 import useSnackbar from "@/hooks/useSnackbar";
-import { EmployeeType } from "@/types/employeeType.type";
+import { EmployeeType } from "@/types/EmployeeType.type";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbars from "../atoms/CustomizedSnackbars";

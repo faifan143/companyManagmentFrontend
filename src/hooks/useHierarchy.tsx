@@ -1,6 +1,6 @@
 import HomeListRow from "@/components/common/atoms/HomeListRow";
 import ListRow from "@/components/common/atoms/ListRow";
-import { ExtendedReceiveTaskType, ReceiveTaskType } from "@/types/task.type";
+import { ExtendedReceiveTaskType, ReceiveTaskType } from "@/types/Task.type";
 import React from "react";
 
 const useHierarchy = () => {

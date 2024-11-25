@@ -1,6 +1,6 @@
 "use client";
 
-import { DeptTree } from "@/types/trees/department.tree.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
@@ -9,17 +9,17 @@ import ReactFlow, {
   Handle,
   Node,
   NodeProps,
-  Position
+  Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
 type ProjectDetailsHierarchyTreeProps = {
   data: DeptTree[];
-  nodeStyles?: (isLightMode: boolean, isManager?: boolean) => string; 
-  nodeColors?: { target: string; source: string }; 
-  height?: number; 
-  width?: string; 
-  lightMode?: boolean; 
+  nodeStyles?: (isLightMode: boolean, isManager?: boolean) => string;
+  nodeColors?: { target: string; source: string };
+  height?: number;
+  width?: string;
+  lightMode?: boolean;
   onPress: (deptId: string) => void;
 };
 
@@ -61,7 +61,9 @@ const generateLayout = (data: DeptTree[]) => {
   return { nodes, edges };
 };
 
-const ProjectDetailsHierarchyTree: React.FC<ProjectDetailsHierarchyTreeProps> = ({
+const ProjectDetailsHierarchyTree: React.FC<
+  ProjectDetailsHierarchyTreeProps
+> = ({
   data,
   nodeStyles = (isLightMode, isManager) =>
     `relative min-w-[120px] text-center shadow-md ${
@@ -107,8 +109,6 @@ const ProjectDetailsHierarchyTree: React.FC<ProjectDetailsHierarchyTreeProps> = 
       setEdges(generatedEdges);
     }
   }, [data]);
-
-
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {

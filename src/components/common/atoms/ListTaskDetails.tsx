@@ -29,7 +29,7 @@ import {
   updateTaskData,
 } from "@/services/task.service";
 import { RootState } from "@/state/store";
-import { ReceiveTaskType } from "@/types/task.type";
+import { ReceiveTaskType } from "@/types/Task.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
