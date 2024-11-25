@@ -24,3 +24,4 @@ export interface LoginServiceOptions {
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   setEmpId: Dispatch<SetStateAction<string>>;
 }
+// wow
