@@ -25,6 +25,7 @@ import { useTranslation } from "react-i18next";
 import useSnackbar from "@/hooks/useSnackbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { useRouter } from "next/navigation";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 const baseUrl = process.env.BASE_URL || "";
 
 const AddEmp: React.FC = () => {
@@ -102,9 +103,9 @@ const AddEmp: React.FC = () => {
     ? `/emp/update/${employeeData.id}`
     : `/emp/create`;
 
-  const { data: departments } = useCustomQuery<DepartmentType[]>({
+  const { data: departments } = useCustomQuery<{info:DepartmentType[],tree:DeptTree[]}>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `http://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
@@ -512,8 +513,8 @@ const AddEmp: React.FC = () => {
               }}
             >
               <option value="">{t("Select a department")}</option>
-              {departments &&
-                departments.map((dept) => (
+              {departments && departments.tree && 
+                departments.tree.map((dept) => (
                   <option key={dept.id} value={dept.id}>
                     {dept.name}
                   </option>
@@ -548,7 +549,7 @@ const AddEmp: React.FC = () => {
                   .filter((job) => job.department._id == selectedDept)
                   .map((job) => (
                     <option key={job.id} value={job.id}>
-                      {job.name}
+                      {job.title}
                     </option>
                   ))}
             </select>

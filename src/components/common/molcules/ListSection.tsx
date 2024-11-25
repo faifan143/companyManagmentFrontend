@@ -70,7 +70,7 @@ const ListSection: React.FC<{
               {t(section.name)}
             </span>
 
-            <div className="">
+            <div className="relative">
               <Image
                 src={ThreeDotsIcon}
                 alt="more icon"
