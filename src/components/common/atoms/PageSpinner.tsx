@@ -1,28 +1,47 @@
 "use client";
 
-import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import useLanguage from "@/hooks/useLanguage";
 
 const PageSpinner = ({ title }: { title?: string }) => {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
+
   return (
-    <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-black bg-opacity-50 backdrop-blur-sm rounded-lg p-8 flex flex-col justify-center items-center  ">
-        <svg width={0} height={0}>
-          <defs>
-            <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="100%" stopColor="#ffffff" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <CircularProgress
-          sx={{ "svg circle": { stroke: "url(#my_gradient)" } }}
-        />
-        <div className="mt-4 font-bold text-[#ffffff]">
-          {title ?? t("Loading ...")}
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-[1px] flex justify-center items-center z-50">
+      <div className="flex flex-col items-center gap-3 bg-black/10 px-8 py-6 rounded-2xl backdrop-blur-xl">
+        {/* Animated bar spinner */}
+        <div className="flex items-center gap-1">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="w-1 h-8 bg-white rounded-full"
+              style={{
+                animation: "pulse 1s ease-in-out infinite",
+                animationDelay: `${i * 0.15}s`,
+                transformOrigin: "center center",
+              }}
+            />
+          ))}
         </div>
+
+        {/* Text */}
+        <span className="text-white/90 text-sm font-medium tracking-wide">
+          {title ?? t("Loading")}
+        </span>
+
+        {/* Animation keyframes */}
+        <style jsx>{`
+          @keyframes pulse {
+            0%,
+            100% {
+              transform: scaleY(0.5);
+              opacity: 0.5;
+            }
+            50% {
+              transform: scaleY(1.3);
+              opacity: 1;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );

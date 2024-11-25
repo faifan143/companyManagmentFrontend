@@ -22,7 +22,7 @@
     " Company Manager": " إدارة الشركة",
     "Write a comment...": "إكتب تعليقاً... ",
     "Select options...": "إختر خياراً... ",
-    "Loading": "جاري التحميل ...",
+    "Loading": "جاري التحميل",
     "Task Details": "تفاصيل المهمة",
     "Members": "الأعضاء",
     "No assigned employee": "لا يوجد موظف معين",
@@ -243,7 +243,7 @@
     "Job Title created successfully!": "تم إنشاء المسمى الوظيفي بنجاح!",
     "Job Title updated successfully!": "تم تحديث المسمى الوظيفي بنجاح!",
     "Select Permissions...": "إختر اذن ...",
-    "Loading ...": "جاري التحميل ...",
+    "Loading ...": "جاري التحميل",
     "chat": "محادثة",
     "Good Morning": "صباح الخير",
     "My Week": "أسبوعي",
@@ -337,6 +337,7 @@
     "Select your rating": "اختر تقييمك",
     "Cancel": "إلغاء",
     "Submit": "إرسال",
-    "Rate this Task": "قيّم هذه المهمة"
+    "Rate this Task": "قيّم هذه المهمة",
+    "Loading...": "جاري التحميل ..."
   }
 }

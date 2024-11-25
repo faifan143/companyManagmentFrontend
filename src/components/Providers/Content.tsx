@@ -53,7 +53,7 @@ const Content = ({ children }: { children: ReactNode | ReactNode[] }) => {
     }
   }, [isAuthenticated]);
 
-  if (loading) return <PageSpinner title={t("Loading ...")} />;
+  if (loading) return <PageSpinner title={t("Loading")} />;
   return (
     <div
       className={`min-h-[100dvh] w-full  ${

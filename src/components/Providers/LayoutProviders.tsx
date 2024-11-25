@@ -4,6 +4,7 @@ import I18nProvider from "./I18nProvider";
 import { QueryProvider } from "./QueryProvider";
 import ReduxProvider from "./ReduxProvider";
 import { TaskTimerProvider } from "./TaskTimerContext";
+import LoadingProvider from "./LoadingProvider";
 const LayoutProviders = ({
   children,
 }: {
@@ -14,7 +15,9 @@ const LayoutProviders = ({
       <QueryProvider>
         <I18nProvider>
           <TaskTimerProvider>
-            <Content>{children}</Content>
+            <LoadingProvider>
+              <Content>{children}</Content>
+            </LoadingProvider>
           </TaskTimerProvider>
         </I18nProvider>
       </QueryProvider>
