@@ -6,7 +6,7 @@ import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import { loginSchema } from "@/schemas/login.schema";
 import { handleLogin } from "@/services/auth.service";
 import { AppDispatch } from "@/state/store";
-import { LoginFormInputs } from "@/types/aLogin.type";
+import { LoginFormInputs } from "@/types/Login.type";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
