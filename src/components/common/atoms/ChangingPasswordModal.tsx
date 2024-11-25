@@ -1,6 +1,6 @@
 import useSnackbar from "@/hooks/useSnackbar";
 import { changePasswordSchema } from "@/schemas/login.schema";
-import { ChangePasswordFormInputs } from "@/types/Login.type";
+import { ChangePasswordFormInputs } from "@/types/aLogin.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";

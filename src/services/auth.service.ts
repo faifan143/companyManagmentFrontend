@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { loginUser } from "@/state/slices/userSlice";
 import { AppDispatch } from "@/state/store";
-import { LoginFormInputs, LoginServiceOptions } from "@/types/Login.type";
+import { LoginFormInputs, LoginServiceOptions } from "@/types/aLogin.type";
 
 export const login = async (data: LoginFormInputs, dispatch: AppDispatch) => {
   try {
