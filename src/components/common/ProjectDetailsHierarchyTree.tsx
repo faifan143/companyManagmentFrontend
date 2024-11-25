@@ -1,6 +1,6 @@
 "use client";
 
-import { DeptTree } from "@/types/trees/aDepartment.tree.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {

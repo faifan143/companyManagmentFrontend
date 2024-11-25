@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskTree } from "@/types/trees/aTask.tree.type";
+import { TaskTree } from "@/types/trees/Task.tree.type";
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {

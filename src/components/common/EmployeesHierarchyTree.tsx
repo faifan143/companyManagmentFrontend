@@ -2,7 +2,7 @@
 
 import { useRedux } from "@/hooks/useRedux";
 import { RootState } from "@/state/store";
-import { EmpTree } from "@/types/trees/aEmp.tree.type";
+import { EmpTree } from "@/types/trees/Emp.tree.type";
 import dagre from "dagre";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {

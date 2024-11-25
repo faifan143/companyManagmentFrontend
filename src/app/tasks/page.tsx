@@ -88,8 +88,8 @@ import { RootState } from "@/state/store";
 import { ProjectType } from "@/types/Project.type";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
-import { DeptTree } from "@/types/trees/aDepartment.tree.type";
-import { TaskTree } from "@/types/trees/aTask.tree.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
+import { TaskTree } from "@/types/trees/Task.tree.type";
 import React, { useEffect, useState } from "react";
 
 const TasksView: React.FC = () => {

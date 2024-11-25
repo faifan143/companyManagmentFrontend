@@ -15,7 +15,7 @@ import {
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeType } from "@/types/EmployeeType.type";
-import { EmpTree } from "@/types/trees/aEmp.tree.type";
+import { EmpTree } from "@/types/trees/Emp.tree.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
