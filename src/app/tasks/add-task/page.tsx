@@ -20,6 +20,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { selectStyle } from "@/utils/SelectStyle";
+import { DeptTree } from "@/types/trees/Department.tree.type";
+import { EmployeeType } from "@/types/EmployeeType.type";
 const baseUrl = process.env.BASE_URL || "";
 
 const AddTask: React.FC = () => {
@@ -57,7 +59,10 @@ const AddTask: React.FC = () => {
     setSnackbarConfig,
   });
 
-  const { data: departments } = useCustomQuery<DepartmentType[]>({
+  const { data: departments } = useCustomQuery<{
+    info: DepartmentType[];
+    tree: DeptTree[];
+  }>({
     queryKey: ["departments", selectedProject ?? "two"],
     url: `http://${baseUrl}/${
       !isProjectDisabled && selectedProject
@@ -67,7 +72,10 @@ const AddTask: React.FC = () => {
     setSnackbarConfig,
   });
 
-  const { data: employees } = useCustomQuery<EmpTree[]>({
+  const { data: employees } = useCustomQuery<{
+    info: EmployeeType[];
+    tree: EmpTree[];
+  }>({
     queryKey: ["employees"],
     url: `http://${baseUrl}/emp/tree`,
     setSnackbarConfig,
@@ -303,7 +311,7 @@ const AddTask: React.FC = () => {
                   {t("Select a department (optional)")}
                 </option>
                 {departments &&
-                  departments.map((dept: any) => (
+                  departments.tree.map((dept: any) => (
                     <option className="" key={dept.id} value={dept.id}>
                       {dept.name}
                     </option>
@@ -358,7 +366,7 @@ const AddTask: React.FC = () => {
                 <>
                   <Select
                     options={
-                      employees?.map((employee) => ({
+                      employees?.tree.map((employee) => ({
                         value: employee.id,
                         label: `${employee.name} - ${employee.title}`,
                       })) || []
