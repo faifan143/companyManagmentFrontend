@@ -6,7 +6,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useSnackbar from "@/hooks/useSnackbar";
 import { addProjectSchema } from "@/schemas/project.shema";
 import { ProjectType } from "@/types/Project.type";
-import { DeptTree } from "@/types/trees/Department.tree.type";
+import { DeptTree } from "@/types/trees/aDepartment.tree.type";
 import { selectStyle } from "@/utils/SelectStyle";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";

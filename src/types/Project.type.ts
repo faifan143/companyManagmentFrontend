@@ -2,7 +2,7 @@ import { DepartmentType } from "./DepartmentType.type";
 import { EmployeeType } from "./EmployeeType.type";
 import { SectionType } from "./Section.type";
 import { ReceiveTaskType } from "./Task.type";
-import { DeptTree } from "./trees/Department.tree.type";
+import { DeptTree } from "./trees/aDepartment.tree.type";
 
 export type ProjectType = {
   _id: string;

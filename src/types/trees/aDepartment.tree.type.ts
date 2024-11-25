@@ -1,4 +1,4 @@
-import { EmpTree } from "./Emp.tree.type";
+import { EmpTree } from "./aEmp.tree.type";
 
 export type DeptTree = {
   id: string;

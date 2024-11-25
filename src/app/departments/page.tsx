@@ -14,7 +14,7 @@ import {
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useSnackbar from "@/hooks/useSnackbar";
 import { DepartmentType } from "@/types/DepartmentType.type";
-import { DeptTree } from "@/types/trees/Department.tree.type";
+import { DeptTree } from "@/types/trees/aDepartment.tree.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
