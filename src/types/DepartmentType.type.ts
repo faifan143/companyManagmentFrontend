@@ -7,7 +7,7 @@ export interface DepartmentType {
   goal: string;
   category: string;
   mainTasks: string;
-  parent_department?: DepartmentType;
+  parent_department?: string;
   numericOwners: { category: string; count: number }[];
   supportingFiles: string[];
   requiredReports: { name: string; templateFile: string }[];

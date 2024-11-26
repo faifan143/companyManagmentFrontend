@@ -71,7 +71,9 @@ const DepartmentsContent = ({
                 </td>
                 <td className="py-3 px-4 text-center">
                   {department.parent_department
-                    ? department.parent_department.name
+                    ? departmentsData.find(
+                        (dep) => dep.id == department.parent_department
+                      )?.name
                     : "None"}
                 </td>
                 {(isAdmin || hasEditPermission) && (
