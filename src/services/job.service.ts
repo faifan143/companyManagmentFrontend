@@ -1,9 +1,9 @@
-import { DepartmentType } from "@/types/DepartmentType.type";
 import {
   AddEducationHandlerParams,
   AddExperienceHandlerParams,
 } from "@/types/JobCategory.type";
 import { HandlePermissionsChangeParams } from "@/types/JobTitle.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 
 export const addEducationService = ({
   newEducation,
@@ -73,9 +73,7 @@ export const handlePermissionsChange = ({
   }
 };
 
-export const getDepartmentOptions = (
-  departments: DepartmentType[] | undefined
-) =>
+export const getDepartmentOptions = (departments: DeptTree[] | undefined) =>
   departments
     ? departments.map((dept) => ({
         value: dept.id,

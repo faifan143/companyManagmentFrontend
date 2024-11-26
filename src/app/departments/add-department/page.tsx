@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-
 "use client";
 
 import { XIcon } from "@/assets";
@@ -23,6 +22,7 @@ import {
   DepartmentType,
 } from "@/types/DepartmentType.type";
 import { JobCategoryType } from "@/types/JobTitle.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
@@ -86,9 +86,12 @@ const AddDept: React.FC = () => {
     name: "developmentPrograms",
   });
 
-  const { data: departments } = useCustomQuery<DepartmentType[]>({
+  const { data: departments } = useCustomQuery<{
+    info: DepartmentType[];
+    tree: DeptTree[];
+  }>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `http://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
   const { data: categories } = useCustomQuery<JobCategoryType[]>({
@@ -317,7 +320,8 @@ const AddDept: React.FC = () => {
             >
               <option value="">{t("Select a parent department")}</option>
               {departments &&
-                departments.map((dept: any) => (
+                departments.tree &&
+                departments.tree.map((dept) => (
                   <option key={dept.id} value={dept.id}>
                     {dept.name}
                   </option>

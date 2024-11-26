@@ -27,6 +27,7 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { selectStyle } from "@/utils/SelectStyle";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { useRouter } from "next/navigation";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -73,9 +74,12 @@ const AddJobTitle: React.FC = () => {
   });
   const jobTitleData = useQueryPageData<JobTitleFormInputs>(reset);
 
-  const { data: departments } = useCustomQuery<DepartmentType[]>({
+  const { data: departments } = useCustomQuery<{
+    info: DepartmentType[];
+    tree: DeptTree[];
+  }>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `http://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
   const { data: categories } = useCustomQuery<JobCategoryType[]>({
@@ -360,11 +364,11 @@ const AddJobTitle: React.FC = () => {
               <Select
                 {...register("accessibleDepartments")}
                 isMulti
-                value={getDepartmentOptions(departments).filter(
+                value={getDepartmentOptions(departments?.tree).filter(
                   (option: { value: string; label: string }) =>
                     specificDept.includes(option.value)
                 )}
-                options={getDepartmentOptions(departments)}
+                options={getDepartmentOptions(departments?.tree)}
                 onChange={(selectedOptions) =>
                   setSpecificDept(selectedOptions.map((option) => option.value))
                 }
@@ -389,11 +393,11 @@ const AddJobTitle: React.FC = () => {
               <Select
                 {...register("accessibleEmps")}
                 isMulti
-                value={getDepartmentOptions(departments).filter(
+                value={getDepartmentOptions(departments?.tree).filter(
                   (option: { value: string; label: string }) =>
                     specificEmp.includes(option.value)
                 )}
-                options={getDepartmentOptions(departments)}
+                options={getDepartmentOptions(departments?.tree)}
                 onChange={(selectedOptions) =>
                   setSpecificEmp(selectedOptions.map((option) => option.value))
                 }
@@ -418,11 +422,11 @@ const AddJobTitle: React.FC = () => {
               <Select
                 {...register("accessibleJobTitles")}
                 isMulti
-                value={getDepartmentOptions(departments).filter(
+                value={getDepartmentOptions(departments?.tree).filter(
                   (option: { value: string; label: string }) =>
                     specificJobTitle.includes(option.value)
                 )}
-                options={getDepartmentOptions(departments)}
+                options={getDepartmentOptions(departments?.tree)}
                 onChange={(selectedOptions) =>
                   setSpecificJobTitle(
                     selectedOptions.map((option) => option.value)
@@ -501,7 +505,8 @@ const AddJobTitle: React.FC = () => {
             >
               <option value="">{t("Select a department")}</option>
               {departments &&
-                departments.map((dept) => (
+                departments.tree &&
+                departments.tree.map((dept) => (
                   <option
                     key={dept.id}
                     value={dept.id}
