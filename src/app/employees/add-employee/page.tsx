@@ -103,7 +103,10 @@ const AddEmp: React.FC = () => {
     ? `/emp/update/${employeeData.id}`
     : `/emp/create`;
 
-  const { data: departments } = useCustomQuery<{info:DepartmentType[],tree:DeptTree[]}>({
+  const { data: departments } = useCustomQuery<{
+    info: DepartmentType[];
+    tree: DeptTree[];
+  }>({
     queryKey: ["departments"],
     url: `http://${baseUrl}/department/tree`,
     setSnackbarConfig,
@@ -146,37 +149,94 @@ const AddEmp: React.FC = () => {
       getErrorMessages({ errors, setSnackbarConfig });
     }
   }, [errors, setSnackbarConfig]);
+  // useEffect(() => {
+  //   if (employeeData) {
+  //     reset(employeeData);
+  //     setValue("name", employeeData.name);
+  //     setValue("email", employeeData.email);
+  //     setValue("phone", employeeData.phone);
+  //     setValue("national_id", employeeData.national_id);
+  //     setValue("address", employeeData.address);
+  //     setValue("emergency_contact", employeeData.emergency_contact);
+  //     setValue("dob", employeeData.dob ? employeeData.dob.split("T")[0] : "");
+  //     setValue("gender", employeeData.gender);
+  //     setValue("marital_status", employeeData.marital_status);
+  //     setValue(
+  //       "employment_date",
+  //       employeeData.employment_date
+  //         ? employeeData.employment_date.split("T")[0]
+  //         : ""
+  //     );
+  //     setValue("job_tasks", employeeData.job_tasks);
+  //     setValue("base_salary", employeeData.base_salary);
+  //     setValue("department_id", employeeData.department.id);
+  //     setSelectedDept(employeeData.department.id);
+  //     setValue("job_id", employeeData.job.id);
+
+  //     if (employeeData.legal_documents) {
+  //       const legalFiles = {};
+  //       employeeData.legal_documents.forEach((doc, index) => {
+  //         if (doc.file) legalFiles[index] = doc.file;
+  //       });
+  //       console.log("legalFiles  :  ", legalFiles);
+
+  //       setLegalFileNames({ legal_documents: legalFiles });
+  //     }
+
+  //     if (employeeData.certifications) {
+  //       const certFiles = {};
+  //       employeeData.certifications.forEach((cert, index) => {
+  //         if (cert.file) certFiles[index] = cert.file;
+  //       });
+  //       setCertificationFileNames({ certifications: certFiles });
+  //     }
+  //   } else {
+  //     reset();
+  //     setLegalFileNames({});
+  //     setCertificationFileNames({});
+  //   }
+  // }, [employeeData, reset, setValue]);
+
   useEffect(() => {
     if (employeeData) {
-      reset(employeeData);
+      reset(employeeData); // Keep this as base reset
+
+      // Basic Information
       setValue("name", employeeData.name);
       setValue("email", employeeData.email);
       setValue("phone", employeeData.phone);
       setValue("national_id", employeeData.national_id);
       setValue("address", employeeData.address);
       setValue("emergency_contact", employeeData.emergency_contact);
+
+      // Dates - Split from ISO string
       setValue("dob", employeeData.dob ? employeeData.dob.split("T")[0] : "");
-      setValue("gender", employeeData.gender);
-      setValue("marital_status", employeeData.marital_status);
       setValue(
         "employment_date",
         employeeData.employment_date
           ? employeeData.employment_date.split("T")[0]
           : ""
       );
-      setValue("job_tasks", employeeData.job_tasks);
-      setValue("base_salary", employeeData.base_salary);
+
+      // Important: Set these values explicitly
+      setValue("gender", employeeData.gender); // Fix for gender
+      setValue("marital_status", employeeData.marital_status); // Fix for marital status
+
+      // Department and Job
       setValue("department_id", employeeData.department.id);
-      setSelectedDept(employeeData.department.id);
+      setSelectedDept(employeeData.department.id); // Important for job filtering
       setValue("job_id", employeeData.job.id);
 
+      // Financial Information
+      setValue("job_tasks", employeeData.job_tasks);
+      setValue("base_salary", employeeData.base_salary);
+
+      // Handle Files
       if (employeeData.legal_documents) {
         const legalFiles = {};
         employeeData.legal_documents.forEach((doc, index) => {
           if (doc.file) legalFiles[index] = doc.file;
         });
-        console.log("legalFiles  :  ", legalFiles);
-
         setLegalFileNames({ legal_documents: legalFiles });
       }
 
@@ -392,6 +452,7 @@ const AddEmp: React.FC = () => {
             <label className="block  text-sm font-medium">{t("Gender")}</label>
             <select
               {...register("gender")}
+              defaultValue={employeeData && employeeData.gender}
               className={`w-full ${
                 isLightMode
                   ? "bg-dark  placeholder:text-tdark "
@@ -401,10 +462,10 @@ const AddEmp: React.FC = () => {
               }`}
             >
               <option value="">{t("Select a gender")}</option>
-              {[t("male"), t("female"), t("undefined")].map(
+              {[("male"), ("female"), ("undefined")].map(
                 (gender, index: number) => (
                   <option key={index} value={gender}>
-                    {gender}
+                    {t(gender)}
                   </option>
                 )
               )}
@@ -423,6 +484,7 @@ const AddEmp: React.FC = () => {
             </label>
             <select
               {...register("marital_status")}
+              value={getValues("marital_status") || ""} // Changed from defaultValue to value
               className={`w-full ${
                 isLightMode
                   ? "bg-dark  placeholder:text-tdark "
@@ -513,7 +575,8 @@ const AddEmp: React.FC = () => {
               }}
             >
               <option value="">{t("Select a department")}</option>
-              {departments && departments.tree && 
+              {departments &&
+                departments.tree &&
                 departments.tree.map((dept) => (
                   <option key={dept.id} value={dept.id}>
                     {dept.name}
