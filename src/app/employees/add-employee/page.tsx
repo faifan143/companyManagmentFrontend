@@ -108,12 +108,12 @@ const AddEmp: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/tree`,
+    url: `https://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
-    url: `http://${baseUrl}/job-titles/get-job-titles`,
+    url: `https://${baseUrl}/job-titles/get-job-titles`,
     setSnackbarConfig,
   });
 
@@ -462,13 +462,11 @@ const AddEmp: React.FC = () => {
               }`}
             >
               <option value="">{t("Select a gender")}</option>
-              {[("male"), ("female"), ("undefined")].map(
-                (gender, index: number) => (
-                  <option key={index} value={gender}>
-                    {t(gender)}
-                  </option>
-                )
-              )}
+              {["male", "female", "undefined"].map((gender, index: number) => (
+                <option key={index} value={gender}>
+                  {t(gender)}
+                </option>
+              ))}
             </select>
             {errors.gender && (
               <p className="text-red-500 mt-1 text-sm">

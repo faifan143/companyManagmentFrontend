@@ -91,12 +91,12 @@ const AddDept: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/tree`,
+    url: `https://${baseUrl}/department/tree`,
     setSnackbarConfig,
   });
   const { data: categories } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["categories"],
-    url: `http://${baseUrl}/job-categories`,
+    url: `https://${baseUrl}/job-categories`,
     setSnackbarConfig,
   });
 

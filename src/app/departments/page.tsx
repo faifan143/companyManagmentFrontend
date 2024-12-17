@@ -34,7 +34,7 @@ const DepartmentsView: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments"],
-    url: `http://${process.env.BASE_URL}/department/tree`,
+    url: `https://${process.env.BASE_URL}/department/tree`,
     setSnackbarConfig,
   });
 

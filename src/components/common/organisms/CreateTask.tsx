@@ -57,13 +57,13 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `https://${baseUrl}/department/get-departments`,
     setSnackbarConfig,
   });
 
   const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
-    url: `http://${baseUrl}/emp/get-all-emps`,
+    url: `https://${baseUrl}/emp/get-all-emps`,
     setSnackbarConfig,
   });
 

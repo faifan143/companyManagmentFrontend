@@ -4,8 +4,7 @@ import {
   HandleEditTypeClickProps,
   ReceiveTaskType,
 } from "@/types/Task.type";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { apiClient } from "@/utils/axios";
 import { Dispatch, SetStateAction } from "react";
 import { DropResult } from "react-beautiful-dnd";
 
@@ -32,14 +31,7 @@ export const handleDeleteStatusClick = async ({
   refetch,
 }: HandleDeleteStatusClick) => {
   try {
-    await axios.delete(
-      `http://${process.env.BASE_URL}/task-status/delete/${id}`,
-      {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("access_token"),
-        },
-      }
-    );
+    await apiClient.delete(`/task-status/delete/${id}`);
     refetch();
   } catch (error) {
     console.error("Error deleting task status:", error);
@@ -74,15 +66,7 @@ export const updateTaskData = async (
   data: { [key: string]: string }
 ) => {
   try {
-    await axios.post(
-      `http://${process.env.BASE_URL}/tasks/update/${taskId}`,
-      data,
-      {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("access_token"),
-        },
-      }
-    );
+    await apiClient.post(`/tasks/update/${taskId}`, data);
   } catch (error) {
     console.error("Failed to update task status", error);
   }

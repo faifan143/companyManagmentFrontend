@@ -104,7 +104,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `https://${baseUrl}/department/get-departments`,
     setSnackbarConfig,
   });
 

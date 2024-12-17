@@ -1,9 +1,9 @@
 import useSnackbar from "@/hooks/useSnackbar";
 import { changePasswordSchema } from "@/schemas/login.schema";
 import { ChangePasswordFormInputs } from "@/types/Login.type";
+import { apiClient } from "@/utils/axios";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -31,11 +31,10 @@ const ChangingPasswordModal = ({
 
   const handlePasswordChange = async (data: ChangePasswordFormInputs) => {
     try {
-      const response = await axios.post(
-        `http://${process.env.BASE_URL}/auth/change-password/${empId}`,
-        { newPassword: data.newPassword }
-      );
-      console.log(response.data);
+      const response = await apiClient.post(`/auth/change-password/${empId}`, {
+        newPassword: data.newPassword,
+      });
+      console.log(response);
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error changing password", error);

@@ -1,16 +1,13 @@
 /* eslint-disable */
+import { apiClient } from "@/utils/axios";
 import {
   useMutation,
-  useQueryClient,
   UseMutationOptions,
   UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
-import axios from "axios";
-import Cookies from "js-cookie";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
-
-const baseUrl = process.env.BASE_URL || "";
 
 type MutationInput = Record<string, any>;
 type MutationResponse = any;
@@ -52,33 +49,20 @@ export const useCreateMutation = <
   unknown
 > => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const mutationAddFunction = async (data: TInput) => {
-    const response = await axios.post(`http://${baseUrl}${endpoint}`, data, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("access_token")}`,
-      },
-    });
-    return response.data;
+    const response = await apiClient.post(endpoint, data);
+    return response as TResponse;
   };
   const mutationUpdateFunction = async (data: TInput) => {
-    const response = await axios.put(`http://${baseUrl}${endpoint}`, data, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("access_token")}`,
-      },
-    });
-    return response.data;
+    const response = await apiClient.put(endpoint, data);
+    return response as TResponse;
   };
-  const mutationDeleteFunction = async (data: TInput) => {
-    const response = await axios.delete(`http://${baseUrl}${endpoint}`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get("access_token")}`,
-      },
-    });
-    return response.data;
+  const mutationDeleteFunction = async () => {
+    const response = await apiClient.delete(endpoint);
+    return response as TResponse;
   };
-
-  const { t } = useTranslation();
 
   return useMutation<TResponse, unknown, TInput>({
     mutationFn:

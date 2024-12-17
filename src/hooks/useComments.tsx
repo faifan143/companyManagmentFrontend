@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { apiClient } from "@/utils/axios";
+import { useEffect, useRef, useState } from "react";
 
 export interface Comment {
   id: string;
@@ -22,15 +21,8 @@ const useComments = (taskId: string | undefined, isOpen: boolean) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(
-          `http://${process.env.BASE_URL}/comment/${taskId}`,
-          {
-            headers: {
-              Authorization: "Bearer " + Cookies.get("access_token"),
-            },
-          }
-        );
-        setComments(response.data);
+        const response = await apiClient.get<Comment[]>(`/comment/${taskId}`);
+        setComments(response);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
@@ -48,29 +40,18 @@ const useComments = (taskId: string | undefined, isOpen: boolean) => {
     }
   };
 
-  // Submit a new comment
   const handleSendComment = async () => {
     if (comment.trim() || attachedFile) {
       try {
-        const response = await axios.post(
-          `http://${process.env.BASE_URL}/comment`,
-          {
-            content: comment,
-            taskId,
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + Cookies.get("access_token"),
-            },
-          }
-        );
-
-        // Update comments state with the newly added comment
-        setComments((prevComments) => [...prevComments, response.data]);
-        setComment(""); // Clear the comment input
-        setAttachedFile(null); // Clear the attached file
+        const response = await apiClient.post<Comment>(`/comment`, {
+          content: comment,
+          taskId,
+        });
+        setComments((prevComments) => [...prevComments, response]);
+        setComment("");
+        setAttachedFile(null);
         if (fileInputRef.current) {
-          fileInputRef.current.value = ""; // Reset file input
+          fileInputRef.current.value = "";
         }
       } catch (error) {
         console.error("Error submitting comment:", error);

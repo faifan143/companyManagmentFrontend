@@ -1,9 +1,10 @@
+import { apiClient } from "@/utils/axios";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { Dispatch, SetStateAction } from "react";
 
-interface CustomQueryOptions<T> extends UseQueryOptions<T> {
+interface CustomQueryOptions<TData>
+  extends Omit<UseQueryOptions<TData, Error, TData>, "queryKey" | "queryFn"> {
   queryKey: string[];
   url: string;
   setSnackbarConfig: Dispatch<
@@ -16,25 +17,20 @@ interface CustomQueryOptions<T> extends UseQueryOptions<T> {
   nestedData?: boolean;
 }
 
-const useCustomQuery = <T,>({
+const useCustomQuery = <TData,>({
   queryKey,
   url,
   setSnackbarConfig,
   nestedData = false,
   ...options
-}: CustomQueryOptions<T>) => {
-  return useQuery<T>({
+}: CustomQueryOptions<TData>) => {
+  return useQuery<TData>({
     queryKey,
-    queryFn: async () => {
+    queryFn: async (): Promise<TData> => {
       try {
-        const response = await axios.get(url, {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access_token")}`,
-          },
-        });
-        return nestedData ? response.data.data : response.data;
+        const response = await apiClient.get<TData>(url);
+        return (nestedData ? response.data : response) as TData;
       } catch (error) {
-        // Display error message using snackbarConfig
         if (axios.isAxiosError(error) && error.response) {
           setSnackbarConfig({
             open: true,
@@ -53,7 +49,7 @@ const useCustomQuery = <T,>({
         throw error;
       }
     },
-    retry: 2,
+    retry: 1,
     ...options,
   });
 };

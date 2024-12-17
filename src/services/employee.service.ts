@@ -4,9 +4,8 @@ import {
   HandleDeleteEmployeeClick,
   HandleSubmitOptions,
 } from "@/types/EmployeeType.type";
-import axios from "axios";
+import { apiClient } from "@/utils/axios";
 import { UseFormSetValue } from "react-hook-form";
-import Cookies from "js-cookie";
 
 export const handleFormSubmit = ({
   data,
@@ -40,11 +39,7 @@ export const handleDeleteClick = async ({
   refetch,
 }: HandleDeleteEmployeeClick) => {
   try {
-    await axios.delete(`https://${process.env.BASE_URL}/emp/delete/${id}`, {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("access_token"),
-      },
-    });
+    await apiClient.delete(`/emp/delete/${id}`);
     refetch();
   } catch (error) {
     console.error("Error deleting employee:", error);

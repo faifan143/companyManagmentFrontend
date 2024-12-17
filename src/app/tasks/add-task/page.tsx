@@ -54,7 +54,7 @@ const AddTask: React.FC = () => {
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `http://${baseUrl}/projects/get-manager-project`,
+    url: `https://${baseUrl}/projects/get-manager-project`,
     setSnackbarConfig,
   });
 
@@ -63,7 +63,7 @@ const AddTask: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments", selectedProject ?? "two"],
-    url: `http://${baseUrl}/${
+    url: `https://${baseUrl}/${
       !isProjectDisabled && selectedProject
         ? `projects/project-departments-tree/${selectedProject}`
         : "department/tree"
@@ -76,7 +76,7 @@ const AddTask: React.FC = () => {
     tree: EmpTree[];
   }>({
     queryKey: ["employees"],
-    url: `http://${baseUrl}/emp/tree`,
+    url: `https://${baseUrl}/emp/tree`,
     setSnackbarConfig,
   });
 

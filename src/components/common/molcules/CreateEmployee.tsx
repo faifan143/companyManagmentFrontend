@@ -100,12 +100,12 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `http://${baseUrl}/department/get-departments`,
+    url: `https://${baseUrl}/department/get-departments`,
     setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
-    url: `http://${baseUrl}/job-titles/get-job-titles`,
+    url: `https://${baseUrl}/job-titles/get-job-titles`,
     setSnackbarConfig,
   });
 

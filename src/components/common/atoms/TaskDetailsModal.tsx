@@ -1,17 +1,14 @@
+import { PaperClipIcon, PaperPlaneIcon, XIcon } from "@/assets";
+import useLanguage from "@/hooks/useLanguage";
 import {
-  TaskDetailsModalProps,
   Comment,
+  TaskDetailsModalProps,
 } from "@/types/components/TaskDetailsModal.type";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { apiClient } from "@/utils/axios";
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PaperClipIcon } from "@/assets";
-import { XIcon } from "@/assets";
-import { PaperPlaneIcon } from "@/assets";
 import Modal from "react-modal";
-import Image from "next/image";
-import useLanguage from "@/hooks/useLanguage";
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleString("en-GB", {
@@ -39,15 +36,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(
-          `http://${process.env.BASE_URL}/comment/${taskData!.id}`,
-          {
-            headers: {
-              Authorization: "Bearer " + Cookies.get("access_token"),
-            },
-          }
+        const response = await apiClient.get<Comment[]>(
+          `/comment/${taskData!.id}`
         );
-        setComments(response.data);
+        setComments(response);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
@@ -77,21 +69,12 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         //   formData.append("files", attachedFile);
         // }
 
-        const response = await axios.post(
-          `http://${process.env.BASE_URL}/comment`,
-          {
-            content: comment,
-            taskId: taskData?.id,
-          },
-          {
-            headers: {
-              // "Content-Type": "multipart/form-data",
-              Authorization: "Bearer " + Cookies.get("access_token"),
-            },
-          }
-        );
+        const response = await apiClient.post<Comment>(`/comment`, {
+          content: comment,
+          taskId: taskData?.id,
+        });
 
-        setComments((prevComments) => [...prevComments, response.data]);
+        setComments((prevComments) => [...prevComments, response]);
         setComment("");
         setAttachedFile(null);
         if (fileInputRef.current) {

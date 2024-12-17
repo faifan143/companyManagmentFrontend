@@ -1,17 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
-import Modal from "react-modal";
-import { PaperClipIcon } from "@/assets";
-import { PaperPlaneIcon } from "@/assets";
-import { socket } from "@/socket"; // Import your socket instance
-import { useRedux } from "@/hooks/useRedux";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { useFileUpload } from "@/hooks/useFileUpload";
-import { ChatMessage, ChatModalProps } from "@/types/Chat.type";
-import { useTranslation } from "react-i18next";
-import Image from "next/image";
-import useLanguage from "@/hooks/useLanguage";
+import { PaperClipIcon, PaperPlaneIcon } from "@/assets";
 import useCustomTheme from "@/hooks/useCustomTheme";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import useLanguage from "@/hooks/useLanguage";
+import { useRedux } from "@/hooks/useRedux";
+import { socket } from "@/socket"; // Import your socket instance
+import { ChatMessage, ChatModalProps } from "@/types/Chat.type";
+import { apiClient } from "@/utils/axios";
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import Modal from "react-modal";
 const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newComment, setNewComment] = useState<string>("");
@@ -44,18 +42,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
 
   const fetchInitialMessages = async () => {
     try {
-      const response = await axios.get(
-        `http://${process.env.BASE_URL}/internal-communications/chats`,
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("access_token")}`,
-          },
-        }
+      const response = await apiClient.get<ChatMessage[]>(
+        `/internal-communications/chats`
       );
-
       console.log(response);
 
-      setMessages(response.data);
+      setMessages(response);
     } catch (error) {
       console.error("Error fetching initial messages:", error);
     }
@@ -110,34 +102,35 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
               msOverflowStyle: "none",
             }}
           >
-            {messages.map((message, index) => (
-              <div key={index} className="flex mb-4">
-                <div className="flex-shrink-0 w-10 h-10 bg-yellow-500 text-twhite rounded-full flex items-center justify-center mr-4">
-                  {message.emp.charAt(0)}
+            {messages &&
+              messages.map((message, index) => (
+                <div key={index} className="flex mb-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-yellow-500 text-twhite rounded-full flex items-center justify-center mr-4">
+                    {message.emp.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-tdark font-semibold">{message.emp}</p>
+                    <p className="text-xs mb-1 text-tmid">
+                      {new Date(message.date).toLocaleTimeString()}
+                    </p>
+                    <p className="text-sm bg-gray-100 p-2 rounded-md shadow-md">
+                      {message.message}
+                    </p>
+                    {message.files && message.files.length > 0 && (
+                      <div className="mt-2">
+                        {message.files.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-gray-200 text-tblack p-1 px-2 rounded-md inline-block mr-2 my-1"
+                          >
+                            {file}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-tdark font-semibold">{message.emp}</p>
-                  <p className="text-xs mb-1 text-tmid">
-                    {new Date(message.date).toLocaleTimeString()}
-                  </p>
-                  <p className="text-sm bg-gray-100 p-2 rounded-md shadow-md">
-                    {message.message}
-                  </p>
-                  {message.files && message.files.length > 0 && (
-                    <div className="mt-2">
-                      {message.files.map((file, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-gray-200 text-tblack p-1 px-2 rounded-md inline-block mr-2 my-1"
-                        >
-                          {file}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           <div

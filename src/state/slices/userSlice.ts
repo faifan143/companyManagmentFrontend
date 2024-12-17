@@ -37,6 +37,7 @@ export const loginUser = createAsyncThunk<
         withCredentials: true,
       }
     );
+
     Cookies.set("access_token", response.data.access_token, { expires: 7 });
     Cookies.set("refresh_token", response.data.refresh_token, {
       expires: 7, // Persist for 7 days
