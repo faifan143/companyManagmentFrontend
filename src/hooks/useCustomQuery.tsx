@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { apiClient } from "@/utils/axios";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
@@ -29,7 +30,8 @@ const useCustomQuery = <TData,>({
     queryFn: async (): Promise<TData> => {
       try {
         const response = await apiClient.get<TData>(url);
-        return (nestedData ? response.data : response) as TData;
+        // @ts-ignore
+        return nestedData ? response.data : response;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           setSnackbarConfig({
