@@ -112,13 +112,13 @@ const TasksView: React.FC = () => {
     tree: TaskTree[];
   }>({
     queryKey: ["tasks", selectedOption],
-    url: `http://${process.env.BASE_URL}/tasks/tree?${selectedOption}`,
+    url: `https://${process.env.BASE_URL}/tasks/tree?${selectedOption}`,
     setSnackbarConfig,
   });
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `http://${process.env.BASE_URL}/projects/${
+    url: `https://${process.env.BASE_URL}/projects/${
       // isAdmin ? "get-all-projects" :
       "get-manager-project"
     }`,
@@ -127,7 +127,7 @@ const TasksView: React.FC = () => {
 
   const { data: deptTree } = useCustomQuery<{ tree: DeptTree[] }>({
     queryKey: ["deptTree", selectedProj ?? "three"],
-    url: `http://${process.env.BASE_URL}/${
+    url: `https://${process.env.BASE_URL}/${
       selectedProj
         ? `projects/project-departments-tree/${selectedProj}`
         : "department/tree"
@@ -143,7 +143,7 @@ const TasksView: React.FC = () => {
     SectionType[]
   >({
     queryKey: ["sections", selectedOption, selectedDept ?? "one"],
-    url: `http://${process.env.BASE_URL}/sections/${
+    url: `https://${process.env.BASE_URL}/sections/${
       myProj && myDept
         ? `department/${selectedDept}`
         : myDept

@@ -19,7 +19,7 @@ const ProfileProjectsReport = ({
   const { isLightMode } = useCustomTheme();
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `http://${process.env.BASE_URL}/projects/${
+    url: `https://${process.env.BASE_URL}/projects/${
       isAdmin ? "get-all-projects" : "get-manager-project"
     }`,
     setSnackbarConfig,

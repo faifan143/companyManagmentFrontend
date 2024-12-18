@@ -30,7 +30,7 @@ const AddSubTaskModal: React.FC<{
 
   const { data: employees } = useCustomQuery<{ tree: EmpTree[] }>({
     queryKey: ["employees"],
-    url: `http://${process.env.BASE_URL}/emp/tree`,
+    url: `https://${process.env.BASE_URL}/emp/tree`,
     setSnackbarConfig,
   });
 

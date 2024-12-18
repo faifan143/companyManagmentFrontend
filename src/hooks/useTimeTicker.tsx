@@ -59,7 +59,7 @@
 //       }
 
 //       const response = await axios.get(
-//         `http://${process.env.BASE_URL}/tasks/${endpoint}/${taskId}`,
+//         `https://${process.env.BASE_URL}/tasks/${endpoint}/${taskId}`,
 //         {
 //           headers: { Authorization: `Bearer ${token}` },
 //         }
@@ -183,7 +183,7 @@ const useTimeTicker = (taskId: string, timeLogs: TimeLog[]) => {
       }
 
       const response = await axios.get(
-        `http://${process.env.BASE_URL}/tasks/${endpoint}/${taskId}`,
+        `https://${process.env.BASE_URL}/tasks/${endpoint}/${taskId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

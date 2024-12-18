@@ -25,7 +25,7 @@ const TaskStatusesView: React.FC = () => {
     refetch,
   } = useCustomQuery<ITaskStatus[]>({
     queryKey: ["taskStatuses"],
-    url: `http://${process.env.BASE_URL}/task-status/find-all`,
+    url: `https://${process.env.BASE_URL}/task-status/find-all`,
     setSnackbarConfig,
     nestedData: true,
   });

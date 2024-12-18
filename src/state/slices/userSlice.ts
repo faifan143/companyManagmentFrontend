@@ -31,7 +31,7 @@ export const loginUser = createAsyncThunk<
 >("user/loginUser", async (userData, { rejectWithValue }) => {
   try {
     const response = await axios.post<LoginResponse>(
-      `http://${process.env.BASE_URL}/auth/login`,
+      `https://${process.env.BASE_URL}/auth/login`,
       userData,
       {
         withCredentials: true,
@@ -64,7 +64,7 @@ export const refreshAuthToken = createAsyncThunk<
 
   try {
     const response = await axios.post<LoginResponse>(
-      `http://${process.env.BASE_URL}/auth/refresh-token`,
+      `https://${process.env.BASE_URL}/auth/refresh-token`,
       { refreshToken },
       { withCredentials: true }
     );

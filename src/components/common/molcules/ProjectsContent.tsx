@@ -31,7 +31,7 @@ const ProjectsContent = () => {
   const { isLightMode } = useCustomTheme();
   const { data: projects, isLoading } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `http://${process.env.BASE_URL}/projects/${
+    url: `https://${process.env.BASE_URL}/projects/${
       isAdmin
         ? "get-all-projects"
         : isPrimary

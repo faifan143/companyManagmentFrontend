@@ -32,7 +32,7 @@ const JobCategoryContent = () => {
     error,
   } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["jobTitles"],
-    url: `http://${process.env.BASE_URL}/job-categories`,
+    url: `https://${process.env.BASE_URL}/job-categories`,
     setSnackbarConfig,
   });
   const { isLightMode } = useCustomTheme();

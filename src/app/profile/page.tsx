@@ -25,7 +25,7 @@ const Profile = () => {
   const { currentLanguage } = useLanguage();
   const { data: tasksData } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
-    url: `http://${process.env.BASE_URL}/tasks/${
+    url: `https://${process.env.BASE_URL}/tasks/${
       isAdmin
         ? "get-all-tasks"
         : isPrimary

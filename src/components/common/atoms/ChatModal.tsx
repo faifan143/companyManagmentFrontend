@@ -20,7 +20,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
     selectedFiles,
     handleFileChange: handleImageChange,
     uploadFiles,
-  } = useFileUpload(`http://${process.env.BASE_URL}/upload`);
+  } = useFileUpload(`https://${process.env.BASE_URL}/upload`);
   const { selector } = useRedux((state) => state.user);
 
   const { getDir } = useLanguage();

@@ -39,7 +39,7 @@ const AddProjectModal: React.FC<{
     DeptTree[]
   >({
     queryKey: ["departments"],
-    url: `http://${process.env.BASE_URL}/department/${
+    url: `https://${process.env.BASE_URL}/department/${
       // isAdmin || isPrimary ? "get-departments" : "view"
       "get-level-one"
     }`,

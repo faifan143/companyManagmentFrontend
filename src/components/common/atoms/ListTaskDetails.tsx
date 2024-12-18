@@ -144,7 +144,7 @@ const ListTaskDetails: React.FC<{
 
   const { data: allTasks } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
-    url: `http://${process.env.BASE_URL}/tasks/get-all-tasks`,
+    url: `https://${process.env.BASE_URL}/tasks/get-all-tasks`,
     setSnackbarConfig,
     nestedData: true,
   });
