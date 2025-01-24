@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import { EyeIcon, EyeOffIcon } from "@/assets";
 import ChangingPasswordModal from "@/components/common/atoms/ChangingPasswordModal";
 import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import useCustomTheme from "@/hooks/useCustomTheme";
+import { useRedux } from "@/hooks/useRedux";
+import useSnackbar from "@/hooks/useSnackbar";
 import { loginSchema } from "@/schemas/login.schema";
 import { handleLogin } from "@/services/auth.service";
 import { AppDispatch } from "@/state/store";
@@ -11,11 +13,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { useRedux } from "@/hooks/useRedux";
-import useSnackbar from "@/hooks/useSnackbar";
-import useCustomTheme from "@/hooks/useCustomTheme";
+import { useDispatch } from "react-redux";
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -24,6 +23,7 @@ const Login: React.FC = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId, setEmpId] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { setSnackbarConfig, snackbarConfig } = useSnackbar();
   const { isLightMode } = useCustomTheme();
 
@@ -34,6 +34,7 @@ const Login: React.FC = () => {
   } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
   });
+
   const dispatch = useDispatch<AppDispatch>();
   const onSubmit = async (data: LoginFormInputs) => {
     await handleLogin({
@@ -53,7 +54,6 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (errors.email || errors.password) {
-      console.log(errors);
       setSnackbarConfig({
         open: true,
         message: errors.email
@@ -76,18 +76,19 @@ const Login: React.FC = () => {
       setEmpId(error.split(",")[1]);
       setIsModalOpen(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div
-      className={`flex items-center justify-center min-h-screen
-    
-    ${isLightMode ? "bg-main" : "bg-radial-light"}
-     fixed inset-0`}
+      className={`flex items-center justify-center min-h-screen ${
+        isLightMode ? "bg-main" : "bg-radial-light"
+      } fixed inset-0`}
     >
       <div
         className={`backdrop-blur-md ${
           isLightMode ? "bg-secondary" : "bg-dark"
-        }  text-twhite p-10 rounded-xl shadow-xl max-w-sm w-full`}
+        } text-twhite p-10 rounded-xl shadow-xl max-w-sm w-full`}
       >
         <h1 className="text-center text-2xl text-twhite font-bold mb-6">
           {t("CompanyManagmentSystem")}
@@ -99,12 +100,13 @@ const Login: React.FC = () => {
             <input
               type="email"
               {...register("email")}
-              className={` ${
+              className={`${
                 isLightMode ? "bg-dark" : "bg-secondary"
-              } outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg focus:outline-none  border ${
+              } outline-none border-none w-full px-4 py-2 mt-1 rounded-lg focus:outline-none border ${
                 errors.email ? "border-red-600" : "border-[#1b1a40]"
               }`}
-              placeholder={t("Enter your email")}
+              placeholder="example@company.com"
+              autoComplete="email"
             />
             {errors.email && (
               <p className="text-red-600 mt-1 text-sm">
@@ -114,16 +116,30 @@ const Login: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-medium">{t("Password")}</label>
-            <input
-              type="password"
-              {...register("password")}
-              className={` ${
-                isLightMode ? "bg-dark" : "bg-secondary"
-              } outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg focus:outline-none  border ${
-                errors.password ? "border-red-600" : "border-[#1b1a40]"
-              }`}
-              placeholder={t("Enter your password")}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                className={`${
+                  isLightMode ? "bg-dark" : "bg-secondary"
+                } outline-none border-none w-full px-4 py-2 mt-1 rounded-lg focus:outline-none border ${
+                  errors.password ? "border-red-600" : "border-[#1b1a40]"
+                }`}
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/4 text-gray-400 hover:text-gray-300"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOffIcon size={20} />
+                ) : (
+                  <EyeIcon size={20} />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">
                 {errors.password.message}
@@ -132,10 +148,9 @@ const Login: React.FC = () => {
           </div>
           <button
             type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600 
-                        ${isLightMode ? " text-tblackAF" : "text-twhite"}
-
-            rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
+            className={`w-full py-2 mt-4 bg-slate-600 ${
+              isLightMode ? " text-tblackAF" : "text-twhite"
+            } rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}

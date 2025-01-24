@@ -18,8 +18,6 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Modal from "react-modal";
 
-const baseUrl = process.env.BASE_URL || "";
-
 const CreateDepartment: React.FC<CreateDepartmentProps> = ({
   isOpen,
   onClose,
@@ -104,7 +102,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `https://${baseUrl}/department/get-departments`,
+    url: `/department/get-departments`,
     setSnackbarConfig,
   });
 

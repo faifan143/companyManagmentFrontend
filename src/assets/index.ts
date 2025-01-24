@@ -33,3 +33,5 @@ export { default as DarkModeIcon } from "./icons/darkmode-icon.svg";
 export { default as TableIcon } from "./icons/table-icon.svg";
 export { default as TreeIcon } from "./icons/tree-icon.svg";
 export { default as StarIcon } from "./icons/star-icon.svg";
+export { default as EyeIcon } from "./icons/eye-icon.svg";
+export { default as EyeOffIcon } from "./icons/eyeoff-icon.svg";

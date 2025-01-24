@@ -23,7 +23,7 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
 
   const { data: project, isLoading } = useCustomQuery<ProjectDetailsType>({
     queryKey: ["project-details"],
-    url: `https://${process.env.BASE_URL}/projects/project-details/${id}`,
+    url: `/projects/project-details/${id}`,
     setSnackbarConfig,
   });
 

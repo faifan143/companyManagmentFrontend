@@ -27,6 +27,7 @@ const ProjectTasks = ({ params: { id } }: { params: { id: string } }) => {
       project_id: id[0],
       department_id: id[1],
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

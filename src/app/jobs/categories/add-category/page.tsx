@@ -58,7 +58,7 @@ const AddJobCategory: React.FC = () => {
 
   const { data: education_experience } = useCustomQuery<any>({
     queryKey: ["education_experience"],
-    url: `https://${process.env.BASE_URL}/job-categories/unique/education-experience`,
+    url: `/job-categories/unique/education-experience`,
     setSnackbarConfig,
   });
 

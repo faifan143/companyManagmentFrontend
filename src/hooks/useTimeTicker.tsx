@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // import { useTaskTimer } from "@/components/Providers/TaskTimerContext";
 // import { TimeLog } from "@/types/task.type";
 // import { useQueryClient } from "@tanstack/react-query";

@@ -18,8 +18,6 @@ import Modal from "react-modal";
 import CreateTaskStatus from "../molcules/CreateTaskStatus";
 import CreateTaskType from "../molcules/CreateTaskType";
 
-const baseUrl = process.env.BASE_URL || "";
-
 const CreateTask: React.FC<CreateTaskProps> = ({
   isOpen,
   onClose,
@@ -57,13 +55,13 @@ const CreateTask: React.FC<CreateTaskProps> = ({
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `https://${baseUrl}/department/get-departments`,
+    url: `/department/get-departments`,
     setSnackbarConfig,
   });
 
   const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
-    url: `https://${baseUrl}/emp/get-all-emps`,
+    url: `/emp/get-all-emps`,
     setSnackbarConfig,
   });
 

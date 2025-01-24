@@ -31,7 +31,6 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-const baseUrl = process.env.BASE_URL || "";
 
 const AddDept: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -91,12 +90,12 @@ const AddDept: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments"],
-    url: `https://${baseUrl}/department/tree`,
+    url: `/department/tree`,
     setSnackbarConfig,
   });
   const { data: categories } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["categories"],
-    url: `https://${baseUrl}/job-categories`,
+    url: `/job-categories`,
     setSnackbarConfig,
   });
 

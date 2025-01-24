@@ -22,7 +22,6 @@ import { useTranslation } from "react-i18next";
 import { selectStyle } from "@/utils/SelectStyle";
 import { DeptTree } from "@/types/trees/Department.tree.type";
 import { EmployeeType } from "@/types/EmployeeType.type";
-const baseUrl = process.env.BASE_URL || "";
 const AddTask: React.FC = () => {
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
@@ -54,7 +53,7 @@ const AddTask: React.FC = () => {
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `https://${baseUrl}/projects/get-manager-project`,
+    url: `/projects/get-manager-project`,
     setSnackbarConfig,
   });
 
@@ -63,7 +62,7 @@ const AddTask: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments", selectedProject ?? "two"],
-    url: `https://${baseUrl}/${
+    url: `/${
       !isProjectDisabled && selectedProject
         ? `projects/project-departments-tree/${selectedProject}`
         : "department/tree"
@@ -76,7 +75,7 @@ const AddTask: React.FC = () => {
     tree: EmpTree[];
   }>({
     queryKey: ["employees"],
-    url: `https://${baseUrl}/emp/tree`,
+    url: `/emp/tree`,
     setSnackbarConfig,
   });
 

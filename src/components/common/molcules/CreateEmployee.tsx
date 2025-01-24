@@ -18,8 +18,6 @@ import {
 import getErrorMessages from "@/utils/handleErrorMessages";
 import useSnackbar from "@/hooks/useSnackbar";
 
-const baseUrl = process.env.BASE_URL || "";
-
 const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   isOpen,
   onClose,
@@ -80,6 +78,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
         errorEmployee + "" || "Failed to process the request. Please try again."
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employeeData, errorEmployee, isErrorEmployee, isSuccessEmployee, reset]);
 
   const onSubmit = async (data: EmployeeFormInputs) => {
@@ -100,12 +99,12 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
 
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
-    url: `https://${baseUrl}/department/get-departments`,
+    url: `/department/get-departments`,
     setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
-    url: `https://${baseUrl}/job-titles/get-job-titles`,
+    url: `/job-titles/get-job-titles`,
     setSnackbarConfig,
   });
 

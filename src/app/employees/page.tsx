@@ -37,7 +37,7 @@ const EmployeesView: React.FC = () => {
     tree: EmpTree[];
   }>({
     queryKey: ["employees"],
-    url: `https://${process.env.BASE_URL}/emp/tree`,
+    url: `/emp/tree`,
     setSnackbarConfig,
   });
   if (isLoading) {

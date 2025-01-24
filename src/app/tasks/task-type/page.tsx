@@ -21,7 +21,7 @@ const TaskTypesView: React.FC = () => {
     error,
   } = useCustomQuery<ITaskType[]>({
     queryKey: ["taskTypes"],
-    url: `https://${process.env.BASE_URL}/task-type/find-all`,
+    url: `/task-type/find-all`,
     setSnackbarConfig,
     nestedData: true,
   });

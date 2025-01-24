@@ -26,7 +26,6 @@ import useSnackbar from "@/hooks/useSnackbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { useRouter } from "next/navigation";
 import { DeptTree } from "@/types/trees/Department.tree.type";
-const baseUrl = process.env.BASE_URL || "";
 
 const AddEmp: React.FC = () => {
   const { snackbarConfig, setSnackbarConfig } = useSnackbar();
@@ -108,12 +107,12 @@ const AddEmp: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments"],
-    url: `https://${baseUrl}/department/tree`,
+    url: `/department/tree`,
     setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
-    url: `https://${baseUrl}/job-titles/get-job-titles`,
+    url: `/job-titles/get-job-titles`,
     setSnackbarConfig,
   });
 

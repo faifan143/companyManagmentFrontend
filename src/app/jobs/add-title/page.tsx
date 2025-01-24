@@ -29,7 +29,6 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import { useRouter } from "next/navigation";
 import { DeptTree } from "@/types/trees/Department.tree.type";
 
-const baseUrl = process.env.BASE_URL || "";
 
 const permissionsOptions = permissionsArray.map((permission) => ({
   value: permission,
@@ -79,12 +78,12 @@ const AddJobTitle: React.FC = () => {
     tree: DeptTree[];
   }>({
     queryKey: ["departments"],
-    url: `https://${baseUrl}/department/tree`,
+    url: `/department/tree`,
     setSnackbarConfig,
   });
   const { data: categories } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["categories"],
-    url: `https://${baseUrl}/job-categories`,
+    url: `/job-categories`,
     setSnackbarConfig,
   });
 

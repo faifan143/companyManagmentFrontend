@@ -1,7 +1,8 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import Cookies from "js-cookie";
 import { refreshAuthToken } from "@/state/slices/userSlice";
 import { store } from "@/state/store";
+import { LoginResponse } from "@/types/LoginResponse.type";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 const ACCESS_TOKEN = "access_token";
 const REFRESH_TOKEN = "refresh_token";
@@ -11,6 +12,7 @@ const api = axios.create({
   baseURL: `https://${process.env.BASE_URL}`,
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
+  withCredentials:true
 });
 
 const handleAuthError = async (error: AxiosError) => {
@@ -21,7 +23,7 @@ const handleAuthError = async (error: AxiosError) => {
   }
 
   try {
-    await store.dispatch(refreshAuthToken()).unwrap();
+    await store.dispatch(refreshAuthToken()).unwrap()
     return api.request(error.config!);
   } catch (refreshError) {
     console.log(refreshError);
@@ -55,4 +57,35 @@ export const apiClient = {
   post: <T>(url: string, data?: unknown): Promise<T> => api.post(url, data),
   put: <T>(url: string, data?: unknown): Promise<T> => api.put(url, data),
   delete: <T>(url: string): Promise<T> => api.delete(url),
+
+  auth: {
+    login: async (credentials: {
+      email: string;
+      password: string;
+    }): Promise<LoginResponse> => {
+      const response = await api.post<LoginResponse>(
+        "/auth/login",
+        credentials
+      );
+      Cookies.set(ACCESS_TOKEN, response.data.access_token, { expires: 7 });
+      Cookies.set(REFRESH_TOKEN, response.data.refresh_token, {
+        expires: 7,
+        path: "/",
+      });
+      Cookies.set("is_Authenticated", "true", { expires: 7 });
+      return response.data;
+    },
+    refreshToken: async (refreshToken: string): Promise<LoginResponse> => {
+      const response = await api.post<LoginResponse>("/auth/refresh-token", {
+        refreshToken,
+      });
+      Cookies.set(ACCESS_TOKEN, response.data.access_token);
+      Cookies.set(REFRESH_TOKEN, response.data.refresh_token, {
+        expires: 7,
+        path: "/",
+      });
+      Cookies.set("is_Authenticated", "true");
+      return response.data;
+    },
+  },
 };

@@ -19,7 +19,7 @@ const Home = () => {
   const isSecondary = useRolePermissions("secondary_user");
   const { data: tasksData, isLoading } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks", scope == "weekly" ? "weekly-tasks" : "monthly-tasks"],
-    url: `https://${process.env.BASE_URL}/tasks/${
+    url: `/tasks/${
       scope == "weekly" ? "weekly-tasks" : "monthly-tasks"
     }`,
     setSnackbarConfig,

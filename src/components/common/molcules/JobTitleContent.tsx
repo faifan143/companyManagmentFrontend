@@ -28,8 +28,8 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
     queryKey: ["jobTitles", selectedOption],
     url:
       selectedOption === "view"
-        ? `https://${process.env.BASE_URL}/job-titles/view`
-        : `https://${process.env.BASE_URL}/job-titles/get-job-titles`,
+        ? `/job-titles/view`
+        : `/job-titles/get-job-titles`,
     setSnackbarConfig,
   });
   const { isLightMode } = useCustomTheme();
