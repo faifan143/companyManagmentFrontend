@@ -1,74 +1,6 @@
-// {/* Main Dropdown */}
-// {showMainSelect && (
-//   <select
-//     className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-//     value={myProj ? "my-project-tasks" : selectedOption}
-//     onChange={(e) => {
-//       const value = e.target.value;
-//       setMyProj(value === "my-project-tasks");
-//       setMyDept(value === "get-my-dept-tasks");
-//       if (
-//         value !== "my-project-tasks" &&
-//         value !== "get-my-dept-tasks"
-//       )
-//         setSelectedOption(value);
-//     }}
-//   >
-//     {canViewTasks && <option value="">{t("My Tasks")}</option>}
-//     {canViewTasks && (isPrimary || isAdmin) && (
-//       <option value="get-my-dept-tasks">
-//         {t("Department Tasks")}
-//       </option>
-//     )}
-//     {canViewTasks && (
-//       <option value="my-project-tasks">{t("Project Tasks")}</option>
-//     )}
-//   </select>
-// )}
-
-// {/* Project-Specific Dropdown */}
-// {myProj && projects && projects?.length > 0 && (
-//   <select
-//     className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-//     onChange={(e) => setSelectedProj(e.target.value)}
-//   >
-//     <option value="">{t("Select a project")}</option>
-//     {projects.map((proj) => (
-//       <option key={proj._id} value={proj._id}>
-//         {proj.name}
-//       </option>
-//     ))}
-//   </select>
-// )}
-
-// {/* Departments Dropdown */}
-// {(myDept || selectedProj) && deptTree && deptTree?.length > 0 && (
-//   <select
-//     className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
-//     onChange={(e) => {
-//       console.log(`Selected department: ${e.target.value}`);
-
-//       const value = e.target.value;
-
-//       if (myProj && selectedProj)
-//         setSelectedOption(
-//           "departmentId=" + value + "&projectId=" + selectedProj
-//         );
-//       setSelectedOption("departmentId=" + value);
-//     }}
-//   >
-//     <option value="">{t("Select a department")}</option>
-//     {deptTree.map((dTree) => (
-//       <option key={dTree.id} value={dTree.id}>
-//         {dTree.name}
-//       </option>
-//     ))}
-//   </select>
-// )}
 "use client";
 
 import { TabBoardIcon, TabListIcon, TreeIcon } from "@/assets";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
 import TasksTab from "@/components/common/atoms/TasksTab";
@@ -76,6 +8,7 @@ import TaskList from "@/components/common/organisms/TaskList";
 import TasksContent from "@/components/common/organisms/TasksContent";
 import RouteWrapper from "@/components/common/RouteWrapper";
 import TaskHierarchyTree from "@/components/common/TasksHierarchyTree";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -83,7 +16,6 @@ import {
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
-import useSnackbar from "@/hooks/useSnackbar";
 import { RootState } from "@/state/store";
 import { ProjectType } from "@/types/Project.type";
 import { SectionType } from "@/types/Section.type";
@@ -106,7 +38,7 @@ const TasksView: React.FC = () => {
     // isPrimary ? "get-my-dept-tasks" :
     ""
   );
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<{
     info: ReceiveTaskType[];
     tree: TaskTree[];
@@ -163,7 +95,7 @@ const TasksView: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="col-span-full flex justify-between items-center">
+      <div className="col-span-full flex flex-col md:flex-row  justify-between items-center gap-5">
         {isSectionsLoading ? (
           <PageSpinner title={t("sections Loading ...")} />
         ) : (
@@ -172,7 +104,7 @@ const TasksView: React.FC = () => {
         <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Tasks")}
         </h1>
-        <div className="flex justify-center items-center gap-5">
+        <div className="flex justify-center items-center gap-5 flex-wrap mb-5">
           {/* Departments Dropdown */}
           {(myDept || myProj) && (
             <select
@@ -258,7 +190,7 @@ const TasksView: React.FC = () => {
       </div>
 
       {/* Tabs and Content */}
-      <div className="col-span-full">
+      <div className="col-span-full   ">
         <TasksTab
           tabs={[
             { id: "list", label: "List", icon: TabListIcon },
@@ -272,7 +204,7 @@ const TasksView: React.FC = () => {
           <TaskList tasksData={tasksData?.info} sections={sections} />
         )}
         {activeTab === "board" && (
-          <GridContainer>
+          <GridContainer extraStyle=" !pl-0 ">
             <TasksContent tasksData={tasksData?.info} sections={sections} />
           </GridContainer>
         )}
@@ -280,13 +212,6 @@ const TasksView: React.FC = () => {
           <TaskHierarchyTree data={tasksData.tree} width="100%" />
         )}
       </div>
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </GridContainer>
   );
 };

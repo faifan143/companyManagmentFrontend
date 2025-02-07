@@ -1,4 +1,5 @@
 import { PencilIcon } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -7,19 +8,117 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
-import useSnackbar from "@/hooks/useSnackbar";
 import { JobTitleType } from "@/types/JobTitle.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import CustomModal from "../CustomModal";
+
+const PermissionsList = ({
+  permissions,
+  onShowMore,
+}: {
+  permissions: string[];
+  onShowMore: () => void;
+}) => {
+  const { t } = useLanguage();
+  const { isLightMode } = useCustomTheme();
+
+  const shouldShowMore = permissions.length > 2;
+  const displayPermissions = permissions.slice(0, 2);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <ul>
+        {displayPermissions.map((perm, index) => (
+          <li
+            key={index}
+            className={`
+               py-1 px-2 rounded-lg text-sm
+            truncate text-twhite  
+              ${isLightMode ? "bg-darker/5  " : "bg-dark/20   "}
+            `}
+          >
+            {perm}
+          </li>
+        ))}
+      </ul>
+
+      {shouldShowMore && (
+        <button
+          onClick={onShowMore}
+          className={`
+            flex items-center justify-center gap-2 
+            mt-1 py-1 px-2 rounded-lg
+            text-xs font-medium transition-all duration-200
+            ${
+              isLightMode
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-primary/20 text-primary hover:bg-primary/30"
+            }
+          `}
+        >
+          <span>{t("Show More")}</span>
+          <span className="text-xs opacity-60">
+            (+{permissions.length - 2})
+          </span>
+        </button>
+      )}
+    </div>
+  );
+};
+
+const ResponsibilitiesList = ({
+  responsibilities,
+  onShowMore,
+}: {
+  responsibilities: string[];
+  onShowMore: () => void;
+}) => {
+  const { t } = useLanguage();
+  const { isLightMode } = useCustomTheme();
+
+  const shouldShowMore = responsibilities.length > 2;
+  const displayResponsibilities = responsibilities.slice(0, 2);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <ul className="list-disc ml-4">
+        {displayResponsibilities.map((resp, index) => (
+          <li key={index}>{resp}</li>
+        ))}
+      </ul>
+
+      {shouldShowMore && (
+        <button
+          onClick={onShowMore}
+          className={`
+            flex items-center justify-center gap-2 
+            mt-1 py-1 px-2 rounded-lg
+            text-xs font-medium transition-all duration-200
+            ${
+              isLightMode
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-primary/20 text-primary hover:bg-primary/30"
+            }
+          `}
+        >
+          <span>{t("Show More")}</span>
+          <span className="text-xs opacity-60">
+            (+{responsibilities.length - 2})
+          </span>
+        </button>
+      )}
+    </div>
+  );
+};
+
 const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["job_title_update"]);
 
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const {
     data: jobs,
     isLoading,
@@ -35,6 +134,11 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const { isLightMode } = useCustomTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string[]>([]);
+
+  const handleShowMoreResponsibilities = (responsibilities: string[]) => {
+    setModalContent(responsibilities);
+    setIsModalOpen(true);
+  };
 
   const handleShowMoreClick = (permissions: string[]) => {
     setModalContent(permissions);
@@ -123,41 +227,25 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                 </td>
                 <td className="py-3 px-4 text-center">
                   {jobTitle.responsibilities.length > 0 ? (
-                    <ul className="list-disc ml-4">
-                      {jobTitle.responsibilities.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ul>
+                    <ResponsibilitiesList
+                      responsibilities={jobTitle.responsibilities}
+                      onShowMore={() =>
+                        handleShowMoreResponsibilities(
+                          jobTitle.responsibilities
+                        )
+                      }
+                    />
                   ) : (
                     t("N/A")
                   )}
                 </td>
 
                 {/* Permissions Column with Show More */}
-                <td className="py-3 px-4 text-center">
-                  {jobTitle.permissions && jobTitle.permissions.length > 3 ? (
-                    <>
-                      <ul className="list-disc ml-4">
-                        {jobTitle.permissions.slice(0, 3).map((perm, index) => (
-                          <li key={index}>{perm}</li>
-                        ))}
-                      </ul>
-                      <button
-                        className="text-blue-500 underline"
-                        onClick={() =>
-                          handleShowMoreClick(jobTitle.permissions)
-                        }
-                      >
-                        {t("Show More")}
-                      </button>
-                    </>
-                  ) : (
-                    <ul className="list-disc ml-4">
-                      {jobTitle.permissions.map((perm, index) => (
-                        <li key={index}>{perm}</li>
-                      ))}
-                    </ul>
-                  )}
+                <td className="py-3 px-4">
+                  <PermissionsList
+                    permissions={jobTitle.permissions}
+                    onShowMore={() => handleShowMoreClick(jobTitle.permissions)}
+                  />
                 </td>
 
                 <td className="py-3 px-4 text-center">
@@ -238,13 +326,6 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
         content={modalContent}
         language={currentLanguage as "en" | "ar"}
         actionText={t("Close")}
-      />
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
       />
     </div>
   );

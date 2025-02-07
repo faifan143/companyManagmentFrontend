@@ -8,7 +8,17 @@ const GridContainer = ({
   extraStyle?: string;
 }) => {
   return (
-    <div className={"sm:w-full mobile-grid sm:desktop-grid  " + extraStyle}>
+    <div
+      className={`
+        w-full 
+        px-8
+        py-4
+        md:pl-[125px]   
+        transition-all 
+        duration-300 
+        ${extraStyle}
+      `}
+    >
       {children}
     </div>
   );

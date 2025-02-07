@@ -1,8 +1,8 @@
 // add sub task modal
 
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useSnackbar from "@/hooks/useSnackbar";
 import { addSubTaskSchema } from "@/schemas/task.schema";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { EmpTree } from "@/types/trees/Emp.tree.type";
@@ -10,7 +10,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import CustomizedSnackbars from "./CustomizedSnackbars";
 
 const AddSubTaskModal: React.FC<{
   isOpen: boolean;
@@ -26,7 +25,7 @@ const AddSubTaskModal: React.FC<{
   } = useForm({
     resolver: yupResolver(addSubTaskSchema),
   });
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
 
   const { data: employees } = useCustomQuery<{ tree: EmpTree[] }>({
     queryKey: ["employees"],
@@ -188,12 +187,7 @@ const AddSubTaskModal: React.FC<{
           </div>
         </div>
       </div>
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+      
     </>
   );
 };

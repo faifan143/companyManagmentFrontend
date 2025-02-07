@@ -1,8 +1,6 @@
 import useHierarchy from "@/hooks/useHierarchy";
 import useLanguage from "@/hooks/useLanguage";
-import useSnackbar from "@/hooks/useSnackbar";
 import { ReceiveTaskType } from "@/types/Task.type";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import GridContainer from "../atoms/GridContainer";
 
 const ListTasks = ({
@@ -10,7 +8,6 @@ const ListTasks = ({
 }: {
   tasksData: ReceiveTaskType[] | undefined;
 }) => {
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
   const { t, currentLanguage } = useLanguage();
   const { renderTaskWithSubtasks, organizeTasksByHierarchy } = useHierarchy();
 
@@ -56,14 +53,7 @@ const ListTasks = ({
           </div>
         </GridContainer>
 
-        <CustomizedSnackbars
-          open={snackbarConfig.open}
-          message={snackbarConfig.message}
-          severity={snackbarConfig.severity}
-          onClose={() =>
-            setSnackbarConfig((prev) => ({ ...prev, open: false }))
-          }
-        />
+     
       </div>
     </>
   );

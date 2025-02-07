@@ -1,6 +1,7 @@
 "use client";
 
 import { PencilIcon } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -9,23 +10,60 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
-import useSnackbar from "@/hooks/useSnackbar";
 import { JobCategoryType } from "@/types/JobTitle.type";
-import {
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
+import CustomModal from "../CustomModal";
+
+const SkillsList = ({
+  skills,
+  onShowMore,
+}: {
+  skills: string[];
+  onShowMore: () => void;
+}) => {
+  const { t } = useLanguage();
+  const { isLightMode } = useCustomTheme();
+
+  const shouldShowMore = skills.length > 2;
+  const displaySkills = skills.slice(0, 2);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <ul className="list-disc ml-4">
+        {displaySkills.map((skill, index) => (
+          <li key={index}>{skill}</li>
+        ))}
+      </ul>
+
+      {shouldShowMore && (
+        <button
+          onClick={onShowMore}
+          className={`
+            flex items-center justify-center gap-2 
+            mt-1 py-1 px-2 rounded-lg
+            text-xs font-medium transition-all duration-200
+            ${
+              isLightMode
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-primary/20 text-primary hover:bg-primary/30"
+            }
+          `}
+        >
+          <span>{t("Show More")}</span>
+          <span className="text-xs opacity-60">(+{skills.length - 2})</span>
+        </button>
+      )}
+    </div>
+  );
+};
+
 const JobCategoryContent = () => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["job_title_category_update"]);
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const {
     data: categories,
     isLoading,
@@ -39,8 +77,8 @@ const JobCategoryContent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string[]>([]);
 
-  const handleShowMoreClick = (permissions: string[]) => {
-    setModalContent(permissions);
+  const handleShowMoreSkills = (skills: string[]) => {
+    setModalContent(skills);
     setIsModalOpen(true);
   };
 
@@ -134,51 +172,18 @@ const JobCategoryContent = () => {
                   <td className="py-3 px-4 text-center">
                     {category && category.required_experience}
                   </td>
-                  {/* <td className="py-3 px-4 text-center">
-                    {category && category.required_skills.length > 0 ? (
-                      <ul className="list-disc ml-4">
-                        {category && category.required_skills.map((skill, index) => (
-                          <li key={index}>{skill}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      t("N/A")
-                    )}
-                  </td> */}
-
-                  {/* Permissions Column with Show More */}
                   <td className="py-3 px-4 text-center">
                     {category &&
                     category.required_skills &&
-                    category.required_skills.length > 3 ? (
-                      <>
-                        <ul className="list-disc ml-4">
-                          {category &&
-                            category.required_skills
-                              .slice(0, 3)
-                              .map((skill, index) => (
-                                <li key={index}>{skill}</li>
-                              ))}
-                        </ul>
-                        <button
-                          className="text-blue-500 underline"
-                          onClick={() =>
-                            category &&
-                            handleShowMoreClick(category.required_skills)
-                          }
-                        >
-                          {t("Show More")}
-                        </button>
-                      </>
+                    category.required_skills.length > 0 ? (
+                      <SkillsList
+                        skills={category.required_skills}
+                        onShowMore={() =>
+                          handleShowMoreSkills(category.required_skills)
+                        }
+                      />
                     ) : (
-                      <ul className="list-disc ml-4">
-                        {category &&
-                          category.required_skills &&
-                          category.required_skills.length > 0 &&
-                          category.required_skills.map((skill, index) => (
-                            <li key={index}>{skill}</li>
-                          ))}
-                      </ul>
+                      t("N/A")
                     )}
                   </td>
                   {(isAdmin || hasEditPermission) && (
@@ -188,7 +193,6 @@ const JobCategoryContent = () => {
                           onClick={() => handleEditClick(category)}
                           className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                         >
-                          {/* {t("Edit")} */}
                           <Image
                             src={PencilIcon}
                             alt="edit icon"
@@ -197,19 +201,6 @@ const JobCategoryContent = () => {
                           />
                         </div>
                       )}
-                      {
-                        // (isAdmin || hasDeletePermission) && (
-                        //   <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                        //     {/* {t("Delete")} */}
-                        //     <Image
-                        //       src={TrashIcon}
-                        //       alt="delete icon"
-                        //       height={20}
-                        //       width={20}
-                        //     />
-                        //   </div>
-                        // )
-                      }
                     </td>
                   )}
                 </tr>
@@ -218,42 +209,13 @@ const JobCategoryContent = () => {
         </table>
       </div>
 
-      {/* Modal for Permissions */}
-      <Dialog
-        open={isModalOpen}
+      <CustomModal
+        isOpen={isModalOpen}
         onClose={handleCloseModal}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle
-          className={` text-twhite bg-secondary  ${
-            currentLanguage == "en" ? "text-left" : "text-right"
-          }`}
-        >
-          {t("Skills")}
-        </DialogTitle>
-        <DialogContent className=" text-twhite bg-secondary">
-          <ul className=" text-twhite list-disc ml-4 ">
-            {modalContent.map((perm, index) => (
-              <li key={index}>{perm}</li>
-            ))}
-          </ul>
-        </DialogContent>
-        <DialogActions className=" text-twhite bg-secondary">
-          <div
-            onClick={handleCloseModal}
-            className="bg-dark py-2 px-4 hover:bg-opacity-70 text-twhite cursor-pointer rounded-md"
-          >
-            {t("Close")}
-          </div>
-        </DialogActions>
-      </Dialog>
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
+        title={t("Skills")}
+        content={modalContent}
+        language={currentLanguage as "en" | "ar"}
+        actionText={t("Close")}
       />
     </div>
   );

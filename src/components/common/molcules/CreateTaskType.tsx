@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
-import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskTypeSchema } from "@/schemas/task.schema";
 import { CreateTaskTypeProps, TaskTypeFormInputs } from "@/types/Task.type";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "react-modal";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
   isOpen,
   onClose,
   taskTypeData,
 }) => {
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const {
     register,
     handleSubmit,
@@ -142,14 +141,7 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
             </p>
           )}
         </form>
-        <CustomizedSnackbars
-          open={snackbarConfig.open}
-          message={snackbarConfig.message}
-          severity={snackbarConfig.severity}
-          onClose={() =>
-            setSnackbarConfig((prev) => ({ ...prev, open: false }))
-          }
-        />
+
       </div>
     </Modal>
   );

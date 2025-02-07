@@ -3,37 +3,22 @@
 
 "use client";
 
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
-import { useCreateMutation } from "@/hooks/useCreateMutation";
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-
+import ConditionalDropdowns from "@/components/common/atoms/job-title/ConditionalDropdowns";
+import IsManagerToggle from "@/components/common/atoms/job-title/IsManagerToggle";
+import { PermissionsSection } from "@/components/common/atoms/job-title/PermissionsSection";
+import TitleFormInput from "@/components/common/atoms/job-title/TitleFormInput";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
+import { useJobTitleForm } from "@/hooks/job-title/useJobTitleForm";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useQueryPageData from "@/hooks/useQueryPageData";
-import { addTitleSchema } from "@/schemas/job.schema";
-import {
-  getDepartmentOptions,
-  handlePermissionsChange,
-} from "@/services/job.service";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { JobCategoryType, JobTitleFormInputs } from "@/types/JobTitle.type";
-import { permissionsArray } from "@/utils/all_permissions";
-import getErrorMessages from "@/utils/handleErrorMessages";
-import Select from "react-select";
-import { useTranslation } from "react-i18next";
-import useSnackbar from "@/hooks/useSnackbar";
-import { selectStyle } from "@/utils/SelectStyle";
 import useCustomTheme from "@/hooks/useCustomTheme";
-import { useRouter } from "next/navigation";
+import { getDepartmentOptions } from "@/services/job.service";
+import { DepartmentType } from "@/types/DepartmentType.type";
+import { JobCategoryType } from "@/types/JobTitle.type";
 import { DeptTree } from "@/types/trees/Department.tree.type";
-
-
-const permissionsOptions = permissionsArray.map((permission) => ({
-  value: permission,
-  label: permission.replace(/_/g, " ").toUpperCase(),
-}));
+import getErrorMessages from "@/utils/handleErrorMessages";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const AddJobTitle: React.FC = () => {
   const [permissionsMode, setPermissionsMode] = useState("default");
@@ -45,33 +30,22 @@ const AddJobTitle: React.FC = () => {
   const [specificJobTitle, setSpecificJobTitle] = useState<string[]>([]);
   const [isManager, setIsManager] = useState(false);
   const [responsibilities, setResponsibilities] = useState<string[]>([]);
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { t } = useTranslation();
-  const router = useRouter();
-
   const { isLightMode } = useCustomTheme();
   const {
-    register,
+    addJobTitle,
+    errorJobTitle,
+    errors,
+    getValues,
     handleSubmit,
-    formState: { errors },
+    isErrorJobTitle,
+    isPendingJobTitle,
+    register,
     reset,
     setValue,
-  } = useForm<JobTitleFormInputs>({
-    resolver: yupResolver(addTitleSchema),
-    defaultValues: {
-      title: "",
-      category: "",
-      description: "",
-      responsibilities: [],
-      permissions: [],
-      department_id: "",
-      is_manager: false,
-      accessibleDepartments: [],
-      accessibleEmps: [],
-      accessibleJobTitles: [],
-    },
-  });
-  const jobTitleData = useQueryPageData<JobTitleFormInputs>(reset);
+    jobTitleData,
+  } = useJobTitleForm();
 
   const { data: departments } = useCustomQuery<{
     info: DepartmentType[];
@@ -85,45 +59,6 @@ const AddJobTitle: React.FC = () => {
     queryKey: ["categories"],
     url: `/job-categories`,
     setSnackbarConfig,
-  });
-
-  const {
-    mutate: addJobTitle,
-    isPending: isPendingJobTitle,
-    isError: isErrorJobTitle,
-    error: errorJobTitle,
-  } = useCreateMutation({
-    endpoint: jobTitleData
-      ? `/job-titles/update/${jobTitleData.id}`
-      : `/job-titles/create`,
-    onSuccessMessage: t("Job Title added successfully!"),
-    invalidateQueryKeys: ["jobTitles"],
-    setSnackbarConfig,
-    onSuccessFn() {
-      reset({
-        id: "",
-        title: "",
-        description: "",
-        responsibilities: [],
-        permissions: [],
-        department_id: "",
-        accessibleDepartments: [],
-        accessibleEmps: [],
-        accessibleJobTitles: [],
-        category: "",
-        is_manager: false,
-      });
-
-      setSnackbarConfig({
-        open: true,
-        message: jobTitleData
-          ? "Job Title updated successfully!"
-          : "Job Title created successfully!",
-        severity: "success",
-      });
-
-      setTimeout(() => router.back(), 1000);
-    },
   });
 
   useEffect(() => {
@@ -157,10 +92,6 @@ const AddJobTitle: React.FC = () => {
   ]);
 
   useEffect(() => {
-    console.log(responsibilities);
-  }, [responsibilities]);
-
-  useEffect(() => {
     if (Object.keys(errors).length > 0) {
       getErrorMessages({ errors, setSnackbarConfig });
     }
@@ -182,7 +113,6 @@ const AddJobTitle: React.FC = () => {
               accessibleDepartments: specificDept,
               accessibleEmps: specificEmp,
               accessibleJobTitles: specificJobTitle,
-              responsibilities,
             });
 
             addJobTitle({
@@ -192,95 +122,39 @@ const AddJobTitle: React.FC = () => {
               accessibleDepartments: specificDept,
               accessibleEmps: specificEmp,
               accessibleJobTitles: specificJobTitle,
-              responsibilities,
+              responsibilities: getValues("responsibilities"),
             });
           })}
         >
-          <div>
-            <label className="block  text-sm font-medium">{t("Title")}</label>
-            <input
-              type="text"
-              {...register("title")}
-              className={` 
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.title ? "border-red-500" : "border-border"
-              }`}
-              placeholder={t("Enter job title")}
-            />
-            {errors.title && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label className="block  text-sm font-medium">
-              {t("Description")}
-            </label>
-            <input
-              type="text"
-              {...register("description")}
-              className={` 
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none  w-full px-4 py-2 mt-1 rounded-lg     focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.description ? "border-red-500" : "border-border"
-              }`}
-              placeholder={t("Enter job description")}
-            />
-            {errors.description && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+          <TitleFormInput
+            name="title"
+            label={t("Title")}
+            placeholder={t("Enter job title")}
+            errors={errors}
+            register={register}
+          />
+          <TitleFormInput
+            name="description"
+            label={t("Description")}
+            placeholder={t("Enter job description")}
+            errors={errors}
+            register={register}
+          />
 
-          <div>
-            <label className="block  text-sm font-medium">
-              {t("Responsibilities")}
-            </label>
-
-            <textarea
-              className={`w-full 
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none px-4 py-2 mt-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.responsibilities ? "border-red-500" : "border-border"
-              }`}
-              placeholder={t("Enter responsibilities (comma-separated)")}
-              rows={3}
-              // {...register("responsibilities")} // Ensure this binds to the form
-              value={responsibilities.join(",")}
-              onChange={(event) => {
-                const values = event.target.value;
-                setResponsibilities(values.split(","));
-                setValue("responsibilities", values.split(","));
-              }}
-            ></textarea>
-
-            {errors.responsibilities && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.responsibilities.message}
-              </p>
-            )}
-          </div>
+          <TitleFormInput
+            name="responsibilities"
+            label={t("Responsibilities")}
+            placeholder={t("Enter responsibilities (comma-separated)")}
+            type="textarea"
+            errors={errors}
+            register={register}
+            value={responsibilities}
+            onChange={setResponsibilities}
+            setValue={setValue}
+          />
 
           {/* Permissions Toggle */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium">
               {t("Permissions Mode")}
             </label>
@@ -310,10 +184,10 @@ const AddJobTitle: React.FC = () => {
                 {t("Custom")}
               </label>
             </div>
-          </div>
+          </div> */}
 
           {/* Custom Permissions Multi-select */}
-          {permissionsMode === "custom" && (
+          {/* {permissionsMode === "custom" && (
             <div>
               <label className="block text-sm font-medium">
                 {t("Select Permissions")}
@@ -351,195 +225,53 @@ const AddJobTitle: React.FC = () => {
                 styles={selectStyle}
               />
             </div>
-          )}
-
+          )} */}
+          <PermissionsSection
+            permissionsMode={permissionsMode}
+            setPermissionsMode={setPermissionsMode}
+            permissionsSelected={permissionsSelected}
+            setPermissionsSelected={setPermissionsSelected}
+          />
           {/* Conditional Dropdowns */}
-          {permissionsSelected.includes("department_view_specific") && (
-            <div>
-              <label className="block text-sm font-medium">
-                {t("Specific Department")}
-              </label>
+          <ConditionalDropdowns
+            departments={departments}
+            getDepartmentOptions={getDepartmentOptions}
+            permissionsSelected={permissionsSelected}
+            specificDept={specificDept}
+            setSpecificDept={setSpecificDept}
+            register={register}
+            setSpecificEmp={setSpecificEmp}
+            setSpecificJobTitle={setSpecificJobTitle}
+            specificEmp={specificEmp}
+            specificJobTitle={specificJobTitle}
+          />
 
-              <Select
-                {...register("accessibleDepartments")}
-                isMulti
-                value={getDepartmentOptions(departments?.tree).filter(
-                  (option: { value: string; label: string }) =>
-                    specificDept.includes(option.value)
-                )}
-                options={getDepartmentOptions(departments?.tree)}
-                onChange={(selectedOptions) =>
-                  setSpecificDept(selectedOptions.map((option) => option.value))
-                }
-                className={`mt-1 text-tblackAF 
-                
-                ${
-                  isLightMode
-                    ? "bg-dark  placeholder:text-tdark "
-                    : "bg-secondary"
-                }
-                outline-none border-none`}
-                placeholder={t("Select Accessible Departments...")}
-              />
-            </div>
-          )}
+          <TitleFormInput
+            name="category"
+            label={t("Job Category")}
+            placeholder={t("Select a Job Category")}
+            type="select"
+            selectedOption={selectedCategory}
+            options={categories}
+            errors={errors}
+            register={register}
+            onChange={setSelectedCategory}
+          />
+          <TitleFormInput
+            name="department_id"
+            label={t("Department")}
+            placeholder={t("Select a Department")}
+            type="select"
+            selectedOption={selectedDept}
+            options={departments?.tree}
+            errors={errors}
+            register={register}
+            onChange={setSelectedDept}
+          />
 
-          {permissionsSelected.includes("emp_view_specific") && (
-            <div>
-              <label className="block text-sm font-medium">
-                {t("Specific Employee")}
-              </label>
-              <Select
-                {...register("accessibleEmps")}
-                isMulti
-                value={getDepartmentOptions(departments?.tree).filter(
-                  (option: { value: string; label: string }) =>
-                    specificEmp.includes(option.value)
-                )}
-                options={getDepartmentOptions(departments?.tree)}
-                onChange={(selectedOptions) =>
-                  setSpecificEmp(selectedOptions.map((option) => option.value))
-                }
-                className={`mt-1 text-tblackAF 
-                
-                ${
-                  isLightMode
-                    ? "bg-dark  placeholder:text-tdark "
-                    : "bg-secondary"
-                }
-                outline-none border-none`}
-                placeholder={t("Select Accessible Employees...")}
-              />
-            </div>
-          )}
-
-          {permissionsSelected.includes("job_title_view_specific") && (
-            <div>
-              <label className="block text-sm font-medium">
-                {t("Specific Job Title")}
-              </label>
-              <Select
-                {...register("accessibleJobTitles")}
-                isMulti
-                value={getDepartmentOptions(departments?.tree).filter(
-                  (option: { value: string; label: string }) =>
-                    specificJobTitle.includes(option.value)
-                )}
-                options={getDepartmentOptions(departments?.tree)}
-                onChange={(selectedOptions) =>
-                  setSpecificJobTitle(
-                    selectedOptions.map((option) => option.value)
-                  )
-                }
-                className={`mt-1 text-tblackAF 
-                
-                ${
-                  isLightMode
-                    ? "bg-dark  placeholder:text-tdark "
-                    : "bg-secondary"
-                }
-                outline-none border-none`}
-                placeholder={t("Select Accessible Job Titles...")}
-              />
-            </div>
-          )}
-
-          <div>
-            <label className="block  text-sm font-medium">
-              {t("Job Category")}
-            </label>
-            <select
-              {...register("category")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg  
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none   focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.category ? "border-red-500" : "border-border"
-              }`}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-              }}
-            >
-              <option value="">{t("Select a Job Category")}</option>
-              {categories &&
-                categories.map((category) => (
-                  <option
-                    key={category.id}
-                    value={category.id}
-                    selected={selectedCategory == category.id}
-                  >
-                    {category.name}
-                  </option>
-                ))}
-            </select>
-            {errors.category && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label className="block  text-sm font-medium">
-              {t("Department")}
-            </label>
-            <select
-              {...register("department_id")}
-              className={`w-full px-4 py-2 mt-1 rounded-lg   
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none  focus:outline-none focus:ring-2 focus:ring-accent border ${
-                errors.department_id ? "border-red-500" : "border-border"
-              }`}
-              onChange={(e) => {
-                setSelectedDept(e.target.value);
-              }}
-            >
-              <option value="">{t("Select a department")}</option>
-              {departments &&
-                departments.tree &&
-                departments.tree.map((dept) => (
-                  <option
-                    key={dept.id}
-                    value={dept.id}
-                    selected={selectedDept == dept.id}
-                  >
-                    {dept.name}
-                  </option>
-                ))}
-            </select>
-            {errors.department_id && (
-              <p className="text-red-500 mt-1 text-sm">
-                {errors.department_id.message}
-              </p>
-            )}
-          </div>
           {/* Is Manager Checkbox */}
-          <div className="flex items-center mt-2">
-            <label className="text-sm font-medium mr-2">
-              {t("Is Manager?")}
-            </label>
-            <input
-              type="checkbox"
-              checked={isManager}
-              onChange={() => setIsManager(!isManager)}
-              className={`form-checkbox cursor-pointer h-5 w-5 
-              
-              ${
-                isLightMode
-                  ? "bg-dark  placeholder:text-tdark "
-                  : "bg-secondary"
-              }
-              outline-none border-none`}
-            />
-          </div>
+          <IsManagerToggle isManager={isManager} setIsManager={setIsManager} />
+
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-slate-600 
@@ -564,13 +296,6 @@ const AddJobTitle: React.FC = () => {
           )}
         </form>
       </div>
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </GridContainer>
   );
 };

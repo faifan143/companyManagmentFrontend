@@ -3,7 +3,6 @@
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
-import useSnackbar from "@/hooks/useSnackbar";
 import { addProjectSchema } from "@/schemas/project.shema";
 import { ProjectType } from "@/types/Project.type";
 import { DeptTree } from "@/types/trees/Department.tree.type";
@@ -13,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
-import CustomizedSnackbars from "./CustomizedSnackbars";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 
 const AddProjectModal: React.FC<{
   isOpen: boolean;
@@ -31,7 +30,7 @@ const AddProjectModal: React.FC<{
     context: { isEditing: !!projectData },
   });
   const { isLightMode } = useCustomTheme();
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   // const isAdmin = useRolePermissions("admin");
   // const isPrimary = useRolePermissions("primary_user");
 
@@ -63,7 +62,7 @@ const AddProjectModal: React.FC<{
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
 
   useEffect(() => {
-    if (projectData) {
+    if (projectData && projectData.departments) {
       reset({
         name: projectData.name,
         description: projectData.description,
@@ -231,12 +230,7 @@ const AddProjectModal: React.FC<{
           </div>
         </div>
       </div>
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+   
     </>
   );
 };

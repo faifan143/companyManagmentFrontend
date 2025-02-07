@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useSnackbar from "@/hooks/useSnackbar";
 import { addDeptPopupSchema } from "@/schemas/department.schema";
 import {
   CreateDepartmentProps,
@@ -42,7 +41,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     }
   }, [departmentData, reset]);
 
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const endpoint = departmentData
     ? `/department/updateDepartment/${departmentData.id}`
     : `/department/create-department`;
@@ -216,12 +215,7 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
           )}
         </form>
       </div>
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+
     </Modal>
   );
 };

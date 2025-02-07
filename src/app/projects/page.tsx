@@ -15,7 +15,7 @@ const Page = () => {
     <GridContainer>
       <div className="col-span-full flex justify-between items-center">
         <h1
-          className={`text-3xl font-bold ${
+          className={`text-3xl font-bold mb-5 ${
             isLightMode ? "text-twhite " : "text-twhite"
           }  text-center `}
         >

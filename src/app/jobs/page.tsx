@@ -21,8 +21,8 @@ const JobTitlesView: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="col-span-full flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-twhite text-center">
+      <div className="col-span-full flex flex-col md:flex-row justify-between items-center gap-5 mb-5">
+        <h1 className="text-3xl font-bold text-twhite text-center pb-4">
           {t("Job Titles")}
         </h1>
         <div className="flex justify-center items-center gap-5">

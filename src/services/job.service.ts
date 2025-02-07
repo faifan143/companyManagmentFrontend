@@ -7,10 +7,8 @@ import { DeptTree } from "@/types/trees/Department.tree.type";
 
 export const addEducationService = ({
   newEducation,
-  setNewEducation,
   setValue,
   setRequiredEducationOptions,
-  setIsAddingEducation,
 }: AddEducationHandlerParams) => {
   if (newEducation.trim() !== "") {
     setRequiredEducationOptions((prevOptions) => [
@@ -18,15 +16,12 @@ export const addEducationService = ({
       newEducation,
     ]);
     setValue("required_education", newEducation);
-    setIsAddingEducation(false);
-    setNewEducation("");
   }
 };
 
 export const addExperienceService = ({
   newExperience,
-  setIsAddingExperience,
-  setNewExperience,
+
   setValue,
   setRequiredExperienceOptions,
 }: AddExperienceHandlerParams) => {
@@ -36,8 +31,7 @@ export const addExperienceService = ({
       newExperience,
     ]);
     setValue("required_experience", newExperience);
-    setIsAddingExperience(false);
-    setNewExperience("");
+    
   }
 };
 

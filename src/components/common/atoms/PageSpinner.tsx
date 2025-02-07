@@ -24,9 +24,9 @@ const PageSpinner = ({ title }: { title?: string }) => {
         </div>
 
         {/* Text */}
-        <span className="text-white/90 text-sm font-medium tracking-wide">
+        {/* <span className="text-white/90 text-sm font-medium tracking-wide">
           {title ?? t("Loading")}
-        </span>
+        </span> */}
 
         {/* Animation keyframes */}
         <style jsx>{`

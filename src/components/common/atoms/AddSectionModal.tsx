@@ -1,14 +1,13 @@
 import { CheckIcon } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
+import useCustomTheme from "@/hooks/useCustomTheme";
+import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
-import useSnackbar from "@/hooks/useSnackbar";
 import { RootState } from "@/state/store";
 import { SectionType } from "@/types/Section.type";
 import Image from "next/image";
 import React, { ChangeEvent, useState } from "react";
-import CustomizedSnackbars from "./CustomizedSnackbars";
-import useLanguage from "@/hooks/useLanguage";
-import useCustomTheme from "@/hooks/useCustomTheme";
 
 const AddSectionModal: React.FC<{
   isOpen: boolean;
@@ -21,7 +20,7 @@ const AddSectionModal: React.FC<{
   const { isLightMode } = useCustomTheme();
   const { t } = useLanguage();
   const [section, setSection] = useState("");
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { mutate: addSection, isPending: isPendingSection } = useCreateMutation(
     {
       endpoint: sectionData ? `/sections/${sectionData._id}` : "/sections",
@@ -91,12 +90,7 @@ const AddSectionModal: React.FC<{
           </div>
         </div>
       </div>
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+    
     </>
   );
 };

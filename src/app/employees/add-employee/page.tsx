@@ -4,10 +4,10 @@
 
 "use client";
 
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useQueryPageData from "@/hooks/useQueryPageData";
 import { addEmpSchema } from "@/schemas/employee.schema";
 import {
@@ -17,18 +17,17 @@ import {
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { EmployeeFormInputs } from "@/types/EmployeeType.type";
 import { JobTitleType } from "@/types/JobTitle.type";
+import { DeptTree } from "@/types/trees/Department.tree.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import useSnackbar from "@/hooks/useSnackbar";
-import useCustomTheme from "@/hooks/useCustomTheme";
-import { useRouter } from "next/navigation";
-import { DeptTree } from "@/types/trees/Department.tree.type";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 
 const AddEmp: React.FC = () => {
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const router = useRouter();
   const [legalFileNames, setLegalFileNames] = useState({});
   const [certificationFileNames, setCertificationFileNames] = useState({});
@@ -606,7 +605,7 @@ const AddEmp: React.FC = () => {
               <option value="">{t("Select a job title")}</option>
               {jobs &&
                 jobs
-                  .filter((job) => job.department._id == selectedDept)
+                  .filter((job) => job.department_id == selectedDept)
                   .map((job) => (
                     <option key={job.id} value={job.id}>
                       {job.title}
@@ -1032,12 +1031,6 @@ const AddEmp: React.FC = () => {
           </button>
         </form>
       </div>
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </GridContainer>
   );
 };

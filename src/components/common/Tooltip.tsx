@@ -1,11 +1,12 @@
 // components/Tooltip.tsx
 "use client";
 
+import useLanguage from "@/hooks/useLanguage";
 import React, { ReactNode, useState } from "react";
 
 interface TooltipProps {
   children: ReactNode; // The element that the tooltip is attached to
-  content: ReactNode; // The tooltip content
+  content: string; // The tooltip content
   position?: "top" | "right" | "bottom" | "left"; // Tooltip position
 }
 
@@ -15,7 +16,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   position = "top",
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-
+  const {t} = useLanguage()
   const tooltipPosition = {
     top: "bottom-full left-1/2 transform -translate-x-1/2 mb-2",
     right: "left-[60%] top-1/2 transform -translate-y-1/2 ml-2",
@@ -34,7 +35,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         <div
           className={`absolute z-10 px-3 py-2 text-sm text-twhite bg-dark rounded-r-lg rounded-tl-lg shadow-lg ${tooltipPosition[position]}`}
         >
-          {content}
+          {t(content)}
         </div>
       )}
     </div>

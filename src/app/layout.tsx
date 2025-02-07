@@ -6,9 +6,9 @@ import "./globals.css";
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
@@ -16,7 +16,6 @@ export default function RootLayout({
         <link rel="icon" href="" />
       </head>
       <body className="bg-main">
-        
         <LayoutProviders>{children}</LayoutProviders>
       </body>
     </html>

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useSnackbar from "@/hooks/useSnackbar";
 import { addTaskPopupSchema } from "@/schemas/task.schema";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { EmployeeType } from "@/types/EmployeeType.type";
@@ -28,7 +27,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({
   const [isTaskStatusModalOpen, setIsTaskStatusModalOpen] = useState(false);
   const [isTaskTypeModalOpen, setIsTaskTypeModalOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { t } = useTranslation();
 
   const {
@@ -297,12 +296,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({
         onClose={() => setIsTaskTypeModalOpen(false)}
       />
 
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </Modal>
   );
 };

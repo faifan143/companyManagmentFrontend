@@ -13,15 +13,14 @@ import {
   PlayIcon,
   SubtasksIcon,
 } from "@/assets";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import StarRating from "@/components/common/StarsRating";
+import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useComments from "@/hooks/useComments";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
-import useSnackbar from "@/hooks/useSnackbar";
 import useTimeTicker from "@/hooks/useTimeTicker";
-import StarRating from "@/components/common/StarsRating";
 import {
   formatDate,
   getPriorityColor,
@@ -35,7 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import AddSubTaskModal from "./AddSubTaskModal";
-import { useRolePermissions } from "@/hooks/useCheckPermissions";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 
 export const formatTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -123,7 +122,7 @@ const ListTaskDetails: React.FC<{
     }
   };
 
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
 
   const handleStart = async () => {
     if (selectedStatus !== "ONGOING") {
@@ -226,7 +225,7 @@ const ListTaskDetails: React.FC<{
         </div>
         {/* Parent task */}
         <div
-          className={`relative flex items-center justify-between  gap-5 w-fit  ${
+          className={`relative flex items-center  justify-between gap-5 w-full  ${
             isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
           }  rounded px-3 py-2`}
         >
@@ -249,15 +248,15 @@ const ListTaskDetails: React.FC<{
         {/* Assigned Emp  */}
         {task && task.emp && (
           <div
-            className={`relative flex items-center justify-between  gap-5 w-fit ${
+            className={`relative flex items-center   gap-5 w-fit ${
               isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
             } rounded px-3 py-2`}
           >
-            <span>{t("Assigned Emp")}</span>
+            <span className="text-nowrap">{t("Assigned Emp")}</span>
             <div
-              className={`border-2 border-red-500  ${
+              className={`  ${
                 isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
-              } text-twhite py-2 px-3 w-fit mx-auto rounded-md  text-sm font-semibold`}
+              } text-twhite py-2 px-3 w-fit mx-auto rounded-md  text-sm font-semibold text-nowrap`}
             >
               {task.emp.name + " - " + task.emp.job.title}
             </div>
@@ -266,7 +265,7 @@ const ListTaskDetails: React.FC<{
         {/* Priority Dropdown */}
         <div
           ref={priorityRef}
-          className={`relative flex items-center justify-between w-1/2 ${
+          className={`relative flex items-center justify-between w-full ${
             isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
           } rounded px-3 py-2`}
         >
@@ -284,7 +283,7 @@ const ListTaskDetails: React.FC<{
             <div
               className={`absolute top-10 ${
                 currentLanguage == "en" ? "-right-20" : "right-20"
-              }  bg-dark border border-slate-500 text-twhite rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+              }  bg-dark  text-twhite rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
             >
               {priorityOptions.map((option) => (
                 <div
@@ -308,7 +307,7 @@ const ListTaskDetails: React.FC<{
         {/* Status Dropdown */}
         <div
           ref={statusRef}
-          className={`relative flex items-center justify-between w-1/2 ${
+          className={`relative flex items-center justify-between w-full ${
             isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
           } rounded px-3 py-2`}
         >
@@ -326,7 +325,7 @@ const ListTaskDetails: React.FC<{
             <div
               className={`absolute top-10 ${
                 currentLanguage == "en" ? "-right-20" : "right-20"
-              }  bg-dark border border-slate-500 text-twhite w-40 rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+              }  bg-dark  text-twhite w-40 rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
             >
               {statusOptions.map((option) => (
                 <div
@@ -381,7 +380,7 @@ const ListTaskDetails: React.FC<{
         {/* time tracking */}
         <div
           ref={statusRef}
-          className={`relative flex items-center justify-between gap-2 w-fit ${
+          className={`relative flex items-center justify-between gap-2 w-full ${
             isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
           } rounded px-3 py-2`}
         >
@@ -444,15 +443,6 @@ const ListTaskDetails: React.FC<{
                 )}
               </span>
             )}
-
-            <CustomizedSnackbars
-              open={snackbarConfig.open}
-              message={snackbarConfig.message}
-              severity={snackbarConfig.severity}
-              onClose={() =>
-                setSnackbarConfig((prev) => ({ ...prev, open: false }))
-              }
-            />
           </div>
         )}
         {/* Description */}
@@ -472,7 +462,7 @@ const ListTaskDetails: React.FC<{
         <div
           className={` ${
             isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
-          } border-2 border-red-500/30 shadow-md p-4 rounded-lg text-tmid space-y-2  `}
+          }  shadow-md p-4 rounded-lg text-tmid space-y-2  `}
         >
           {task && task.subTasks && task.subTasks.length > 0 ? (
             task.subTasks.map((sub, index) => (
@@ -564,7 +554,7 @@ const ListTaskDetails: React.FC<{
           <div
             className={` ${
               isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
-            }  border-2 border-yellow-500/30 shadow-md p-4 rounded-lg text-tmid space-y-2  `}
+            }   shadow-md p-4 rounded-lg text-tmid space-y-2  `}
           >
             {comments.length > 0 ? (
               comments.map((comment, index) => (

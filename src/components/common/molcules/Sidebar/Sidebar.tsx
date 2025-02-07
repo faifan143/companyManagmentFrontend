@@ -1,17 +1,16 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 import { ChatsIcon } from "@/assets";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { RootState } from "@/state/store";
-import Image from "next/image";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import ChatModal from "../../atoms/ChatModal";
 import RouteWrapper from "../../RouteWrapper";
 import Tooltip from "../../Tooltip";
 import { sidebarItems } from "./data";
+import { SidebarItem } from "./SidebarItem";
 
 const Sidebar = ({
   isExpanded,
@@ -30,10 +29,23 @@ const Sidebar = ({
   const [selectedTab, setSelectedTab] = useState(
     () => localStorage.getItem("selectedTab") || "/home"
   );
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleTabClick = (path: string) => {
     setSelectedTab(path);
     localStorage.setItem("selectedTab", path);
+    if (isMobile) {
+      setIsExpanded(false);
+    }
   };
 
   const visibleItems = userPermissions
@@ -48,83 +60,87 @@ const Sidebar = ({
     : [];
 
   return (
-    <div
-      className={
-        isExpanded ? "fixed inset-0 bg-slate-600/10 backdrop-blur-sm z-10 " : ""
-      }
-      onClick={() => setIsExpanded(false)}
-    >
+    <>
       <div
-        className={`shadow-md p-5 mr-5 fixed top-[50px] bottom-0 transition-width duration-500  border-r border-slate-600 ${
-          isLightMode ? "bg-darkest" : "bg-main"
-        }   ${isExpanded ? "w-[350px] backdrop-blur" : "w-[92px]"}`}
+        className={`
+          ${
+            isExpanded
+              ? "fixed inset-0 bg-slate-600/10 backdrop-blur-sm z-10"
+              : ""
+          }
+          ${isMobile ? "touch-none" : ""}
+        `}
+        onClick={() => setIsExpanded(false)}
       >
-        <div className="sidebar flex flex-col space-y-4 py-4">
-          {visibleItems.map((item, index) => (
-            <RouteWrapper
-              href={item.path}
-              key={index}
-              onClick={() => handleTabClick(item.path)}
-            >
-              <Tooltip content={item.label} position="right">
-                <SidebarItem
-                  key={item.label}
-                  icon={item.icon}
-                  label={t(item.label)}
-                  isExpanded={isExpanded}
-                  isSelected={selectedTab === item.path}
-                  onClick={() => {}}
-                />
-              </Tooltip>
-            </RouteWrapper>
-          ))}
-          <div className="h-[1px] w-full bg-slate-200"></div>
-          <div className="flex justify-start">
-            <SidebarItem
-              icon={ChatsIcon}
-              label={t(`Department Chat`)}
-              isExpanded={isExpanded}
-              isSelected={isChatOpen}
-              onClick={() => setIsChatOpen((prev) => !prev)}
-            
+        <div
+          className={`
+            shadow-md p-5 fixed transition-all duration-300 ease-in-out
+            border-r border-slate-600
+            ${isLightMode ? "bg-darkest" : "bg-main"}
+            ${
+              isMobile
+                ? `top-0 h-full ${isExpanded ? "left-0" : "-left-full"}`
+                : `top-[50px] bottom-0 left-0`
+            }
+            ${
+              !isMobile &&
+              (isExpanded ? "w-[240px] mr-5" : "w-[92px] transform origin-left")
+            }
+          `}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className={`sidebar flex flex-col space-y-4 ${
+              isMobile && isExpanded ? "py-16" : "py-4"
+            } transition-all duration-300 ${
+              !isMobile && !isExpanded ? "opacity-90" : "opacity-100"
+            }`}
+          >
+            {visibleItems.map((item, index) => (
+              <RouteWrapper
+                href={item.path}
+                key={index}
+                onClick={() => handleTabClick(item.path)}
+              >
+                {!isExpanded ? (
+                  <Tooltip content={item.label} position="right">
+                    <SidebarItem
+                      icon={item.icon}
+                      label={t(item.label)}
+                      isExpanded={isExpanded}
+                      isSelected={selectedTab === item.path}
+                      onClick={() => {}}
+                    />
+                  </Tooltip>
+                ) : (
+                  <SidebarItem
+                    icon={item.icon}
+                    label={t(item.label)}
+                    isExpanded={isExpanded}
+                    isSelected={selectedTab === item.path}
+                    onClick={() => {}}
+                  />
+                )}
+              </RouteWrapper>
+            ))}
+            <div className="h-[1px] w-full bg-slate-200"></div>
+            <div className="flex justify-start">
+              <SidebarItem
+                icon={ChatsIcon}
+                label={t(`Department Chat`)}
+                isExpanded={isExpanded}
+                isSelected={isChatOpen}
+                onClick={() => setIsChatOpen((prev) => !prev)}
+              />
+            </div>
+            <ChatModal
+              isOpen={isChatOpen}
+              onClose={() => setIsChatOpen(false)}
             />
           </div>
-          <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </div>
       </div>
-    </div>
-  );
-};
-
-// @ts-ignore
-const SidebarItem = ({ icon, label, isExpanded, isSelected, onClick }) => {
-  const iconWithColor = React.cloneElement(
-    <div className="svg-container">
-      <Image src={icon} alt="home icon" width={20} height={20} />
-    </div>
-  );
-  const { isLightMode } = useCustomTheme();
-
-  return (
-    <div
-      onClick={onClick}
-      className={`flex cursor-pointer items-center 
-      ${isLightMode ? "text-tblackAF" : "text-twhite"}
-      ${isExpanded ? "justify-start" : "justify-center"} relative p-2`}
-    >
-      {isSelected && (
-        <div
-          className={`absolute inset-0 ${
-            isLightMode ? "bg-darker" : "bg-secondary"
-          } rounded-md`}
-          style={{ padding: "6px" }}
-        />
-      )}
-      <div className="relative z-10 flex items-center">
-        {iconWithColor}
-        {isExpanded && <p className="ml-2">{label}</p>}
-      </div>
-    </div>
+    </>
   );
 };
 

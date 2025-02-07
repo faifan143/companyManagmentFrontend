@@ -12,15 +12,35 @@ export interface JobCategoryFormInputs {
 
 export interface AddEducationHandlerParams {
   newEducation: string;
-  setNewEducation: Dispatch<SetStateAction<string>>;
   setValue: UseFormSetValue<JobCategoryFormInputs>;
   setRequiredEducationOptions: Dispatch<SetStateAction<string[]>>;
-  setIsAddingEducation: Dispatch<SetStateAction<boolean>>;
 }
 export interface AddExperienceHandlerParams {
   newExperience: string;
-  setNewExperience: Dispatch<SetStateAction<string>>;
   setValue: UseFormSetValue<JobCategoryFormInputs>;
   setRequiredExperienceOptions: Dispatch<SetStateAction<string[]>>;
-  setIsAddingExperience: Dispatch<SetStateAction<boolean>>;
+
+}
+
+
+
+
+
+
+export interface EducationExperienceData {
+  requiredEducation: string[];
+  requiredExperience: string[];
+}
+
+export interface AddEducationParams {
+  newEducation: string;
+  setIsAddingEducation: (value: boolean) => void;
+  setNewEducation: (value: string) => void;
+  setRequiredEducationOptions: (options: string[]) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setValue: (name: keyof JobCategoryFormInputs, value: any) => void;
+}
+
+export interface AddExperienceParams extends AddEducationParams {
+  setRequiredExperienceOptions: (options: string[]) => void;
 }

@@ -1,4 +1,5 @@
 import { UseFormGetValues } from "react-hook-form";
+import { DeptTree } from "./trees/Department.tree.type";
 
 export interface DepartmentType {
   id: string;
@@ -53,4 +54,10 @@ export interface HandleManualSubmitOptions {
   getValues: UseFormGetValues<DepartmentFormInputs>;
   selectedFiles: File[];
   addDepartment: (data: DepartmentFormInputs) => void;
+}
+
+
+export interface DepartmentsTotalType{
+  info: DepartmentType[];
+  tree: DeptTree[];
 }

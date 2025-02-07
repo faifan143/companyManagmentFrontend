@@ -1,22 +1,21 @@
 "use client";
 
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import InfoCard from "@/components/common/InfoCard";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
 import ProjectDetailsHierarchyTree from "@/components/common/ProjectDetailsHierarchyTree";
 import TaskStatusPieChart from "@/components/common/TaskStatusPieChart";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate } from "@/services/task.service";
 import { ProjectDetailsType } from "@/types/Project.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useRouter } from "next/navigation";
 
 const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { t, currentLanguage } = useLanguage();
   const { isLightMode } = useCustomTheme();
   const router = useRouter();
@@ -113,14 +112,7 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
           </>
         )}
 
-        <CustomizedSnackbars
-          open={snackbarConfig.open}
-          message={snackbarConfig.message}
-          severity={snackbarConfig.severity}
-          onClose={() =>
-            setSnackbarConfig((prev) => ({ ...prev, open: false }))
-          }
-        />
+     
       </div>
     </GridContainer>
   );

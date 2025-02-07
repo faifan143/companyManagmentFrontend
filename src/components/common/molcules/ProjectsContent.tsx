@@ -1,16 +1,15 @@
 import { PencilIcon } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import AddProjectModal from "../atoms/AddProjectModal";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import RouteWrapper from "../RouteWrapper";
 
 export const collabColors = [
@@ -25,7 +24,7 @@ const ProjectsContent = () => {
     null
   );
   const { t, currentLanguage } = useLanguage();
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { isLightMode } = useCustomTheme();
@@ -96,7 +95,7 @@ const ProjectsContent = () => {
             </tr>
           </thead>
           <tbody>
-            {projects &&
+            {projects && 
               projects.map((project) => (
                 <tr
                   key={project._id}
@@ -274,12 +273,7 @@ const ProjectsContent = () => {
         />
       )}
 
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+    
     </div>
   );
 };

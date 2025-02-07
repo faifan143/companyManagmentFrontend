@@ -2,7 +2,7 @@
 "use client";
 
 import TaskColumn from "@/components/common/organisms/TaskColumn";
-import useSnackbar from "@/hooks/useSnackbar";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { categorizeTasks, onDragEnd } from "@/services/task.service";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
@@ -10,7 +10,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import PageSpinner from "../atoms/PageSpinner";
 
 const TasksContent = ({
@@ -20,7 +19,7 @@ const TasksContent = ({
   sections: SectionType[] | undefined;
   tasksData: ReceiveTaskType[] | undefined;
 }) => {
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [tasks, setTasks] = useState<{
@@ -75,32 +74,23 @@ const TasksContent = ({
           }
         }}
       >
-        {sections &&
-          sections.map((sec, index) => {
-            console.log(
-              `task data for sectoin  ${sec.name} - ${sec._id} are :  `,
-              tasks ? tasks[sec._id] : "no task data found"
-            );
-            return (
-              <TaskColumn
-                key={index}
-                columnId={sec._id}
-                title={sec.name}
-                taskCount={(tasks && tasks[sec._id]?.length) || 0}
-                tasks={(tasks && tasks[sec._id]) || []}
-              />
-            );
-          })}
+        <div className="grid  grid-cols-3 md:grid-cols-12 gap-4  ">
+          {sections &&
+            sections.map((sec, index) => {
+              return (
+                <TaskColumn
+                  key={index}
+                  columnId={sec._id}
+                  title={sec.name}
+                  taskCount={(tasks && tasks[sec._id]?.length) || 0}
+                  tasks={(tasks && tasks[sec._id]) || []}
+                />
+              );
+            })}
+        </div>
 
         {isUpdating && <PageSpinner />}
       </DragDropContext>
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </>
   );
 };

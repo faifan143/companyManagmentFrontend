@@ -66,6 +66,14 @@
     "Parent Department": "Parent Department",
     "No Employees": "No Employees",
     "DOB": "DOB",
+    "welcome_back": "Welcome back! Please login to your account",
+    "Parent": "Parent",
+    "No parent": "No parent",
+    "Template": "Template",
+    "File": "File",
+    "None": "None",
+    "Click to collapse": "Click to collapse",
+    "Click to expand": "Click to expand",
     "Phone": "Phone",
     "Address": "Address",
     "Department": "Department",
@@ -78,6 +86,17 @@
     "Responsibilities": "Responsibilities",
     "Permissions": "Permissions",
     "Department ID": "Department ID",
+    "Enable management privileges for this role": "Enable management privileges for this role",
+    "Overview": "Overview",
+
+    "Personal Information": "Personal Information",
+
+    "Task Overview": "Task Overview",
+    "Current Tasks": "Current Tasks",
+
+    "Not Available": "Not Available",
+    "at": "at",
+
     "N/A": "N/A",
     "Show More": "Show More",
     "Edit": "Edit",

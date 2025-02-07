@@ -7,11 +7,9 @@ import {
 } from "@/hooks/useCheckPermissions";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useSetPageData from "@/hooks/useSetPageData";
-import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 
 const EmployeesContent: React.FC<{
   employeesData: EmployeeType[];
@@ -20,7 +18,6 @@ const EmployeesContent: React.FC<{
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["emp_update"]);
   const { isLightMode } = useCustomTheme();
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
 
   const { handleEditClick } = useSetPageData<EmployeeType>(
     "/employees/add-employee"
@@ -134,12 +131,7 @@ const EmployeesContent: React.FC<{
         </p>
       )}
 
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+
     </div>
   );
 };

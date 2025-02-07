@@ -1,5 +1,4 @@
-// hooks/useAuth.ts
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useRedux } from "@/hooks/useRedux";
 import { refreshAuthToken } from "@/state/slices/userSlice";
@@ -13,25 +12,26 @@ export const useAuth = () => {
     dispatch,
   } = useRedux((state: RootState) => state.user);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const refreshToken = Cookies.get("refresh_token");
-      if (!refreshToken) {
-        router.replace("/auth");
-        return;
-      }
+  const checkAuth = useCallback(async () => {
+    const refreshToken = Cookies.get("refresh_token");
 
-      try {
-        await dispatch(refreshAuthToken()).unwrap();
-      } catch (error) {
-        console.log(error);
-        Cookies.remove("refresh_token");
-        Cookies.remove("access_token");
-        router.push("/auth");
-      }
-    };
-    checkAuth();
+    if (!refreshToken) {
+      return router.replace("/auth");
+    }
+
+    try {
+      await dispatch(refreshAuthToken()).unwrap();
+    } catch (error) {
+      console.error("Authentication error:", error);
+      Cookies.remove("refresh_token");
+      Cookies.remove("access_token");
+      router.push("/auth");
+    }
   }, [dispatch, router]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   return { isAuthenticated, loading };
 };

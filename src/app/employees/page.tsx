@@ -2,9 +2,9 @@
 "use client";
 
 import { TableIcon, TreeIcon } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import EmployeeHierarchyTree from "@/components/common/EmployeesHierarchyTree";
 import RouteWrapper from "@/components/common/RouteWrapper";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import TasksTab from "@/components/common/atoms/TasksTab";
 import EmployeesContent from "@/components/common/molcules/EmployeesContent";
@@ -13,7 +13,6 @@ import {
   useRolePermissions,
 } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import useSnackbar from "@/hooks/useSnackbar";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import { EmpTree } from "@/types/trees/Emp.tree.type";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
@@ -30,7 +29,7 @@ const EmployeesView: React.FC = () => {
   const { t } = useTranslation();
   const canViewSpecific = usePermissions(["emp_view_specific"]);
   const showSelect = isAdmin || canViewSpecific || isPrimary;
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
 
   const { data: employees, isLoading } = useCustomQuery<{
     info: EmployeeType[];
@@ -58,12 +57,12 @@ const EmployeesView: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="col-span-full flex justify-between items-center">
+      <div className="col-span-full flex flex-col md:flex-row justify-between items-center mb-5 gap-5">
         <h1 className="text-3xl font-bold text-twhite text-center ">
           {t("Employees Management")}
         </h1>
 
-        <div className="flex justify-center items-center gap-5">
+        <div className="flex justify-center items-center gap-5 ">
           {showSelect && (
             <select
               className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"
@@ -109,13 +108,6 @@ const EmployeesView: React.FC = () => {
           <EmployeeHierarchyTree data={employees.tree} width="100%" />
         )}
       </div>
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </GridContainer>
   );
 };

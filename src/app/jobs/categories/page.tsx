@@ -11,8 +11,8 @@ const Category = () => {
   const isAdmin = useRolePermissions("admin");
   return (
     <GridContainer>
-      <div className="col-span-full flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-twhite text-center ">
+      <div className="col-span-full flex flex-col md:flex-row gap-5 mb-5 justify-between items-center ">
+        <h1 className="text-3xl font-bold text-twhite text-center mb-5">
           {t("Job Categories Management")}
         </h1>
         {isAdmin && (

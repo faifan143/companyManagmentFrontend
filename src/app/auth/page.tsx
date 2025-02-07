@@ -1,176 +1,70 @@
+// src/components/Login/Login.tsx
 "use client";
-import { EyeIcon, EyeOffIcon } from "@/assets";
+import Background from "@/components/common/atoms/Background";
 import ChangingPasswordModal from "@/components/common/atoms/ChangingPasswordModal";
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import LoginForm from "@/components/common/atoms/LoginForm";
+import LoginHeader from "@/components/common/atoms/LoginHeader";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { useRedux } from "@/hooks/useRedux";
-import useSnackbar from "@/hooks/useSnackbar";
-import { loginSchema } from "@/schemas/login.schema";
-import { handleLogin } from "@/services/auth.service";
 import { AppDispatch } from "@/state/store";
-import { LoginFormInputs } from "@/types/Login.type";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-const Login: React.FC = () => {
-  const { t } = useTranslation();
+const Login = () => {
   const { selector } = useRedux((state) => state.user);
   const { loading, error, isAuthenticated } = selector;
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId, setEmpId] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
   const { isLightMode } = useCustomTheme();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormInputs>({
-    resolver: yupResolver(loginSchema),
-  });
-
-  const dispatch = useDispatch<AppDispatch>();
-  const onSubmit = async (data: LoginFormInputs) => {
-    await handleLogin({
-      data,
-      dispatch,
-      setSnackbarConfig,
-      setIsModalOpen,
-      setEmpId,
-    });
-  };
+  const { setSnackbarConfig } = useMokkBar();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace("/home");
-    }
+    if (isAuthenticated) router.replace("/home");
   }, [isAuthenticated, router]);
 
   useEffect(() => {
-    if (errors.email || errors.password) {
-      setSnackbarConfig({
-        open: true,
-        message: errors.email
-          ? errors.email.message + ""
-          : errors.password
-          ? errors.password.message + ""
-          : "error occured while validating",
-        severity: "error",
-      });
-    }
-  }, [errors, setSnackbarConfig]);
-
-  useEffect(() => {
-    if (
-      error &&
-      error
-        .split(",")[0]
-        .includes("You must change your password on the first login")
-    ) {
-      setEmpId(error.split(",")[1]);
+    if (error?.includes("You must change your password on the first login")) {
+      const [, extractedEmpId] = error.split(",");
+      setEmpId(extractedEmpId);
       setIsModalOpen(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [error]);
 
   return (
     <div
-      className={`flex items-center justify-center min-h-screen ${
-        isLightMode ? "bg-main" : "bg-radial-light"
-      } fixed inset-0`}
+      className={`min-h-screen flex items-center justify-center p-4 fixed inset-0 
+      ${
+        isLightMode
+          ? "bg-gradient-to-br from-blue-50 via-white to-blue-50"
+          : "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+      }`}
     >
+      <Background />
       <div
-        className={`backdrop-blur-md ${
-          isLightMode ? "bg-secondary" : "bg-dark"
-        } text-twhite p-10 rounded-xl shadow-xl max-w-sm w-full`}
+        className={`relative w-full max-w-md p-8 rounded-2xl shadow-2xl backdrop-blur-lg 
+        ${
+          isLightMode
+            ? "bg-white/80 shadow-gray-200/50"
+            : "bg-gray-900/80 shadow-black/30"
+        }`}
       >
-        <h1 className="text-center text-2xl text-twhite font-bold mb-6">
-          {t("CompanyManagmentSystem")}
-        </h1>
-
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label className="block text-sm font-medium">{t("Email")}</label>
-            <input
-              type="email"
-              {...register("email")}
-              className={`${
-                isLightMode ? "bg-dark" : "bg-secondary"
-              } outline-none border-none w-full px-4 py-2 mt-1 rounded-lg focus:outline-none border ${
-                errors.email ? "border-red-600" : "border-[#1b1a40]"
-              }`}
-              placeholder="example@company.com"
-              autoComplete="email"
-            />
-            {errors.email && (
-              <p className="text-red-600 mt-1 text-sm">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium">{t("Password")}</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                {...register("password")}
-                className={`${
-                  isLightMode ? "bg-dark" : "bg-secondary"
-                } outline-none border-none w-full px-4 py-2 mt-1 rounded-lg focus:outline-none border ${
-                  errors.password ? "border-red-600" : "border-[#1b1a40]"
-                }`}
-                placeholder="••••••••"
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/4 text-gray-400 hover:text-gray-300"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOffIcon size={20} />
-                ) : (
-                  <EyeIcon size={20} />
-                )}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-          <button
-            type="submit"
-            className={`w-full py-2 mt-4 bg-slate-600 ${
-              isLightMode ? " text-tblackAF" : "text-twhite"
-            } rounded-lg font-bold hover:bg-opacity-90 transition duration-200 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-          >
-            {loading ? t("Logging in...") : t("Login")}
-          </button>
-          {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
-        </form>
+        <LoginHeader />
+        <LoginForm
+          dispatch={dispatch}
+          setSnackbarConfig={setSnackbarConfig}
+          setIsModalOpen={setIsModalOpen}
+          setEmpId={setEmpId}
+          loading={loading}
+        />{" "}
       </div>
       <ChangingPasswordModal
         empId={empId}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-      />
-
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
       />
     </div>
   );

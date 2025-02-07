@@ -7,23 +7,22 @@ import {
   SubtasksIcon,
   TasksIcon,
 } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useSnackbar from "@/hooks/useSnackbar";
+import { useRedux } from "@/hooks/useRedux";
+import useTimeTicker from "@/hooks/useTimeTicker";
 import {
   formatDate,
   getPriorityBorderColor,
   isDueSoon,
 } from "@/services/task.service";
+import { RootState } from "@/state/store";
 import { ReceiveTaskType } from "@/types/Task.type";
+import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import Image from "next/image";
 import React, { useState } from "react";
-import CustomizedSnackbars from "./CustomizedSnackbars";
 import ListTaskDetails, { formatTime } from "./ListTaskDetails";
-import useTimeTicker from "@/hooks/useTimeTicker";
-import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
-import { useRedux } from "@/hooks/useRedux";
-import { RootState } from "@/state/store";
 
 const ListRow: React.FC<{
   task: ReceiveTaskType;
@@ -31,7 +30,7 @@ const ListRow: React.FC<{
 }> = ({ task, level }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t, currentLanguage } = useLanguage();
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { isLightMode } = useCustomTheme();
   const {
     elapsedTime,
@@ -56,13 +55,13 @@ const ListRow: React.FC<{
             isLightMode
               ? "bg-secondary  hover:bg-darker "
               : "bg-dark  hover:bg-slate-700"
-          }  flex items-center justify-between w-full cursor-pointer my-1 px-5 group  !rounded-md ${
+          }  flex flex-col md:flex-row items-center justify-between w-full cursor-pointer my-1 px-5 group  !rounded-md ${
             currentLanguage == "en" ? " border-l-4 " : " border-r-4"
           } ${getPriorityBorderColor(task.priority)}  `}
         >
           <div
             onClick={() => setIsModalOpen((prev) => !prev)}
-            className={` w-full  flex items-center gap-2  px-6 py-4 text-twhite ${
+            className={` w-full  flex items-center justify-center gap-2  px-6 py-4 text-twhite  ${
               isLightMode
                 ? "group-hover:text-tblackAF"
                 : "group-hover:text-twhite"
@@ -103,7 +102,7 @@ const ListRow: React.FC<{
           </div>
 
           {
-            <div className=" w-full  flex items-center justify-center">
+            <div className=" w-full px-6 py-4 flex items-center justify-center">
               <span
                 className={`  text-tdark ${
                   isLightMode
@@ -195,12 +194,6 @@ const ListRow: React.FC<{
           />
         </>
       )}
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
     </>
   );
 };

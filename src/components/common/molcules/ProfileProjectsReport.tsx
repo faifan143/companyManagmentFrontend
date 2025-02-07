@@ -19,9 +19,7 @@ const ProfileProjectsReport = ({
   const { isLightMode } = useCustomTheme();
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `/projects/${
-      isAdmin ? "get-all-projects" : "get-manager-project"
-    }`,
+    url: `/projects/${isAdmin ? "get-all-projects" : "get-manager-project"}`,
     setSnackbarConfig,
   });
 
@@ -55,7 +53,8 @@ const ProfileProjectsReport = ({
                   </div>
                   <div className=" flex items-center justify-between w-[60%]">
                     <div className=" py-3 px-4 text-center">
-                      {project.departments.length === 1 ? (
+                      {project.departments &&
+                      project.departments.length === 1 ? (
                         <div className="border-2 border-blue-500/30 bg-dark text-twhite py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
                           {project.departments[0].name}
                         </div>
@@ -96,7 +95,7 @@ const ProfileProjectsReport = ({
                       )}
                     </div>
                     <div className=" py-3 px-4 text-center">
-                      {project.members.length === 1 ? (
+                      {project.members && project.members.length === 1 ? (
                         <div className="border-2 border-blue-500/30 bg-dark text-twhite py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
                           {project.members[0].name}
                         </div>
@@ -105,22 +104,23 @@ const ProfileProjectsReport = ({
                           className="flex justify-center -space-x-4"
                           dir="ltr"
                         >
-                          {project.members.slice(0, 3).map((member, index) => (
-                            <div
-                              key={member.id}
-                              className={`relative ${
-                                collabColors[index % collabColors.length]
-                              } cursor-pointer text-twhite rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold shadow-lg`}
-                              title={member.name}
-                            >
-                              {member.name
-                                .split(" ")
-                                .map((word) => word[0])
-                                .join("")
-                                .toUpperCase()}
-                            </div>
-                          ))}
-                          {project.members.length > 3 && (
+                          {project.members &&
+                            project.members.slice(0, 3).map((member, index) => (
+                              <div
+                                key={member.id}
+                                className={`relative ${
+                                  collabColors[index % collabColors.length]
+                                } cursor-pointer text-twhite rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold shadow-lg`}
+                                title={member.name}
+                              >
+                                {member.name
+                                  .split(" ")
+                                  .map((word) => word[0])
+                                  .join("")
+                                  .toUpperCase()}
+                              </div>
+                            ))}
+                          {project.members && project.members.length > 3 && (
                             <div
                               className="relative text-twhite  cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold shadow-lg"
                               title={project.members

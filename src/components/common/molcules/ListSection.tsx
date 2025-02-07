@@ -1,15 +1,14 @@
 import { ArrowDownIcon, PencilIcon, ThreeDotsIcon, TrashIcon } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useHierarchy from "@/hooks/useHierarchy";
 import useLanguage from "@/hooks/useLanguage";
-import useSnackbar from "@/hooks/useSnackbar";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import AddSectionModal from "../atoms/AddSectionModal";
-import CustomizedSnackbars from "../atoms/CustomizedSnackbars";
 import PageSpinner from "../atoms/PageSpinner";
 
 const ListSection: React.FC<{
@@ -19,7 +18,7 @@ const ListSection: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
-  const { setSnackbarConfig, snackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const { currentLanguage } = useLanguage();
   const { isLightMode } = useCustomTheme();
   const { renderTaskWithSubtasks, organizeTasksByHierarchy } = useHierarchy();
@@ -151,12 +150,7 @@ const ListSection: React.FC<{
         </>
       )}
 
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+
     </>
   );
 };

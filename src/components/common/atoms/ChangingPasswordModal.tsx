@@ -1,4 +1,4 @@
-import useSnackbar from "@/hooks/useSnackbar";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { changePasswordSchema } from "@/schemas/login.schema";
 import { ChangePasswordFormInputs } from "@/types/Login.type";
 import { apiClient } from "@/utils/axios";
@@ -8,7 +8,6 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Modal from "react-modal";
-import CustomizedSnackbars from "./CustomizedSnackbars";
 
 const ChangingPasswordModal = ({
   isModalOpen,
@@ -20,7 +19,7 @@ const ChangingPasswordModal = ({
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
   const {
     register: registerChangePassword,
     handleSubmit: handleChangePasswordSubmit,
@@ -112,14 +111,7 @@ const ChangingPasswordModal = ({
         >
           &times;
         </button>
-        <CustomizedSnackbars
-          open={snackbarConfig.open}
-          message={snackbarConfig.message}
-          severity={snackbarConfig.severity}
-          onClose={() =>
-            setSnackbarConfig((prev) => ({ ...prev, open: false }))
-          }
-        />
+     
       </div>
     </Modal>
   );

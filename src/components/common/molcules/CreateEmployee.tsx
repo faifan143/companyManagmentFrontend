@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import CustomizedSnackbars from "@/components/common/atoms/CustomizedSnackbars";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import { DepartmentType } from "@/types/DepartmentType.type";
-import { JobTitleType } from "@/types/JobTitle.type";
 import { addEmpPopupSchema } from "@/schemas/employee.schema";
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import Modal from "react-modal";
+import { DepartmentType } from "@/types/DepartmentType.type";
 import {
   CreateEmployeeProps,
   EmployeeFormInputs,
 } from "@/types/EmployeeType.type";
+import { JobTitleType } from "@/types/JobTitle.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
-import useSnackbar from "@/hooks/useSnackbar";
+import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import Modal from "react-modal";
 
 const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   isOpen,
@@ -43,7 +42,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     }
   }, [employeeData, reset]);
 
-  const { snackbarConfig, setSnackbarConfig } = useSnackbar();
+  const { setSnackbarConfig } = useMokkBar();
 
   const endpoint = employeeData
     ? `/emp/update/${employeeData.id}`
@@ -313,12 +312,7 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           )}
         </form>
       </div>
-      <CustomizedSnackbars
-        open={snackbarConfig.open}
-        message={snackbarConfig.message}
-        severity={snackbarConfig.severity}
-        onClose={() => setSnackbarConfig((prev) => ({ ...prev, open: false }))}
-      />
+
     </Modal>
   );
 };
