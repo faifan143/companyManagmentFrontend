@@ -61,7 +61,7 @@ const ListRow: React.FC<{
         >
           <div
             onClick={() => setIsModalOpen((prev) => !prev)}
-            className={` w-full  flex items-center justify-center gap-2  px-6 py-4 text-twhite  ${
+            className={` w-full  flex items-center  gap-2  px-6 py-4 text-twhite  ${
               isLightMode
                 ? "group-hover:text-tblackAF"
                 : "group-hover:text-twhite"

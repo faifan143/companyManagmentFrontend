@@ -32,7 +32,7 @@ const HomeListRow: React.FC<{
           
           
           ${isLightMode ? "hover:bg-darker" : "hover:bg-tblack"}
-          group bg-dark flex flex-col md:flex-row items-center justify-center w-full cursor-pointer my-1 px-5  flex-nowrap !rounded-md ${
+          group bg-dark flex flex-col md:flex-row items-center justify-center sm:justify-between w-full cursor-pointer my-1 px-5  flex-nowrap !rounded-md ${
             currentLanguage == "en" ? " border-l-4 " : " border-r-4"
           } ${getPriorityBorderColor(task.priority)}  `}
           onClick={() => setIsModalOpen((prev) => !prev)}

@@ -162,11 +162,11 @@ const ListTaskDetails: React.FC<{
   return (
     <>
       <div
-        className="fixed inset-0  backdrop-blur-sm cursor-auto "
+        className="fixed inset-0 backdrop-blur-sm cursor-auto z-40"
         onClick={handleBackdropClick}
       />
 
-      <div className="bg-secondary   rounded-xl shadow-md w-[400px] text-twhite space-y-4 fixed top-[50px] right-[10px] bottom-[10px] z-50 p-6 cursor-default overflow-auto ">
+      <div className="bg-secondary rounded-xl shadow-md w-[400px] text-twhite space-y-4 fixed top-[10px] right-[10px] bottom-[10px] z-50 p-6 cursor-default overflow-auto ">
         <div
           onClick={handleBackdropClick}
           className="text-twhite absolute top-4 right-4 text-xl cursor-pointer"
