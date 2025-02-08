@@ -17,6 +17,9 @@ const config: Config = {
         "radial-light":
           "radial-gradient(circle, rgba(62, 62, 64) 0%, rgb(46, 46, 48) 100%)",
       },
+      screens: {
+        xs: "380px",
+      },
       colors: {
         main: "var(--color-main)",
         secondary: "var(--color-secondary)",

@@ -13,15 +13,15 @@ const Page = () => {
   const { isLightMode } = useCustomTheme();
   return (
     <GridContainer>
-      <div className="col-span-full flex justify-between items-center">
+      <div className="col-span-full flex flex-col xs:flex-row justify-between items-center mb-5 gap-5">
         <h1
-          className={`text-3xl font-bold mb-5 ${
+          className={`text-3xl font-bold  ${
             isLightMode ? "text-twhite " : "text-twhite"
           }  text-center `}
         >
           {t("Projects")}
         </h1>
-        <div className="flex justify-center items-center gap-5">
+        <div className="flex justify-center items-center gap-5 ">
           {
             <button
               type="button"

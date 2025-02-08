@@ -64,11 +64,11 @@ const DepartmentsView: React.FC = () => {
 
   return (
     <GridContainer>
-      <div className="col-span-full flex justify-between items-center mb-5">
+      <div className="col-span-full flex flex-col md:flex-row justify-between items-center mb-5 gap-5">
         <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Departments")}
         </h1>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center justify-center gap-5 flex-wrap">
           {showSelect && (
             <select
               className=" border bg-secondary outline-none border-none text-twhite border-gray-300 rounded-lg px-4 py-2 focus:outline-none transition duration-200"

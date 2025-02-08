@@ -62,7 +62,7 @@ const EmployeesView: React.FC = () => {
           {t("Employees Management")}
         </h1>
 
-        <div className="flex justify-center items-center gap-5 ">
+        <div className="flex justify-center items-center gap-5 flex-wrap">
           {showSelect && (
             <select
               className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"

@@ -18,9 +18,7 @@ const Home = () => {
   const isSecondary = useRolePermissions("secondary_user");
   const { data: tasksData, isLoading } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks", scope == "weekly" ? "weekly-tasks" : "monthly-tasks"],
-    url: `/tasks/${
-      scope == "weekly" ? "weekly-tasks" : "monthly-tasks"
-    }`,
+    url: `/tasks/${scope == "weekly" ? "weekly-tasks" : "monthly-tasks"}`,
     setSnackbarConfig,
     nestedData: true,
   });
@@ -40,7 +38,6 @@ const Home = () => {
 
         <HomeTasksReport tasksData={tasksData} />
         {!isSecondary && <ProfileProjectsReport isCentered={true} />}
-      
       </div>
     </GridContainer>
   );

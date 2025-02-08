@@ -256,7 +256,7 @@ const ListTaskDetails: React.FC<{
             <div
               className={`  ${
                 isLightMode ? "bg-light-droppable-fade" : "bg-droppable-fade"
-              } text-twhite py-2 px-3 w-fit mx-auto rounded-md  text-sm font-semibold text-nowrap`}
+              } text-twhite py-2 px-3 w-fit mx-auto rounded-md  text-sm font-semibold text-center`}
             >
               {task.emp.name + " - " + task.emp.job.title}
             </div>
@@ -394,7 +394,7 @@ const ListTaskDetails: React.FC<{
         {userId == task?.emp.id && (
           <div
             ref={statusRef}
-            className={`relative flex items-center justify-between gap-2 w-fit ${
+            className={`relative flex items-center justify-between gap-2 w-full ${
               isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
             } rounded px-3 py-2`}
           >

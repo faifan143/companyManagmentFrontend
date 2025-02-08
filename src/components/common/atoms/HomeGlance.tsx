@@ -22,7 +22,6 @@ const HomeGlance = ({
   const {
     selector: { userInfo },
   } = useRedux((state: RootState) => state.user);
-
   const { isLightMode } = useCustomTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -32,49 +31,56 @@ const HomeGlance = ({
   };
 
   return (
-    <header className="w-fit mx-auto text-twhite flex flex-col items-center gap-2 mt-20 ">
-      <div className="text-lg">
+    <header className="w-full px-4 sm:px-0 sm:w-fit mx-auto text-twhite flex flex-col items-center gap-2  sm:mt-10">
+      <div className="text-base sm:text-lg">
         {getHomeDate(currentLanguage as "ar" | "en")}
       </div>
-      <div className="text-2xl">
+
+      <div className="text-xl sm:text-2xl text-center px-2">
         {getGreeting(t)}, {userInfo ? userInfo.name : "Guest"}
       </div>
-      <div className="bg-dark text-tdark rounded-full flex justify-between min-w-[320px] items-center gap-2 p-5">
+
+      <div className="bg-dark text-tdark rounded-full flex flex-col sm:flex-row justify-between w-full max-w-[320px] items-center gap-3 sm:gap-2 p-3 sm:p-5">
         {/* Scope Dropdown */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 cursor-pointer "
+            className="flex items-center justify-center sm:justify-start gap-2 cursor-pointer w-full sm:w-auto text-sm sm:text-base"
           >
             {scope === "weekly" ? t("My Week") : t("My Month")}
             <Image
               src={ArrowDownIcon}
-              alt="arow down"
-              height={20}
-              width={20}
+              alt="arrow down"
+              height={16}
+              width={16}
               className="ml-1"
             />
           </button>
+
           {isDropdownOpen && (
-            <div className="absolute left-0 top-full mt-1 w-32 bg-dark border border-slate-600 rounded-md shadow-lg">
+            <div className="absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-full mt-1 w-40 sm:w-32 bg-dark border border-slate-600 rounded-md shadow-lg z-10">
               <ul>
                 <li
                   onClick={() => handleScopeChange("weekly")}
-                  className={`px-4 py-2 cursor-pointer ${
-                    isLightMode
-                      ? "hover:bg-darkest hover:text-tblackAF"
-                      : "hover:bg-slate-700"
-                  }  ${scope === "weekly" ? "text-twhite" : "text-tdark"}`}
+                  className={`px-4 py-2 cursor-pointer text-center sm:text-left text-sm sm:text-base
+                    ${
+                      isLightMode
+                        ? "hover:bg-darkest hover:text-tblackAF"
+                        : "hover:bg-slate-700"
+                    }  
+                    ${scope === "weekly" ? "text-twhite" : "text-tdark"}`}
                 >
                   {t("My Week")}
                 </li>
                 <li
                   onClick={() => handleScopeChange("monthly")}
-                  className={`px-4 py-2 cursor-pointer ${
-                    isLightMode
-                      ? "hover:bg-darkest hover:text-tblackAF"
-                      : "hover:bg-slate-700"
-                  }  ${scope === "monthly" ? "text-twhite" : "text-tdark"}`}
+                  className={`px-4 py-2 cursor-pointer text-center sm:text-left text-sm sm:text-base
+                    ${
+                      isLightMode
+                        ? "hover:bg-darkest hover:text-tblackAF"
+                        : "hover:bg-slate-700"
+                    }  
+                    ${scope === "monthly" ? "text-twhite" : "text-tdark"}`}
                 >
                   {t("My Month")}
                 </li>
@@ -82,9 +88,17 @@ const HomeGlance = ({
             </div>
           )}
         </div>
-        <div className="w-[1px] h-5 bg-slate-400"></div>
-        <div className="flex items-center gap-2">
-          <Image src={CheckSlateIcon} alt="" height={20} width={20} />
+
+        <div className="hidden sm:block w-[1px] h-5 bg-slate-400"></div>
+
+        <div className="flex items-center justify-center gap-2 text-sm sm:text-base w-full sm:w-auto">
+          <Image
+            src={CheckSlateIcon}
+            alt=""
+            height={16}
+            width={16}
+            className="sm:h-5 sm:w-5"
+          />
           {completedTasks} {t("Tasks Completed")}
         </div>
       </div>

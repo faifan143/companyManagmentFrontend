@@ -9,6 +9,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     const selectedTab = localStorage.getItem("selectedTab");
     if (selectedTab) router.replace(selectedTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div className="bg-main">
