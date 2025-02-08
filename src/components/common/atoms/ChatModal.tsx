@@ -1,4 +1,4 @@
-import { PaperClipIcon, PaperPlaneIcon } from "@/assets";
+import { PaperClipIcon, PaperPlaneIcon, XIcon } from "@/assets";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import useLanguage from "@/hooks/useLanguage";
@@ -86,7 +86,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       onRequestClose={onClose}
       ariaHideApp={false}
-      className="fixed right-0 top-0 flex items-center justify-center w-[450px] p-4 h-full border-none outline-none"
+      className="fixed right-0 top-0 flex items-center justify-center w-[350px] md:w-[450px]  p-4 h-full border-none outline-none"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-20"
     >
       {selector.userInfo && selector.userInfo.department && (
@@ -94,6 +94,22 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose }) => {
           <h2 className="text-xl text-twhite  font-bold mb-4" dir={getDir()}>
             {t("chat")} {selector.userInfo?.department.name}
           </h2>
+          <div
+            className={
+              getDir() == "rtl"
+                ? " absolute top-8  left-5"
+                : " absolute top-8 right-5"
+            }
+            onClick={onClose}
+          >
+            <Image
+              src={XIcon}
+              alt="icon"
+              width={6}
+              height={6}
+              className="w-6 h-6 text-twhite cursor-pointer"
+            />
+          </div>
           <div
             className="overflow-y-auto pb-10"
             style={{

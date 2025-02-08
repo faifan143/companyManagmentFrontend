@@ -28,15 +28,15 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
 
   if (isLoading) {
     return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-5">
+        <CircularProgress size={80} />
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5 text-twhite">
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-5 text-twhite">
         {t("No Project Details")}
       </div>
     );
@@ -44,11 +44,11 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
 
   return (
     <GridContainer>
-      <div className="col-span-full ">
+      <div className="col-span-full px-4 md:px-6">
         <h1
-          className={`text-3xl font-bold ${
-            isLightMode ? "text-twhite " : "text-twhite"
-          }   `}
+          className={`text-2xl md:text-3xl font-bold mb-6 ${
+            isLightMode ? "text-twhite" : "text-twhite"
+          }`}
         >
           {t("Project Details")}
         </h1>
@@ -75,17 +75,18 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
                 },
                 { label: "Is Overdue", value: project.is_over_due.toString() },
               ]}
-              customStyle="bg-secondary"
-              fieldCustomStyle="bg-dark text-twhite "
+              customStyle="bg-secondary mb-6"
+              fieldCustomStyle="bg-dark text-twhite"
             />
-            <div className="flex items-center justify-between">
-              <div className="w-[65%]">
+
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="w-full lg:w-[65%]">
                 <HomeTasksReport
                   tasksData={project.projectTasks}
                   isCentered={false}
                 />
               </div>
-              <div className="w-64 h-5w-64">
+              <div className="w-full lg:w-64 h-64 mx-auto lg:mx-0">
                 <TaskStatusPieChart
                   taskDone={project.taskDone}
                   taskOnGoing={project.taskOnGoing}
@@ -95,24 +96,20 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
               </div>
             </div>
 
-            {project && (
-              <div className="my-7 w-2/3 mx-auto">
-                <ProjectDetailsHierarchyTree
-                  data={project.departments}
-                  width="100%"
-                  onPress={(deptId) => {
-                    console.log(`Node clicked: ${deptId}`);
-                    router.push(
-                      `/projects/details/project-tasks/${project._id}/${deptId}`
-                    );
-                  }}
-                />
-              </div>
-            )}
+            <div className="my-7 w-full lg:w-2/3 mx-auto overflow-x-auto">
+              <ProjectDetailsHierarchyTree
+                data={project.departments}
+                width="100%"
+                onPress={(deptId) => {
+                  console.log(`Node clicked: ${deptId}`);
+                  router.push(
+                    `/projects/details/project-tasks/${project._id}/${deptId}`
+                  );
+                }}
+              />
+            </div>
           </>
         )}
-
-     
       </div>
     </GridContainer>
   );
