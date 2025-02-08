@@ -188,11 +188,15 @@ const AddProjectModal: React.FC<{
                   </label>
                   <Select
                     isMulti
+
+                    
                     value={selectedDepartments.map((id) => ({
                       value: id,
                       label:
                         departments?.find((dept) => dept.id === id)?.name || "",
                     }))}
+
+
                     options={
                       departments
                         ? departments.map((dept) => ({

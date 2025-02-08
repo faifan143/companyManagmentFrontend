@@ -47,8 +47,10 @@ const Profile = () => {
   });
   const currently =
     tasksData &&
-    tasksData.filter((task) => !task.is_over_due && task.status != "DONE").length;
-  const overdue = tasksData && tasksData.filter((task) => task.is_over_due).length;
+    tasksData.filter((task) => !task.is_over_due && task.status != "DONE")
+      .length;
+  const overdue =
+    tasksData && tasksData.filter((task) => task.is_over_due).length;
   const completed =
     tasksData && tasksData.filter((task) => task.status == "DONE").length;
 
@@ -177,17 +179,17 @@ const Profile = () => {
                   <div className="p-4">
                     <div className="grid grid-cols-3 gap-4">
                       <TaskStatusBadge
-                        count={currently+""}
+                        count={currently + ""}
                         label="Current Tasks"
                         color="text-blue-400"
                       />
                       <TaskStatusBadge
-                        count={overdue+""}
+                        count={overdue + ""}
                         label="Overdue"
                         color="text-red-400"
                       />
                       <TaskStatusBadge
-                        count={completed+""}
+                        count={completed + ""}
                         label="Completed"
                         color="text-green-400"
                       />

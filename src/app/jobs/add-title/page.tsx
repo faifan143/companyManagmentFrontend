@@ -140,7 +140,6 @@ const AddJobTitle: React.FC = () => {
             errors={errors}
             register={register}
           />
-
           <TitleFormInput
             name="responsibilities"
             label={t("Responsibilities")}
@@ -152,7 +151,6 @@ const AddJobTitle: React.FC = () => {
             onChange={setResponsibilities}
             setValue={setValue}
           />
-
           {/* Permissions Toggle */}
           {/* <div>
             <label className="block text-sm font-medium">
@@ -245,7 +243,6 @@ const AddJobTitle: React.FC = () => {
             specificEmp={specificEmp}
             specificJobTitle={specificJobTitle}
           />
-
           <TitleFormInput
             name="category"
             label={t("Job Category")}
@@ -268,10 +265,8 @@ const AddJobTitle: React.FC = () => {
             register={register}
             onChange={setSelectedDept}
           />
-
           {/* Is Manager Checkbox */}
           <IsManagerToggle isManager={isManager} setIsManager={setIsManager} />
-
           <button
             type="submit"
             className={`w-full py-2 mt-4 bg-slate-600 

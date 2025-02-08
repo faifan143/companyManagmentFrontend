@@ -79,7 +79,6 @@
   color: var(--color-icons); /* SVG will inherit this color for "stroke" */
 }
 
-
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -124,7 +123,10 @@ button:active:not(:disabled) {
 
 @layer utilities {
   .bg-grid-pattern {
-    background-image: radial-gradient(rgb(255 255 255 / 0.1) 1px, transparent 1px);
+    background-image: radial-gradient(
+      rgb(255 255 255 / 0.1) 1px,
+      transparent 1px
+    );
     background-size: 24px 24px;
   }
 }

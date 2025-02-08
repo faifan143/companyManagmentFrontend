@@ -6,6 +6,8 @@ import {
   JobsIcon,
   ProjectIcon,
   TasksIcon,
+  TemplateIcon,
+  TransactionIcon,
 } from "@/assets";
 
 export const sidebarItems = [
@@ -56,5 +58,17 @@ export const sidebarItems = [
     icon: CategoryIcon,
     path: "/jobs/categories",
     requiredPermissions: ["job_title_category_search_and_view"],
+  },
+  {
+    label: "Transactions Templates",
+    icon: TemplateIcon,
+    path: "/transactions/templates",
+    requiredPermissions: [],
+  },
+  {
+    label: "Transactions",
+    icon: TransactionIcon,
+    path: "/transactions",
+    requiredPermissions: [],
   },
 ];

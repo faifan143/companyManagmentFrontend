@@ -1,30 +1,25 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { apiClient } from "@/utils/axios";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import { Dispatch, SetStateAction } from "react";
 
 interface CustomQueryOptions<TData>
   extends Omit<UseQueryOptions<TData, Error, TData>, "queryKey" | "queryFn"> {
   queryKey: string[];
   url: string;
-  setSnackbarConfig: Dispatch<
-    SetStateAction<{
-      open: boolean;
-      message: string;
-      severity: "success" | "info" | "warning" | "error";
-    }>
-  >;
+
   nestedData?: boolean;
 }
 
 const useCustomQuery = <TData,>({
   queryKey,
   url,
-  setSnackbarConfig,
   nestedData = false,
   ...options
 }: CustomQueryOptions<TData>) => {
+  const { setSnackbarConfig } = useMokkBar();
+
   return useQuery<TData>({
     queryKey,
     queryFn: async (): Promise<TData> => {

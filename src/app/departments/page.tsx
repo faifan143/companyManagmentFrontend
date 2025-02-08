@@ -6,7 +6,6 @@ import TasksTab from "@/components/common/atoms/TasksTab";
 import DepartmentHierarchyTree from "@/components/common/DepartmentsHierarchyTree";
 import DepartmentsContent from "@/components/common/molcules/DepartmentsContent";
 import RouteWrapper from "@/components/common/RouteWrapper";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -20,7 +19,6 @@ import { useTranslation } from "react-i18next";
 
 const DepartmentsView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("table");
-  const { setSnackbarConfig } = useMokkBar();
 
   const [selectedOption, setSelectedOption] = useState("get-departments");
   const isAdmin = useRolePermissions("admin");
@@ -35,7 +33,6 @@ const DepartmentsView: React.FC = () => {
   }>({
     queryKey: ["departments"],
     url: `/department/tree`,
-    setSnackbarConfig,
   });
 
   const showSelect = isAdmin || (canViewSpecificDepartments && isPrimary);

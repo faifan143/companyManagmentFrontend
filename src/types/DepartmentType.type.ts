@@ -56,8 +56,7 @@ export interface HandleManualSubmitOptions {
   addDepartment: (data: DepartmentFormInputs) => void;
 }
 
-
-export interface DepartmentsTotalType{
+export interface DepartmentsTotalType {
   info: DepartmentType[];
   tree: DeptTree[];
 }
