@@ -107,12 +107,10 @@ const AddEmp: React.FC = () => {
   }>({
     queryKey: ["departments"],
     url: `/department/tree`,
-    setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
     url: `/job-titles/get-job-titles`,
-    setSnackbarConfig,
   });
 
   const { mutate: addEmployee, isPending: isPendingEmployee } =
@@ -120,7 +118,6 @@ const AddEmp: React.FC = () => {
       endpoint: endpoint,
       onSuccessMessage: t("Employee added successfully!"),
       invalidateQueryKeys: ["employees", "employeeTree"],
-      setSnackbarConfig,
       onSuccessFn: () => {
         setSnackbarConfig({
           open: true,

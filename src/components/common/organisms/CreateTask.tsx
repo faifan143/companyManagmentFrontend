@@ -55,20 +55,17 @@ const CreateTask: React.FC<CreateTaskProps> = ({
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
     url: `/department/get-departments`,
-    setSnackbarConfig,
   });
 
   const { data: employees } = useCustomQuery<EmployeeType[]>({
     queryKey: ["employees"],
     url: `/emp/get-all-emps`,
-    setSnackbarConfig,
   });
 
   const { mutate: addTask, isPending } = useCreateMutation({
     endpoint: taskData ? `/tasks/update/${taskData.id}` : `/tasks/create`,
     onSuccessMessage: "Task added successfully!",
     invalidateQueryKeys: ["tasks"],
-    setSnackbarConfig,
     onSuccessFn() {
       setSnackbarConfig({
         open: true,
@@ -295,7 +292,6 @@ const CreateTask: React.FC<CreateTaskProps> = ({
         isOpen={isTaskTypeModalOpen}
         onClose={() => setIsTaskTypeModalOpen(false)}
       />
-
     </Modal>
   );
 };

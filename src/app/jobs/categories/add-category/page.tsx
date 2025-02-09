@@ -49,7 +49,7 @@ const AddJobCategory: React.FC = () => {
     requiredExperienceOptions,
     setRequiredEducationOptions,
     setRequiredExperienceOptions,
-  } = useEducationExperience(setSnackbarConfig);
+  } = useEducationExperience();
   const {
     addJobCategory,
     errorJobCategory,

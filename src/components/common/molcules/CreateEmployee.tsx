@@ -58,7 +58,6 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
     endpoint: endpoint,
     onSuccessMessage: "Employee added successfully!",
     invalidateQueryKeys: ["employees"],
-    setSnackbarConfig,
   });
 
   useEffect(() => {
@@ -99,12 +98,10 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
     url: `/department/get-departments`,
-    setSnackbarConfig,
   });
   const { data: jobs } = useCustomQuery<JobTitleType[]>({
     queryKey: ["jobTitles"],
     url: `/job-titles/get-job-titles`,
-    setSnackbarConfig,
   });
 
   useEffect(() => {
@@ -312,7 +309,6 @@ const CreateEmployee: React.FC<CreateEmployeeProps> = ({
           )}
         </form>
       </div>
-
     </Modal>
   );
 };

@@ -1,5 +1,4 @@
 import { PencilIcon } from "@/assets";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
@@ -24,7 +23,6 @@ const ProjectsContent = () => {
     null
   );
   const { t, currentLanguage } = useLanguage();
-  const { setSnackbarConfig } = useMokkBar();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
   const { isLightMode } = useCustomTheme();
@@ -37,7 +35,6 @@ const ProjectsContent = () => {
         ? "get-manager-project"
         : "get-emp-project"
     }`,
-    setSnackbarConfig,
   });
 
   const handleEditClick = (project: ProjectType) => {
@@ -95,7 +92,7 @@ const ProjectsContent = () => {
             </tr>
           </thead>
           <tbody>
-            {projects && 
+            {projects &&
               projects.map((project) => (
                 <tr
                   key={project._id}
@@ -272,8 +269,6 @@ const ProjectsContent = () => {
           }}
         />
       )}
-
-    
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import { PencilIcon } from "@/assets";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -118,7 +117,6 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["job_title_update"]);
 
-  const { setSnackbarConfig } = useMokkBar();
   const {
     data: jobs,
     isLoading,
@@ -129,7 +127,6 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
       selectedOption === "view"
         ? `/job-titles/view`
         : `/job-titles/get-job-titles`,
-    setSnackbarConfig,
   });
   const { isLightMode } = useCustomTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -150,7 +147,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
     setModalContent([]);
   };
 
-  const { handleEditClick } = useSetPageData<JobTitleType>("/jobs/add-title");
+  const { NavigateButton } = useSetPageData<JobTitleType>("/jobs/add-title");
 
   if (isLoading) {
     return (
@@ -254,8 +251,8 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                 {(isAdmin || hasEditPermission) && (
                   <td className="py-3 px-4 flex gap-2">
                     {(isAdmin || hasEditPermission) && (
-                      <div
-                        onClick={() => handleEditClick(jobTitle)}
+                      <NavigateButton
+                        data={jobTitle}
                         className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                       >
                         {/* {t("Edit")} */}
@@ -265,7 +262,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                           height={20}
                           width={20}
                         />
-                      </div>
+                      </NavigateButton>
                     )}
                     {
                       // (isAdmin || hasDeletePermission) && (

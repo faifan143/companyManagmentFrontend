@@ -12,7 +12,6 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 
 const AddProjectModal: React.FC<{
   isOpen: boolean;
@@ -30,7 +29,6 @@ const AddProjectModal: React.FC<{
     context: { isEditing: !!projectData },
   });
   const { isLightMode } = useCustomTheme();
-  const { setSnackbarConfig } = useMokkBar();
   // const isAdmin = useRolePermissions("admin");
   // const isPrimary = useRolePermissions("primary_user");
 
@@ -42,7 +40,6 @@ const AddProjectModal: React.FC<{
       // isAdmin || isPrimary ? "get-departments" : "view"
       "get-level-one"
     }`,
-    setSnackbarConfig,
   });
 
   const { mutate: addOrUpdateProject, isPending } = useCreateMutation({
@@ -51,7 +48,6 @@ const AddProjectModal: React.FC<{
       ? `Project updated successfully!`
       : `Project added successfully!`,
     invalidateQueryKeys: ["projects"],
-    setSnackbarConfig,
     onSuccessFn() {
       reset();
       setSelectedDepartments([]);
@@ -188,15 +184,11 @@ const AddProjectModal: React.FC<{
                   </label>
                   <Select
                     isMulti
-
-                    
                     value={selectedDepartments.map((id) => ({
                       value: id,
                       label:
                         departments?.find((dept) => dept.id === id)?.name || "",
                     }))}
-
-
                     options={
                       departments
                         ? departments.map((dept) => ({
@@ -234,7 +226,6 @@ const AddProjectModal: React.FC<{
           </div>
         </div>
       </div>
-   
     </>
   );
 };

@@ -1,5 +1,4 @@
 "use client";
-
 import { TabBoardIcon, TabListIcon, TreeIcon } from "@/assets";
 import GridContainer from "@/components/common/atoms/GridContainer";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
@@ -8,7 +7,6 @@ import TaskList from "@/components/common/organisms/TaskList";
 import TasksContent from "@/components/common/organisms/TasksContent";
 import RouteWrapper from "@/components/common/RouteWrapper";
 import TaskHierarchyTree from "@/components/common/TasksHierarchyTree";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -38,14 +36,12 @@ const TasksView: React.FC = () => {
     // isPrimary ? "get-my-dept-tasks" :
     ""
   );
-  const { setSnackbarConfig } = useMokkBar();
   const { data: tasksData, isLoading: isTasksLoading } = useCustomQuery<{
     info: ReceiveTaskType[];
     tree: TaskTree[];
   }>({
     queryKey: ["tasks", selectedOption],
     url: `/tasks/tree?${selectedOption}`,
-    setSnackbarConfig,
   });
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
@@ -54,7 +50,6 @@ const TasksView: React.FC = () => {
       // isAdmin ? "get-all-projects" :
       "get-manager-project"
     }`,
-    setSnackbarConfig,
   });
 
   const { data: deptTree } = useCustomQuery<{ tree: DeptTree[] }>({
@@ -64,7 +59,6 @@ const TasksView: React.FC = () => {
         ? `projects/project-departments-tree/${selectedProj}`
         : "department/tree"
     }`,
-    setSnackbarConfig,
   });
 
   const { selector } = useRedux(
@@ -82,7 +76,6 @@ const TasksView: React.FC = () => {
         ? `department/${selectedDept}`
         : `department/${selector}`
     }`,
-    setSnackbarConfig,
   });
 
   useEffect(() => {

@@ -1,5 +1,4 @@
 import { ArrowDownIcon, PencilIcon, ThreeDotsIcon, TrashIcon } from "@/assets";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useHierarchy from "@/hooks/useHierarchy";
@@ -18,7 +17,6 @@ const ListSection: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
-  const { setSnackbarConfig } = useMokkBar();
   const { currentLanguage } = useLanguage();
   const { isLightMode } = useCustomTheme();
   const { renderTaskWithSubtasks, organizeTasksByHierarchy } = useHierarchy();
@@ -33,7 +31,6 @@ const ListSection: React.FC<{
     endpoint: `/sections/${section._id}`,
     onSuccessMessage: t("Section Deleted successfully!"),
     invalidateQueryKeys: ["sections"],
-    setSnackbarConfig,
     requestType: "delete",
   });
 
@@ -149,8 +146,6 @@ const ListSection: React.FC<{
           />
         </>
       )}
-
-
     </>
   );
 };

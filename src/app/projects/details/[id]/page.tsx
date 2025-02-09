@@ -5,7 +5,6 @@ import InfoCard from "@/components/common/InfoCard";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
 import ProjectDetailsHierarchyTree from "@/components/common/ProjectDetailsHierarchyTree";
 import TaskStatusPieChart from "@/components/common/TaskStatusPieChart";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
@@ -15,7 +14,6 @@ import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useRouter } from "next/navigation";
 
 const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
-  const { setSnackbarConfig } = useMokkBar();
   const { t, currentLanguage } = useLanguage();
   const { isLightMode } = useCustomTheme();
   const router = useRouter();
@@ -23,7 +21,6 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
   const { data: project, isLoading } = useCustomQuery<ProjectDetailsType>({
     queryKey: ["project-details"],
     url: `/projects/project-details/${id}`,
-    setSnackbarConfig,
   });
 
   if (isLoading) {

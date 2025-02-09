@@ -1,4 +1,3 @@
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useQueryPageData from "@/hooks/useQueryPageData";
 import {
@@ -12,7 +11,6 @@ import { UseFormReset } from "react-hook-form";
 
 export const useAddDeptLogic = (reset: UseFormReset<DepartmentFormInputs>) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const { setSnackbarConfig } = useMokkBar();
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [requiredCategoryOptions, setRequiredCategoryOptions] = useState<
@@ -64,6 +62,5 @@ export const useAddDeptLogic = (reset: UseFormReset<DepartmentFormInputs>) => {
     departmentData,
     departments,
     categories,
-    setSnackbarConfig,
   };
 };

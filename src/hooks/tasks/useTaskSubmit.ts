@@ -21,7 +21,6 @@ export const useTaskSubmit = (
       : "/tasks/create-task-project",
     onSuccessMessage: t("Task added successfully!"),
     invalidateQueryKeys: ["tasks"],
-    setSnackbarConfig,
     onSuccessFn() {
       setSnackbarConfig({
         open: true,

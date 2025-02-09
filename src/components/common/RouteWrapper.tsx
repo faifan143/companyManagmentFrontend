@@ -9,7 +9,7 @@ import React, { ReactNode, useEffect } from "react";
 
 interface RouteWrapperProps {
   href: string;
-  children: ReactNode;
+  children?: ReactNode;
   onClick?: () => void;
   className?: string;
 }
@@ -26,6 +26,8 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 
   const handleRoute = (e: React.MouseEvent) => {
     e.preventDefault();
+    console.log("hello");
+
     if (href !== pathname) dispatchAction(setLaoding, true);
     if (onClick) onClick();
     router.push(href);

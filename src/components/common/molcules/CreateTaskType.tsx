@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import { addTaskTypeSchema } from "@/schemas/task.schema";
 import { CreateTaskTypeProps, TaskTypeFormInputs } from "@/types/Task.type";
@@ -15,7 +14,6 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
   onClose,
   taskTypeData,
 }) => {
-  const { setSnackbarConfig } = useMokkBar();
   const {
     register,
     handleSubmit,
@@ -46,7 +44,6 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
       : `/task-type/create`,
     onSuccessMessage: "Task Type added successfully!",
     invalidateQueryKeys: ["taskTypes"],
-    setSnackbarConfig,
     onSuccessFn() {
       reset({ id: "", name: "", description: "" });
     },
@@ -141,7 +138,6 @@ const CreateTaskType: React.FC<CreateTaskTypeProps> = ({
             </p>
           )}
         </form>
-
       </div>
     </Modal>
   );

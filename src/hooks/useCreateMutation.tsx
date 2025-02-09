@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { apiClient } from "@/utils/axios";
 import {
   useMutation,
@@ -19,13 +20,6 @@ interface UseCreateMutationParams<
   endpoint: string;
   onSuccessMessage?: string;
   invalidateQueryKeys?: string[];
-  setSnackbarConfig: Dispatch<
-    SetStateAction<{
-      open: boolean;
-      message: string;
-      severity: "success" | "info" | "warning" | "error";
-    }>
-  >;
   onSuccessFn?: () => void;
   requestType?: "post" | "put" | "delete";
   options?: UseMutationOptions<TResponse, unknown, TInput, unknown>;
@@ -38,7 +32,6 @@ export const useCreateMutation = <
   endpoint,
   onSuccessMessage,
   invalidateQueryKeys = [],
-  setSnackbarConfig,
   onSuccessFn,
   requestType = "post",
   options,
@@ -50,7 +43,7 @@ export const useCreateMutation = <
 > => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-
+  const { setSnackbarConfig } = useMokkBar();
   const mutationAddFunction = async (data: TInput) => {
     const response = await apiClient.post(endpoint, data);
     return response as TResponse;

@@ -1,7 +1,6 @@
 "use client";
 
 import { PencilIcon } from "@/assets";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import {
   usePermissions,
   useRolePermissions,
@@ -63,7 +62,6 @@ const JobCategoryContent = () => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
   const hasEditPermission = usePermissions(["job_title_category_update"]);
-  const { setSnackbarConfig } = useMokkBar();
   const {
     data: categories,
     isLoading,
@@ -71,7 +69,6 @@ const JobCategoryContent = () => {
   } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["jobTitles"],
     url: `/job-categories`,
-    setSnackbarConfig,
   });
   const { isLightMode } = useCustomTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,7 +84,7 @@ const JobCategoryContent = () => {
     setModalContent([]);
   };
 
-  const { handleEditClick } = useSetPageData<JobCategoryType>(
+  const { NavigateButton } = useSetPageData<JobCategoryType>(
     "/jobs/categories/add-category"
   );
 
@@ -189,8 +186,8 @@ const JobCategoryContent = () => {
                   {(isAdmin || hasEditPermission) && (
                     <td className="py-3 px-4 flex gap-2">
                       {(isAdmin || hasEditPermission) && (
-                        <div
-                          onClick={() => handleEditClick(category)}
+                        <NavigateButton
+                          data={category}
                           className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                         >
                           <Image
@@ -199,7 +196,7 @@ const JobCategoryContent = () => {
                             height={20}
                             width={20}
                           />
-                        </div>
+                        </NavigateButton>
                       )}
                     </td>
                   )}

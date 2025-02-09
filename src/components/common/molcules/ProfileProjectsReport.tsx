@@ -1,12 +1,11 @@
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
-import { collabColors } from "./ProjectsContent";
-import useCustomTheme from "@/hooks/useCustomTheme";
 import RouteWrapper from "../RouteWrapper";
+import { collabColors } from "./ProjectsContent";
 
 const ProfileProjectsReport = ({
   isCentered = false,
@@ -15,13 +14,11 @@ const ProfileProjectsReport = ({
 }) => {
   const { t, currentLanguage } = useLanguage();
   const isAdmin = useRolePermissions("admin");
-  const { setSnackbarConfig } = useSnackbar();
   const { isLightMode } = useCustomTheme();
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `/projects/${isAdmin ? "get-all-projects" : "get-manager-project"}`,
-    setSnackbarConfig,
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

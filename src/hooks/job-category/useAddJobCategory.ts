@@ -1,20 +1,21 @@
-import { useCreateMutation } from '@/hooks/useCreateMutation';
-import { JobCategoryFormInputs } from '@/types/JobCategory.type';
-import { MokkBarContextType } from '@/types/MokkBar.type';
-import { useRouter } from 'next/navigation';
-import useLanguage from '../useLanguage';
+import { useCreateMutation } from "@/hooks/useCreateMutation";
+import { JobCategoryFormInputs } from "@/types/JobCategory.type";
+import { MokkBarContextType } from "@/types/MokkBar.type";
+import { useRouter } from "next/navigation";
+import useLanguage from "../useLanguage";
 
-export const useAddJobCategory = (
-{jobCategoryData,reset,setSnackbarConfig}:{  jobCategoryData: JobCategoryFormInputs | null, 
-  reset: () => void,
-  setSnackbarConfig: MokkBarContextType['setSnackbarConfig']}
-) => {
+export const useAddJobCategory = ({
+  jobCategoryData,
+  reset,
+  setSnackbarConfig,
+}: {
+  jobCategoryData: JobCategoryFormInputs | null;
+  reset: () => void;
+  setSnackbarConfig: MokkBarContextType["setSnackbarConfig"];
+}) => {
   const { t } = useLanguage();
   const router = useRouter();
 
-
-
-  
   const {
     mutate: addJobCategory,
     isPending: isPendingJobCategory,
@@ -26,10 +27,8 @@ export const useAddJobCategory = (
       : `/job-categories`,
     onSuccessMessage: t("Job Category added successfully!"),
     invalidateQueryKeys: ["jobCategories"],
-    setSnackbarConfig,
     onSuccessFn: () => {
       reset();
-
       setSnackbarConfig({
         open: true,
         message: jobCategoryData
@@ -42,21 +41,10 @@ export const useAddJobCategory = (
     },
   });
 
-
-
-
-
-
-
-
-
-
-
-
   return {
     addJobCategory,
     isPendingJobCategory,
     isErrorJobCategory,
-    errorJobCategory
+    errorJobCategory,
   };
 };

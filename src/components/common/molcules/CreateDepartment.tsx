@@ -55,7 +55,6 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
     endpoint: endpoint,
     onSuccessMessage: t("Department added successfully!"),
     invalidateQueryKeys: ["departments"],
-    setSnackbarConfig,
   });
 
   const onSubmit = async (data: DepartmentFormInputs) => {
@@ -102,7 +101,6 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
   const { data: departments } = useCustomQuery<DepartmentType[]>({
     queryKey: ["departments"],
     url: `/department/get-departments`,
-    setSnackbarConfig,
   });
 
   useEffect(() => {
@@ -215,7 +213,6 @@ const CreateDepartment: React.FC<CreateDepartmentProps> = ({
           )}
         </form>
       </div>
-
     </Modal>
   );
 };

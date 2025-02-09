@@ -54,7 +54,6 @@ const AddDept = () => {
     setNewCategory,
     setRequiredCategoryOptions,
     setSelectedFiles,
-    setSnackbarConfig,
   } = useAddDeptLogic(reset);
 
   const {
@@ -69,7 +68,6 @@ const AddDept = () => {
       : `/department/create-department`,
     onSuccessMessage: "Departments added successfully!",
     invalidateQueryKeys: ["departments"],
-    setSnackbarConfig,
     onSuccessFn: () => {
       reset({
         id: "",

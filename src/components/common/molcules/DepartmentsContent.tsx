@@ -19,7 +19,7 @@ const DepartmentsContent = ({
   const isAdmin = useRolePermissions("admin");
 
   const hasEditPermission = usePermissions(["department_updatesss"]);
-  const { handleEditClick } = useSetPageData<DepartmentType>(
+  const { NavigateButton } = useSetPageData<DepartmentType>(
     "/departments/add-department"
   );
   const { isLightMode } = useCustomTheme();
@@ -105,8 +105,8 @@ const DepartmentsContent = ({
                 </div>
 
                 {(isAdmin || hasEditPermission) && (
-                  <button
-                    onClick={() => handleEditClick(department)}
+                  <NavigateButton
+                    data={department}
                     className="p-2 rounded-lg transition-all duration-200
                       bg-green-500/60 hover:bg-green-500/70
                       hover:shadow-lg active:scale-95"
@@ -118,7 +118,7 @@ const DepartmentsContent = ({
                       width={18}
                       className="opacity-80 hover:opacity-100"
                     />
-                  </button>
+                  </NavigateButton>
                 )}
               </div>
             </div>

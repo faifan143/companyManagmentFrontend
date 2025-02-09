@@ -1,4 +1,3 @@
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import { ProjectType } from "@/types/Project.type";
@@ -10,12 +9,9 @@ export const useTaskQueries = (
   selectedProject: string | undefined,
   isProjectDisabled: boolean
 ) => {
-  const { setSnackbarConfig } = useMokkBar();
-
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: "/projects/get-manager-project",
-    setSnackbarConfig,
   });
 
   const { data: departments } = useCustomQuery<{
@@ -28,7 +24,6 @@ export const useTaskQueries = (
         ? `projects/project-departments-tree/${selectedProject}`
         : "department/tree"
     }`,
-    setSnackbarConfig,
   });
 
   const { data: employees } = useCustomQuery<{
@@ -37,7 +32,6 @@ export const useTaskQueries = (
   }>({
     queryKey: ["employees"],
     url: "/emp/tree",
-    setSnackbarConfig,
   });
 
   return {

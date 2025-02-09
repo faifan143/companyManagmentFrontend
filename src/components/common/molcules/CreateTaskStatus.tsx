@@ -47,7 +47,6 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
       : `/task-status/create`,
     onSuccessMessage: "Task Status added successfully!",
     invalidateQueryKeys: ["taskStatuses"],
-    setSnackbarConfig,
     onSuccessFn() {
       reset({ id: "", name: "", description: "" });
     },
@@ -148,7 +147,6 @@ const CreateTaskStatus: React.FC<CreateTaskStatusProps> = ({
             </p>
           )}
         </form>
-
       </div>
     </Modal>
   );

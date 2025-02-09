@@ -6,7 +6,6 @@ import HomeGlance from "@/components/common/atoms/HomeGlance";
 import PageSpinner from "@/components/common/atoms/PageSpinner";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
 import ProfileProjectsReport from "@/components/common/molcules/ProfileProjectsReport";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { ReceiveTaskType } from "@/types/Task.type";
@@ -14,12 +13,10 @@ import { useState } from "react";
 
 const Home = () => {
   const [scope, setScope] = useState<"weekly" | "monthly">("weekly");
-  const { setSnackbarConfig } = useMokkBar();
   const isSecondary = useRolePermissions("secondary_user");
   const { data: tasksData, isLoading } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks", scope == "weekly" ? "weekly-tasks" : "monthly-tasks"],
     url: `/tasks/${scope == "weekly" ? "weekly-tasks" : "monthly-tasks"}`,
-    setSnackbarConfig,
     nestedData: true,
   });
 

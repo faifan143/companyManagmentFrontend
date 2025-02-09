@@ -1,5 +1,4 @@
 import { CheckIcon } from "@/assets";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
@@ -20,7 +19,6 @@ const AddSectionModal: React.FC<{
   const { isLightMode } = useCustomTheme();
   const { t } = useLanguage();
   const [section, setSection] = useState("");
-  const { setSnackbarConfig } = useMokkBar();
   const { mutate: addSection, isPending: isPendingSection } = useCreateMutation(
     {
       endpoint: sectionData ? `/sections/${sectionData._id}` : "/sections",
@@ -28,7 +26,6 @@ const AddSectionModal: React.FC<{
         sectionData ? "updated" : "added"
       } successfully!`,
       invalidateQueryKeys: ["sections"],
-      setSnackbarConfig,
       onSuccessFn() {
         setSection("");
         setTimeout(onClose, 500);
@@ -90,7 +87,6 @@ const AddSectionModal: React.FC<{
           </div>
         </div>
       </div>
-    
     </>
   );
 };

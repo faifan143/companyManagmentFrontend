@@ -53,12 +53,10 @@ const AddJobTitle: React.FC = () => {
   }>({
     queryKey: ["departments"],
     url: `/department/tree`,
-    setSnackbarConfig,
   });
   const { data: categories } = useCustomQuery<JobCategoryType[]>({
     queryKey: ["categories"],
     url: `/job-categories`,
-    setSnackbarConfig,
   });
 
   useEffect(() => {

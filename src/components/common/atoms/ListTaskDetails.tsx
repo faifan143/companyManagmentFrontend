@@ -14,6 +14,7 @@ import {
   SubtasksIcon,
 } from "@/assets";
 import StarRating from "@/components/common/StarsRating";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
 import useComments from "@/hooks/useComments";
 import useCustomQuery from "@/hooks/useCustomQuery";
@@ -34,7 +35,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import AddSubTaskModal from "./AddSubTaskModal";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 
 export const formatTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -144,7 +144,6 @@ const ListTaskDetails: React.FC<{
   const { data: allTasks } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
     url: `/tasks/get-all-tasks`,
-    setSnackbarConfig,
     nestedData: true,
   });
 

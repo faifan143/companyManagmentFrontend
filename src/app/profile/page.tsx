@@ -1,14 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Mail,
-  MapPin,
-  Phone,
-  Building2,
-  Briefcase,
-  Calendar,
-} from "lucide-react";
 import GridContainer from "@/components/common/atoms/GridContainer";
+import PersonalInfoCard from "@/components/common/atoms/ProfileInfoCard";
+import TaskStatusBadge from "@/components/common/atoms/TaskStatusBadge";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
 import ProfileProjectsReport from "@/components/common/molcules/ProfileProjectsReport";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";
@@ -16,12 +9,18 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
-import useSnackbar from "@/hooks/useSnackbar";
 import { formatDate } from "@/services/task.service";
 import { RootState } from "@/state/store";
 import { ReceiveTaskType } from "@/types/Task.type";
-import PersonalInfoCard from "@/components/common/atoms/ProfileInfoCard";
-import TaskStatusBadge from "@/components/common/atoms/TaskStatusBadge";
+import {
+  Briefcase,
+  Building2,
+  Calendar,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
+import { useState } from "react";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -31,7 +30,6 @@ const Profile = () => {
   const {} = useCustomTheme();
   const isAdmin = useRolePermissions("admin");
   const isPrimary = useRolePermissions("primary_user");
-  const { setSnackbarConfig } = useSnackbar();
   const { currentLanguage, t } = useLanguage();
   const { data: tasksData } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
@@ -42,7 +40,6 @@ const Profile = () => {
         ? "get-my-dept-tasks"
         : "get-emp-tasks"
     }`,
-    setSnackbarConfig,
     nestedData: true,
   });
   const currently =

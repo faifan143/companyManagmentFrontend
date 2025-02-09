@@ -1,6 +1,5 @@
 // add sub task modal
 
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { addSubTaskSchema } from "@/schemas/task.schema";
@@ -25,19 +24,16 @@ const AddSubTaskModal: React.FC<{
   } = useForm({
     resolver: yupResolver(addSubTaskSchema),
   });
-  const { setSnackbarConfig } = useMokkBar();
 
   const { data: employees } = useCustomQuery<{ tree: EmpTree[] }>({
     queryKey: ["employees"],
     url: `/emp/tree`,
-    setSnackbarConfig,
   });
 
   const { mutate: addSection, isPending } = useCreateMutation({
     endpoint: `/tasks/add-subtask/${parentTask?.id}`,
     onSuccessMessage: `SubTask Added successfully!`,
     invalidateQueryKeys: ["tasks"],
-    setSnackbarConfig,
     onSuccessFn() {
       reset();
       setTimeout(onClose, 1000);
@@ -187,7 +183,6 @@ const AddSubTaskModal: React.FC<{
           </div>
         </div>
       </div>
-      
     </>
   );
 };

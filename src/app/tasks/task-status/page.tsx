@@ -1,6 +1,5 @@
 "use client";
 
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import {
   handleDeleteStatusClick,
@@ -13,7 +12,6 @@ import React, { useState } from "react";
 import CreateTaskStatus from "../../../components/common/molcules/CreateTaskStatus";
 
 const TaskStatusesView: React.FC = () => {
-  const { setSnackbarConfig } = useMokkBar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<ITaskStatus | null>(null);
 
@@ -25,7 +23,6 @@ const TaskStatusesView: React.FC = () => {
   } = useCustomQuery<ITaskStatus[]>({
     queryKey: ["taskStatuses"],
     url: `/task-status/find-all`,
-    setSnackbarConfig,
     nestedData: true,
   });
 
@@ -118,8 +115,6 @@ const TaskStatusesView: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         taskStatusData={editData}
       />
-
-
     </div>
   );
 };

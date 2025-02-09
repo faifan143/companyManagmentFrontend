@@ -19,7 +19,7 @@ const EmployeesContent: React.FC<{
   const hasEditPermission = usePermissions(["emp_update"]);
   const { isLightMode } = useCustomTheme();
 
-  const { handleEditClick } = useSetPageData<EmployeeType>(
+  const { NavigateButton } = useSetPageData<EmployeeType>(
     "/employees/add-employee"
   );
 
@@ -92,8 +92,8 @@ const EmployeesContent: React.FC<{
                   {(isAdmin || hasEditPermission) && (
                     <td className="text-center py-3 px-4 flex gap-2">
                       {(isAdmin || hasEditPermission) && (
-                        <div
-                          onClick={() => handleEditClick(employee)}
+                        <NavigateButton
+                          data={employee}
                           className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
                         >
                           {/* {t("Edit")} */}
@@ -103,7 +103,7 @@ const EmployeesContent: React.FC<{
                             height={20}
                             width={20}
                           />
-                        </div>
+                        </NavigateButton>
                       )}
                       {
                         // (isAdmin || hasDeletePermission) && (
@@ -130,8 +130,6 @@ const EmployeesContent: React.FC<{
           {t("No employees found.")}
         </p>
       )}
-
-
     </div>
   );
 };

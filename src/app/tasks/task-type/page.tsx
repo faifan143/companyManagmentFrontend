@@ -1,6 +1,5 @@
 "use client";
 
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { handleEditTypeClick } from "@/services/task.service";
 import { ITaskType } from "@/types/Task.type";
@@ -10,7 +9,6 @@ import React, { useState } from "react";
 import CreateTaskType from "../../../components/common/molcules/CreateTaskType";
 
 const TaskTypesView: React.FC = () => {
-  const { setSnackbarConfig } = useMokkBar();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<ITaskType | null>(null);
 
@@ -21,7 +19,6 @@ const TaskTypesView: React.FC = () => {
   } = useCustomQuery<ITaskType[]>({
     queryKey: ["taskTypes"],
     url: `/task-type/find-all`,
-    setSnackbarConfig,
     nestedData: true,
   });
 
@@ -106,8 +103,6 @@ const TaskTypesView: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         taskTypeData={editData}
       />
-
-
     </div>
   );
 };

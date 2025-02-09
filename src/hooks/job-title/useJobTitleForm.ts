@@ -50,7 +50,6 @@ export function useJobTitleForm() {
       : `/job-titles/create`,
     onSuccessMessage: t("Job Title added successfully!"),
     invalidateQueryKeys: ["jobTitles"],
-    setSnackbarConfig,
     onSuccessFn() {
       reset();
       setSnackbarConfig({

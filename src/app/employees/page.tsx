@@ -2,7 +2,6 @@
 "use client";
 
 import { TableIcon, TreeIcon } from "@/assets";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
 import EmployeeHierarchyTree from "@/components/common/EmployeesHierarchyTree";
 import RouteWrapper from "@/components/common/RouteWrapper";
 import GridContainer from "@/components/common/atoms/GridContainer";
@@ -29,7 +28,6 @@ const EmployeesView: React.FC = () => {
   const { t } = useTranslation();
   const canViewSpecific = usePermissions(["emp_view_specific"]);
   const showSelect = isAdmin || canViewSpecific || isPrimary;
-  const { setSnackbarConfig } = useMokkBar();
 
   const { data: employees, isLoading } = useCustomQuery<{
     info: EmployeeType[];
@@ -37,7 +35,6 @@ const EmployeesView: React.FC = () => {
   }>({
     queryKey: ["employees"],
     url: `/emp/tree`,
-    setSnackbarConfig,
   });
   if (isLoading) {
     return (

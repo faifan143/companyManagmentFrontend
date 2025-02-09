@@ -9,7 +9,7 @@ import { templates } from "./data";
 const Templates = () => {
   const { t, getDir } = useLanguage();
   const isRTL = getDir() === "rtl";
-  const { handleEditClick } = useSetPageData("/transactions/add-transaction");
+  const { NavigateButton } = useSetPageData("/transactions/add-transaction");
 
   return (
     <GridContainer>
@@ -61,12 +61,12 @@ const Templates = () => {
                 ))}
               </ul>
             </div>
-            <button
-              onClick={() => handleEditClick(template)}
-              className="mt-4 bg-dark text-white px-4 py-2 rounded-md hover:bg-tdark transition duration-200 w-full"
+            <NavigateButton
+              data={template}
+              className="bg-primary text-white px-4 py-2 rounded-md"
             >
               {t("Make Transaction")}
-            </button>
+            </NavigateButton>
           </div>
         ))}
       </div>
