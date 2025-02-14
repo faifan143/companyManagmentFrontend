@@ -12,6 +12,7 @@ export const CustomTextarea: React.FC<TextareaProps> = ({
       {...props}
       className={`w-full px-4 py-2 bg-secondary border border-gray-300 dark:border-gray-700  text-twhite
       rounded-lg focus:outline-none focus:ring-2 focus:ring-dark focus:border-transparent 
+      placeholder:text-tmid
       transition-colors duration-200 min-h-[120px] resize-y ${className}`}
     />
   </div>

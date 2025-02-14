@@ -9,10 +9,11 @@ const REFRESH_TOKEN = "refresh_token";
 const AUTH_PATH = "/auth";
 
 const api = axios.create({
-  baseURL: `https://${process.env.BASE_URL}`,
+  // baseURL: `https://${process.env.BASE_URL}`,
+  baseURL: `https://company-managemnt-system.vercel.app`,
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
-  withCredentials:true
+  withCredentials: true,
 });
 
 const handleAuthError = async (error: AxiosError) => {
@@ -23,7 +24,7 @@ const handleAuthError = async (error: AxiosError) => {
   }
 
   try {
-    await store.dispatch(refreshAuthToken()).unwrap()
+    await store.dispatch(refreshAuthToken()).unwrap();
     return api.request(error.config!);
   } catch (refreshError) {
     console.log(refreshError);

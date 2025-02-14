@@ -30,7 +30,7 @@ import { useSearchParams } from "next/navigation";
 import { FieldValues, UseFormReset } from "react-hook-form";
 
 function useQueryData<T extends FieldValues>(
-  reset: UseFormReset<T>,
+  reset: UseFormReset<FieldValues>,
   paramName: string = "key"
 ) {
   const searchParams = useSearchParams();

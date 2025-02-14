@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 interface UseLanguage {
   currentLanguage: string;
   toggleLanguage: () => void;
-  getDir: () => string;
+  getDir: () => "rtl" | "ltr";
   t: TFunction<"translation", undefined>;
 }
 
@@ -18,7 +18,6 @@ const useLanguage = (): UseLanguage => {
     localStorage.setItem("language", newLanguage);
   };
 
-  
   const getDir = () => {
     return currentLanguage === "ar" ? "rtl" : "ltr";
   };

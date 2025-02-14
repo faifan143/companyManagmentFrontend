@@ -405,6 +405,11 @@
     "Add New Transaction": "اضافة معاملة جديدة",
     "Transactions": "المعاملات",
     "New Transaction": "معاملة جديدة",
-    "Make Transaction": "انشاء معاملة"
+    "Make Transaction": "انشاء معاملة",
+    "days": "أيام",
+    "hours": "ساعات",
+    "months": "أشهر",
+    "internal": "داخلي",
+    "external": "خارجي"
   }
 }

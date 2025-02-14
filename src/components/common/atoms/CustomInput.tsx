@@ -11,6 +11,7 @@ export const CustomInput: React.FC<InputProps> = ({
       {...props}
       className={`w-full px-4 py-2 text-twhite bg-secondary border border-gray-300 dark:border-gray-700 
       rounded-lg focus:outline-none focus:ring-2 focus:ring-dark focus:border-transparent 
+      placeholder:text-tmid
       transition-colors duration-200 ${className}`}
     />
   </div>

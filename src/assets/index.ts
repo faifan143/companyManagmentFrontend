@@ -37,3 +37,4 @@ export { default as EyeIcon } from "./icons/eye-icon.svg";
 export { default as EyeOffIcon } from "./icons/eyeoff-icon.svg";
 export { default as TemplateIcon } from "./icons/template-icon.svg";
 export { default as TransactionIcon } from "./icons/transactions-icon.svg";
+export { default as ErrorLoading } from "./icons/error-loading.svg";

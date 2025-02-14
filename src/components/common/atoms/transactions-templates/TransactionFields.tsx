@@ -1,18 +1,20 @@
+// TransactionFields.tsx
+import { TrashIcon } from "@/assets";
 import useLanguage from "@/hooks/useLanguage";
 import { Option, TransactionField } from "@/types/new-template.type";
-import { Dispatch, SetStateAction } from "react";
+import Image from "next/image";
 import { CustomButton } from "../CustomButton";
 import { CustomInput } from "../CustomInput";
 import { CustomSelect } from "../CustomSelect";
-import Image from "next/image";
-import { TrashIcon } from "@/assets";
 
-const TransactionFields = ({
+interface TransactionFieldsProps {
+  transactionFields: TransactionField[];
+  setTransactionFields: (fields: TransactionField[]) => void;
+}
+
+const TransactionFields: React.FC<TransactionFieldsProps> = ({
   transactionFields,
   setTransactionFields,
-}: {
-  transactionFields: TransactionField[];
-  setTransactionFields: Dispatch<SetStateAction<TransactionField[]>>;
 }) => {
   const { t } = useLanguage();
 
@@ -25,24 +27,33 @@ const TransactionFields = ({
   ];
 
   const handleAddField = () => {
-    setTransactionFields((prev) => [
-      ...prev,
-      { name: "", type: "text", required: false },
-    ]);
+    const newFields = [
+      ...transactionFields,
+      { name: "", type: "text" } as TransactionField,
+    ];
+    setTransactionFields(newFields);
   };
 
   const handleRemoveField = (index: number) => {
-    setTransactionFields((prev) => prev.filter((_, i) => i !== index));
+    const newFields = transactionFields.filter((_, i) => i !== index);
+    setTransactionFields(newFields);
   };
 
   const handleAdditionalFieldChange = (
     index: number,
     field: keyof TransactionField,
-    value: string | boolean
+    value: string
   ) => {
-    setTransactionFields((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    const newFields = transactionFields.map((item, i) =>
+      i === index
+        ? {
+            ...item,
+            [field]:
+              field === "type" ? (value as TransactionField["type"]) : value,
+          }
+        : item
     );
+    setTransactionFields(newFields);
   };
 
   return (
@@ -55,7 +66,6 @@ const TransactionFields = ({
           {t("Add Field")}
         </CustomButton>
       </div>
-
       <div className="space-y-4">
         {transactionFields.map((field, index) => (
           <div
@@ -79,11 +89,7 @@ const TransactionFields = ({
                 label={t("Field Type")}
                 value={field.type}
                 onChange={(e) =>
-                  handleAdditionalFieldChange(
-                    index,
-                    "type",
-                    e.target.value as TransactionField["type"]
-                  )
+                  handleAdditionalFieldChange(index, "type", e.target.value)
                 }
                 options={fieldTypes}
                 placeholder={t("Field Type")}
