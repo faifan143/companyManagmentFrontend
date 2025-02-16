@@ -6,11 +6,11 @@ import { RootState } from "@/state/store";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import ChatModal from "../../atoms/ChatModal";
-import RouteWrapper from "../../RouteWrapper";
-import Tooltip from "../../Tooltip";
+import RouteWrapper from "../../atoms/ui/RouteWrapper";
+import Tooltip from "../../atoms/ui/Tooltip";
 import { sidebarItems } from "./data";
 import { SidebarItem } from "./SidebarItem";
+import { usePathname } from "next/navigation";
 
 const Sidebar = ({
   isExpanded,
@@ -26,10 +26,42 @@ const Sidebar = ({
   );
   const [isChatOpen, setIsChatOpen] = useState(false);
   const { isLightMode } = useCustomTheme();
-  const [selectedTab, setSelectedTab] = useState(
-    () => localStorage.getItem("selectedTab") || "/home"
-  );
   const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
+
+  // Get visible items based on permissions
+  const visibleItems = userPermissions
+    ? sidebarItems.filter(
+        (item) =>
+          isAdmin ||
+          item.requiredPermissions.length === 0 ||
+          item.requiredPermissions.some((permission) =>
+            userPermissions.includes(permission)
+          )
+      )
+    : [];
+
+  // Initialize selected tab with validation
+  const getValidSelectedTab = () => {
+    const storedTab = localStorage.getItem("selectedTab");
+    // Check if stored tab exists and is in visible items
+    if (storedTab && visibleItems.some((item) => item.path === storedTab)) {
+      return storedTab;
+    }
+    // Fallback to first visible item's path or "/home" if no items
+    return visibleItems.length > 0 ? visibleItems[0].path : "/home";
+  };
+
+  const [selectedTab, setSelectedTab] = useState(getValidSelectedTab);
+
+  // Revalidate selected tab when permissions change
+  useEffect(() => {
+    const validTab = getValidSelectedTab();
+    if (selectedTab !== validTab) {
+      setSelectedTab(validTab);
+      localStorage.setItem("selectedTab", validTab);
+    }
+  }, [userPermissions, isAdmin]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -47,17 +79,6 @@ const Sidebar = ({
       setIsExpanded(false);
     }
   };
-
-  const visibleItems = userPermissions
-    ? sidebarItems.filter(
-        (item) =>
-          isAdmin ||
-          item.requiredPermissions.length == 0 ||
-          item.requiredPermissions.some((permission) =>
-            userPermissions!.includes(permission)
-          )
-      )
-    : [];
 
   return (
     <>
@@ -108,7 +129,10 @@ const Sidebar = ({
                       icon={item.icon}
                       label={t(item.label)}
                       isExpanded={isExpanded}
-                      isSelected={selectedTab === item.path}
+                      isSelected={
+                        pathname == item.path ||
+                        pathname.split("/")[1] == item.path.split("/")[1]
+                      }
                       onClick={() => {}}
                     />
                   </Tooltip>
@@ -117,7 +141,10 @@ const Sidebar = ({
                     icon={item.icon}
                     label={t(item.label)}
                     isExpanded={isExpanded}
-                    isSelected={selectedTab === item.path}
+                    isSelected={
+                      pathname == item.path ||
+                      pathname.split("/")[1] == item.path.split("/")[1]
+                    }
                     onClick={() => {}}
                   />
                 )}
@@ -133,10 +160,6 @@ const Sidebar = ({
                 onClick={() => setIsChatOpen((prev) => !prev)}
               />
             </div>
-            <ChatModal
-              isOpen={isChatOpen}
-              onClose={() => setIsChatOpen(false)}
-            />
           </div>
         </div>
       </div>

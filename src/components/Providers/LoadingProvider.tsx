@@ -3,7 +3,7 @@
 import { useRedux } from "@/hooks/useRedux";
 import { RootState } from "@/state/store";
 import React, { ReactNode } from "react";
-import PageSpinner from "../common/atoms/PageSpinner";
+import PageSpinner from "../common/atoms/ui/PageSpinner";
 
 interface LoadingProviderProps {
   children: ReactNode;

@@ -18,6 +18,8 @@ export const useAddDeptLogic = (reset: UseFormReset<DepartmentFormInputs>) => {
   >(["primary-department", "secondary-department", "sub-department"]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const departmentData = useQueryPageData<DepartmentFormInputs>(reset);
 
   const { data: departments } = useCustomQuery<{

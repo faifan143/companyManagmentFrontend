@@ -6,17 +6,17 @@ import {
   MoreIcon,
   SearchIcon,
 } from "@/assets";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { logout } from "@/state/slices/userSlice";
 import { AppDispatch, RootState } from "@/state/store";
+import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import RouteWrapper from "../RouteWrapper";
-import { useMokkBar } from "@/components/Providers/Mokkbar";
+import RouteWrapper from "./ui/RouteWrapper";
 
 const NewHeader = ({
   setIsExpanded,
@@ -29,16 +29,14 @@ const NewHeader = ({
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
   const { isLightMode, toggleThemes } = useCustomTheme();
   const { toggleLanguage, getDir } = useLanguage();
   const { setSnackbarConfig } = useMokkBar();
-
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleSidebar = () => setIsExpanded((prev) => !prev);
   const toggleMobileSearch = () => setIsMobileSearchOpen(!isMobileSearchOpen);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const queryClient = useQueryClient();
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -107,7 +105,10 @@ const NewHeader = ({
         {/* Actions Group */}
         <div className="flex items-center gap-2 md:gap-4">
           {/* Mobile Search Toggle */}
-          <div className="md:hidden relative group" onClick={toggleMobileSearch}>
+          <div
+            className="md:hidden relative group"
+            onClick={toggleMobileSearch}
+          >
             <div
               className={`p-2 rounded-full cursor-pointer transform transition-all duration-200 
               ${isLightMode ? "hover:bg-darker" : "hover:bg-secondary"}
@@ -199,17 +200,20 @@ const NewHeader = ({
                 </li>
               </RouteWrapper>
 
-              <li
+              <RouteWrapper
+                href={"/auth"}
                 onClick={() => {
                   dispatch(logout());
+                  queryClient.removeQueries();
                   setSnackbarConfig({
                     open: true,
                     message: "Logout successful!",
                     severity: "success",
                   });
-                  router.replace("/auth");
                 }}
-                className={`
+              >
+                <li
+                  className={`
                   px-4 py-3
                   cursor-pointer
                   transition-colors duration-200
@@ -218,10 +222,11 @@ const NewHeader = ({
                       ? "hover:bg-darkest hover:text-tblackAF"
                       : "hover:bg-tblack"
                   }
-                `}
-              >
-                {t("Logout")}
-              </li>
+                  `}
+                >
+                  {t("Logout")}
+                </li>
+              </RouteWrapper>
             </ul>
           </div>
         )}

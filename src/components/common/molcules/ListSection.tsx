@@ -7,8 +7,8 @@ import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import AddSectionModal from "../atoms/AddSectionModal";
-import PageSpinner from "../atoms/PageSpinner";
+import AddSectionModal from "../atoms/modals/AddSectionModal";
+import PageSpinner from "../atoms/ui/PageSpinner";
 
 const ListSection: React.FC<{
   section: SectionType;

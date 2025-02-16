@@ -1,16 +1,18 @@
-import { useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useRedux } from "@/hooks/useRedux";
+"use client";
 import { refreshAuthToken } from "@/state/slices/userSlice";
+import { AppDispatch, RootState } from "@/state/store";
 import Cookies from "js-cookie";
-import { RootState } from "@/state/store";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export const useAuth = () => {
   const router = useRouter();
-  const {
-    selector: { isAuthenticated, loading },
-    dispatch,
-  } = useRedux((state: RootState) => state.user);
+  const { loading, isAuthenticated } = useSelector(
+    (state: RootState) => state.user
+  );
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const checkAuth = useCallback(async () => {
     const refreshToken = Cookies.get("refresh_token");

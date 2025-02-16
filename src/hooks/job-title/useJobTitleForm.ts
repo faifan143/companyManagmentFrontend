@@ -36,7 +36,8 @@ export function useJobTitleForm() {
       accessibleJobTitles: [],
     },
   });
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const jobTitleData = useQueryPageData<JobTitleFormInputs>(reset);
 
   const {

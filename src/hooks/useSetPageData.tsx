@@ -1,4 +1,4 @@
-import RouteWrapper from "@/components/common/RouteWrapper";
+import RouteWrapper from "@/components/common/atoms/ui/RouteWrapper";
 
 function useSetPageData<T>(path: string) {
   const setPageData = (data: T) => {

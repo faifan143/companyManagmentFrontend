@@ -4,7 +4,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
-import RouteWrapper from "../RouteWrapper";
+import RouteWrapper from "../atoms/ui/RouteWrapper";
 import { collabColors } from "./ProjectsContent";
 
 const ProfileProjectsReport = ({

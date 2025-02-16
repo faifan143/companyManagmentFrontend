@@ -1,7 +1,7 @@
 import useHierarchy from "@/hooks/useHierarchy";
 import useLanguage from "@/hooks/useLanguage";
 import { ReceiveTaskType } from "@/types/Task.type";
-import GridContainer from "../atoms/GridContainer";
+import GridContainer from "../atoms/ui/GridContainer";
 
 const ListTasks = ({
   tasksData,
@@ -52,8 +52,6 @@ const ListTasks = ({
             </div>
           </div>
         </GridContainer>
-
-     
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 "use client";
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import PersonalInfoCard from "@/components/common/atoms/ProfileInfoCard";
-import TaskStatusBadge from "@/components/common/atoms/TaskStatusBadge";
+import TaskStatusBadge from "@/components/common/atoms/tasks/TaskStatusBadge";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
 import ProfileProjectsReport from "@/components/common/molcules/ProfileProjectsReport";
 import { useRolePermissions } from "@/hooks/useCheckPermissions";

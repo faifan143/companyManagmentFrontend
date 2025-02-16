@@ -1,26 +1,23 @@
-"use client"
+"use client";
 // src/components/Login/LoginHeader.tsx
-import { useTranslation } from "react-i18next";
+import useLanguage from "@/hooks/useLanguage";
 import { Briefcase } from "lucide-react";
-import useCustomTheme from "@/hooks/useCustomTheme";
 
 const LoginHeader = () => {
-  const { t } = useTranslation();
-  const { isLightMode } = useCustomTheme();
+  const { t } = useLanguage();
 
   return (
     <div className="flex flex-col items-center mb-8">
-      <div className={`p-4 rounded-full mb-6 
-        ${isLightMode ? "bg-blue-100 text-blue-600" : "bg-blue-900/30 text-blue-400"}`}
+      <div
+        className={`p-4 rounded-full mb-6 bg-tblack
+      `}
       >
-        <Briefcase className="w-8 h-8" />
+        <Briefcase className="w-8 h-8 text-white" />
       </div>
-      <h1 className={`text-2xl font-bold mb-2 ${isLightMode ? "text-gray-800" : "text-white"}`}>
+      <h1 className={`text-2xl font-bold mb-2 text-twhite`}>
         {t("CompanyManagmentSystem")}
       </h1>
-      <p className={`text-sm ${isLightMode ? "text-gray-600" : "text-gray-400"}`}>
-        {t("welcome_back")}
-      </p>
+      <p className={`text-sm text-tmid`}>{t("welcome_back")}</p>
     </div>
   );
 };

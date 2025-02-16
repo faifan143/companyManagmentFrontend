@@ -1,6 +1,6 @@
 "use client";
 
-import PageSpinner from "@/components/common/atoms/PageSpinner";
+import PageSpinner from "@/components/common/atoms/ui/PageSpinner";
 import TaskListView from "@/components/common/organisms/TaskListView";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import { useEffect } from "react";

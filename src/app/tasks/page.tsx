@@ -1,12 +1,12 @@
 "use client";
 import { TabBoardIcon, TabListIcon, TreeIcon } from "@/assets";
-import GridContainer from "@/components/common/atoms/GridContainer";
-import PageSpinner from "@/components/common/atoms/PageSpinner";
-import TasksTab from "@/components/common/atoms/TasksTab";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
+import PageSpinner from "@/components/common/atoms/ui/PageSpinner";
+import TasksTab from "@/components/common/atoms/tasks/TasksTab";
 import TaskList from "@/components/common/organisms/TaskList";
 import TasksContent from "@/components/common/organisms/TasksContent";
-import RouteWrapper from "@/components/common/RouteWrapper";
-import TaskHierarchyTree from "@/components/common/TasksHierarchyTree";
+import RouteWrapper from "@/components/common/atoms/ui/RouteWrapper";
+import TaskHierarchyTree from "@/components/common/atoms/tasks/TasksHierarchyTree";
 import {
   usePermissions,
   useRolePermissions,

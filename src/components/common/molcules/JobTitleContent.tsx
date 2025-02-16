@@ -8,10 +8,10 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import { JobTitleType } from "@/types/JobTitle.type";
-import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
-import CustomModal from "../CustomModal";
+import CustomModal from "../atoms/modals/CustomModal";
+import PageSpinner from "../atoms/ui/PageSpinner";
 
 const PermissionsList = ({
   permissions,
@@ -152,7 +152,7 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
+        <PageSpinner />
       </div>
     );
   }

@@ -8,7 +8,7 @@ import {
 import { TaskCardProps } from "@/types/components/TaskCard.type";
 import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import ListTaskDetails from "../atoms/ListTaskDetails";
+import ListTaskDetails from "../atoms/tasks/ListTaskDetails";
 
 const TaskCard: React.FC<TaskCardProps> = ({ taskId, index, title, task }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

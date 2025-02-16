@@ -1,6 +1,6 @@
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 

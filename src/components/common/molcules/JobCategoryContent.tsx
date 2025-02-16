@@ -10,10 +10,10 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
 import { JobCategoryType } from "@/types/JobTitle.type";
-import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
-import CustomModal from "../CustomModal";
+import CustomModal from "../atoms/modals/CustomModal";
+import PageSpinner from "../atoms/ui/PageSpinner";
 
 const SkillsList = ({
   skills,
@@ -85,13 +85,13 @@ const JobCategoryContent = () => {
   };
 
   const { NavigateButton } = useSetPageData<JobCategoryType>(
-    "/jobs/categories/add-category"
+    "/categories/add-category"
   );
 
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
+        <PageSpinner />
       </div>
     );
   }

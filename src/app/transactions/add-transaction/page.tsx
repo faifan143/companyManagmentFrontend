@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useLanguage from "@/hooks/useLanguage";
+import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 import useQueryData from "@/hooks/useQueryPageData";
 import { templateType } from "@/types/new-template.type";
+import { addDurationToDate } from "@/utils/add_duration_to_date";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -16,6 +19,8 @@ interface FormFields {
 
 const NewTransaction = () => {
   const { t, getDir } = useLanguage();
+  const router = useRouter();
+
   const { reset, register, handleSubmit, watch } = useForm<FormFields>();
   // @ts-ignore
   const template = useQueryData<templateType>(reset);
@@ -36,15 +41,17 @@ const NewTransaction = () => {
     }
   }, [getDir, startDate, template]);
 
-  const { mutateAsync: createTransaction } = useCreateMutation({
+  const { mutateAsync: createTransaction, isPending } = useCreateMutation({
     endpoint: "/transactions",
     invalidateQueryKeys: ["transactions"],
     requestType: "post",
+    onSuccessFn: () => {
+      router.back();
+    },
   });
   const onSubmit = (data: FormFields) => {
     if (!template) return;
 
-    // Format data according to transactionType
     const formattedData = {
       template_id: template._id,
       start_date: data.start_date,
@@ -187,7 +194,11 @@ const NewTransaction = () => {
           type="submit"
           className="mt-8 w-full bg-dark hover:bg-dark/90 text-twhite px-6 py-3 rounded-lg transition duration-200 font-medium"
         >
-          {t("Submit Transaction")}
+          <PendingLogic
+            isPending={isPending}
+            normalText={"Create Transaction"}
+            pendingText={"Submitting . . ."}
+          />
         </button>
       </form>
     </GridContainer>
@@ -195,49 +206,3 @@ const NewTransaction = () => {
 };
 
 export default NewTransaction;
-interface Duration {
-  value: number;
-  unit: "days" | "hours" | "months";
-}
-
-export const addDurationToDate = (
-  startDate: string,
-  duration: Duration,
-  getDir: () => "rtl" | "ltr"
-): string => {
-  if (!startDate || !duration) return "";
-
-  const { value, unit } = duration;
-  const date = new Date(startDate);
-
-  switch (unit) {
-    case "days":
-      date.setDate(Number(date.getDate()) + Number(value));
-      break;
-    case "hours":
-      date.setHours(Number(date.getHours()) + Number(value));
-
-      const returnedDate =
-        getDir() == "rtl"
-          ? date.toLocaleTimeString("ar", {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-              hour12: true,
-            })
-          : date.toLocaleTimeString("en", {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-              hour12: true,
-            });
-      return returnedDate;
-    case "months":
-      date.setMonth(Number(date.getMonth()) + Number(value));
-      break;
-    default:
-      return "";
-  }
-
-  return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD format for days and months
-};

@@ -1,16 +1,16 @@
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
-import InfoCard from "@/components/common/InfoCard";
+import InfoCard from "@/components/common/atoms/InfoCard";
+import ProjectDetailsHierarchyTree from "@/components/common/atoms/ProjectDetailsHierarchyTree";
+import TaskStatusPieChart from "@/components/common/atoms/tasks/TaskStatusPieChart";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
+import PageSpinner from "@/components/common/atoms/ui/PageSpinner";
 import HomeTasksReport from "@/components/common/molcules/HomeTasksReport";
-import ProjectDetailsHierarchyTree from "@/components/common/ProjectDetailsHierarchyTree";
-import TaskStatusPieChart from "@/components/common/TaskStatusPieChart";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { formatDate } from "@/services/task.service";
 import { ProjectDetailsType } from "@/types/Project.type";
-import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import { useRouter } from "next/navigation";
 
 const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
@@ -26,7 +26,7 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={80} />
+        <PageSpinner />
       </div>
     );
   }

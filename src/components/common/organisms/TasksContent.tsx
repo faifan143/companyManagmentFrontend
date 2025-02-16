@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
-import PageSpinner from "../atoms/PageSpinner";
+import PageSpinner from "../atoms/ui/PageSpinner";
 
 const TasksContent = ({
   tasksData,

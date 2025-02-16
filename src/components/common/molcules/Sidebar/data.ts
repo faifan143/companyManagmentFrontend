@@ -56,13 +56,13 @@ export const sidebarItems = [
   {
     label: "Job Categories Management",
     icon: CategoryIcon,
-    path: "/jobs/categories",
+    path: "/categories",
     requiredPermissions: ["job_title_category_search_and_view"],
   },
   {
     label: "Transactions Templates",
     icon: TemplateIcon,
-    path: "/transactions/templates",
+    path: "/templates",
     requiredPermissions: [],
   },
   {

@@ -1,11 +1,12 @@
 "use client";
 
 import { TableIcon, TreeIcon } from "@/assets";
-import GridContainer from "@/components/common/atoms/GridContainer";
-import TasksTab from "@/components/common/atoms/TasksTab";
-import DepartmentHierarchyTree from "@/components/common/DepartmentsHierarchyTree";
+import TasksTab from "@/components/common/atoms/tasks/TasksTab";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
+import PageSpinner from "@/components/common/atoms/ui/PageSpinner";
+import RouteWrapper from "@/components/common/atoms/ui/RouteWrapper";
 import DepartmentsContent from "@/components/common/molcules/DepartmentsContent";
-import RouteWrapper from "@/components/common/RouteWrapper";
+import DepartmentHierarchyTree from "@/components/common/molcules/DepartmentsHierarchyTree";
 import {
   usePermissions,
   useRolePermissions,
@@ -13,7 +14,6 @@ import {
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { DepartmentType } from "@/types/DepartmentType.type";
 import { DeptTree } from "@/types/trees/Department.tree.type";
-import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -40,7 +40,7 @@ const DepartmentsView: React.FC = () => {
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
+        <PageSpinner />
       </div>
     );
   }

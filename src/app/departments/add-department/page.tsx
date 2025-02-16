@@ -3,10 +3,11 @@
 // @ts-nocheck
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
 import AddCategoryField from "@/components/common/atoms/departments/AddCategoryField";
 import DeptAdditionalSection from "@/components/common/atoms/departments/DeptAdditionalSection";
 import DeptFormInput from "@/components/common/atoms/departments/DeptFormInput";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
+import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 import { useAddDeptLogic } from "@/hooks/departments/useAddDepartment";
 import { useAddDeptForm } from "@/hooks/departments/useAddDeptForm";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
@@ -56,36 +57,31 @@ const AddDept = () => {
     setSelectedFiles,
   } = useAddDeptLogic(reset);
 
-  const {
-    mutate: addDepartment,
-    isPending: isPendingDepartment,
-    isSuccess: isSuccessDepartment,
-    isError: isErrorDepartment,
-    error: errorDepartment,
-  } = useCreateMutation({
-    endpoint: departmentData
-      ? `/department/updateDepartment/${departmentData.id}`
-      : `/department/create-department`,
-    onSuccessMessage: "Departments added successfully!",
-    invalidateQueryKeys: ["departments"],
-    onSuccessFn: () => {
-      reset({
-        id: "",
-        parent_department_id: "",
-        description: "",
-        name: "",
-        goal: "",
-        category: "",
-        mainTasks: "",
-        numericOwners: [],
-        supportingFiles: [],
-        requiredReports: [],
-        developmentPrograms: [],
-      });
-      setSelectedFiles([]);
-      setTimeout(() => router.back(), 1000);
-    },
-  });
+  const { mutate: addDepartment, isPending: isPendingDepartment } =
+    useCreateMutation({
+      endpoint: departmentData
+        ? `/department/updateDepartment/${departmentData.id}`
+        : `/department/create-department`,
+      onSuccessMessage: "Departments added successfully!",
+      invalidateQueryKeys: ["departments"],
+      onSuccessFn: () => {
+        reset({
+          id: "",
+          parent_department_id: "",
+          description: "",
+          name: "",
+          goal: "",
+          category: "",
+          mainTasks: "",
+          numericOwners: [],
+          supportingFiles: [],
+          requiredReports: [],
+          developmentPrograms: [],
+        });
+        setSelectedFiles([]);
+        setTimeout(() => router.back(), 1000);
+      },
+    });
 
   return (
     <GridContainer>
@@ -207,22 +203,16 @@ const AddDept = () => {
             `}
             disabled={isPendingDepartment}
           >
-            {isPendingDepartment
-              ? departmentData
-                ? t("Updating...")
-                : t("Creating...")
-              : departmentData
-              ? t("Update Department")
-              : t("Create Department")}
+            {
+              <PendingLogic
+                isPending={isPendingDepartment}
+                normalText={
+                  departmentData ? "Update Department" : "Create Department"
+                }
+                pendingText={departmentData ? "Updating..." : "Creating..."}
+              />
+            }
           </button>
-          {isErrorDepartment && (
-            <p className="text-red-500 mt-2 text-center">
-              {errorDepartment + ""}
-            </p>
-          )}
-          {isSuccessDepartment && (
-            <p className="text-low mt-2 text-center">Successful</p>
-          )}
         </form>
       </div>
     </GridContainer>

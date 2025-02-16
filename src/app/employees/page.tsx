@@ -2,10 +2,11 @@
 "use client";
 
 import { TableIcon, TreeIcon } from "@/assets";
-import EmployeeHierarchyTree from "@/components/common/EmployeesHierarchyTree";
-import RouteWrapper from "@/components/common/RouteWrapper";
-import GridContainer from "@/components/common/atoms/GridContainer";
-import TasksTab from "@/components/common/atoms/TasksTab";
+import EmployeeHierarchyTree from "@/components/common/atoms/EmployeesHierarchyTree";
+import TasksTab from "@/components/common/atoms/tasks/TasksTab";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
+import PageSpinner from "@/components/common/atoms/ui/PageSpinner";
+import RouteWrapper from "@/components/common/atoms/ui/RouteWrapper";
 import EmployeesContent from "@/components/common/molcules/EmployeesContent";
 import {
   usePermissions,
@@ -14,7 +15,6 @@ import {
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { EmployeeType } from "@/types/EmployeeType.type";
 import { EmpTree } from "@/types/trees/Emp.tree.type";
-import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -39,7 +39,7 @@ const EmployeesView: React.FC = () => {
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
+        <PageSpinner />
       </div>
     );
   }

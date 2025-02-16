@@ -1,88 +1,149 @@
-"use client"
+"use client";
+import { useMokkBar } from "@/components/Providers/Mokkbar";
 import { loginSchema } from "@/schemas/login.schema";
-import { handleLogin } from "@/services/auth.service";
+import { loginUser } from "@/state/slices/userSlice";
 import { AppDispatch } from "@/state/store";
-import { SnackbarConfig } from "@/types/DepartmentType.type";
 import { LoginFormInputs } from "@/types/Login.type";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Mail, EyeOff, Eye , Lock } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import PendingLogic from "./ui/PendingLogic";
+import { useRedux } from "@/hooks/useRedux";
+import { useRouter } from "next/navigation";
 
-const LoginForm = ({
-    dispatch,
-    setSnackbarConfig,
-    setIsModalOpen, // Add these props
-    setEmpId, // Add these props
-    loading,
-  }: {
-    dispatch: AppDispatch;
-    setSnackbarConfig: Dispatch<SetStateAction<SnackbarConfig>>;
-    setIsModalOpen: Dispatch<SetStateAction<boolean>>; // New prop
-    setEmpId: Dispatch<SetStateAction<string>>; // New prop
-    loading: boolean;
-  }) => {
-    const { t } = useTranslation();
-    const [showPassword, setShowPassword] = useState(false);
-  
-    const {
-      register,
-      handleSubmit,
-      formState: { errors },
-    } = useForm<LoginFormInputs>({
-      resolver: yupResolver(loginSchema),
-    });
-  
-    const onSubmit = async (data: LoginFormInputs) => {
-      await handleLogin({ data, dispatch, setSnackbarConfig, setIsModalOpen, setEmpId });
-      setSnackbarConfig({ open: true, message: "Login successful!", severity: "success" });
-    };
-  
-    return (
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Email Input */}
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+interface LoginFormProps {
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+  setEmpId: Dispatch<SetStateAction<string>>;
+}
+
+const LoginForm = ({ setIsModalOpen, setEmpId }: LoginFormProps) => {
+  const { t } = useTranslation();
+  const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const { setSnackbarConfig } = useMokkBar();
+  const { selector: isLoading } = useRedux((state) => state.user.loading);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>({
+    resolver: yupResolver(loginSchema),
+  });
+
+  const togglePasswordVisibility = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowPassword((prev) => !prev);
+  };
+
+  const onSubmit = async (data: LoginFormInputs) => {
+    try {
+      const result = await dispatch(loginUser(data)).unwrap();
+      if (result.status === true) {
+        router.replace(localStorage.getItem("selectedTab") || "/home");
+      }
+      setSnackbarConfig({
+        open: true,
+        message: t("Login successful"),
+        severity: "success",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const errorMessage = error?.message || error;
+
+      if (
+        errorMessage?.startsWith(
+          "You must change your password on the first login"
+        )
+      ) {
+        const empId = errorMessage.split(",")[1];
+        setEmpId(empId);
+        setIsModalOpen(true);
+      } else {
+        setSnackbarConfig({
+          open: true,
+          message: errorMessage || t("Login failed"),
+          severity: "error",
+        });
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Email Input */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center border rounded-lg overflow-hidden bg-white">
+          <div className="flex items-center justify-center p-3">
+            <Mail className="text-gray-400 w-5 h-5" />
+          </div>
           <input
             type="email"
             {...register("email")}
-            className={`w-full pl-10 pr-4 py-3 rounded-lg outline-none border ${
+            className={`flex-1 py-3 outline-none ${
               errors.email ? "border-red-500" : "border-gray-200"
             }`}
             placeholder={t("Email")}
           />
-          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
         </div>
-  
-        {/* Password Input */}
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        {errors.email && (
+          <p className="text-sm text-red-500">{errors.email.message}</p>
+        )}
+      </div>
+
+      {/* Password Input */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center border rounded-lg overflow-hidden bg-white">
+          <div className="flex items-center justify-center p-3">
+            <Lock className="text-gray-400 w-5 h-5" />
+          </div>
           <input
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`w-full pl-10 pr-12 py-3 rounded-lg outline-none border ${
+            className={`flex-1 py-3 outline-none ${
               errors.password ? "border-red-500" : "border-gray-200"
             }`}
             placeholder={t("Password")}
           />
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            onClick={togglePasswordVisibility}
+            className="flex items-center justify-center p-3 text-gray-400 hover:text-gray-600 
+              focus:outline-none transition-colors select-none"
+            tabIndex={0}
+            aria-label={showPassword ? t("Hide password") : t("Show password")}
           >
-            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
           </button>
-          {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
         </div>
-  
-        {/* Submit Button */}
-        <button type="submit" disabled={loading} className="w-full py-3 rounded-lg bg-blue-600 text-white">
-          {loading ? t("Logging in...") : t("Login")}
-        </button>
-      </form>
-    );
-  };
-  
-  export default LoginForm;
-  
+        {errors.password && (
+          <p className="text-sm text-red-500">{errors.password.message}</p>
+        )}
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full py-3 rounded-lg bg-tblack text-white hover:bg-secondary hover:text-tmid disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <PendingLogic
+          isPending={isLoading}
+          normalText="Login"
+          pendingText="Logging in..."
+        />
+      </button>
+    </form>
+  );
+};
+
+export default LoginForm;

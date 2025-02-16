@@ -5,11 +5,11 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
-import { CircularProgress } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
-import AddProjectModal from "../atoms/AddProjectModal";
-import RouteWrapper from "../RouteWrapper";
+import AddProjectModal from "../atoms/modals/AddProjectModal";
+import RouteWrapper from "../atoms/ui/RouteWrapper";
+import PageSpinner from "../atoms/ui/PageSpinner";
 
 export const collabColors = [
   "border-2  border-blue-500 ",
@@ -45,7 +45,7 @@ const ProjectsContent = () => {
   if (isLoading) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <CircularProgress size={100} />
+        <PageSpinner />
       </div>
     );
   }

@@ -1,7 +1,7 @@
 "use client";
 
-import AddProjectModal from "@/components/common/atoms/AddProjectModal";
-import GridContainer from "@/components/common/atoms/GridContainer";
+import AddProjectModal from "@/components/common/atoms/modals/AddProjectModal";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import ProjectsContent from "@/components/common/molcules/ProjectsContent";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import React, { useState } from "react";

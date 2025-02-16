@@ -3,7 +3,7 @@
 
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import ConditionalDropdowns from "@/components/common/atoms/job-title/ConditionalDropdowns";
 import IsManagerToggle from "@/components/common/atoms/job-title/IsManagerToggle";
 import { PermissionsSection } from "@/components/common/atoms/job-title/PermissionsSection";
@@ -19,6 +19,7 @@ import { DeptTree } from "@/types/trees/Department.tree.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 
 const AddJobTitle: React.FC = () => {
   const [permissionsMode, setPermissionsMode] = useState("default");
@@ -274,13 +275,15 @@ const AddJobTitle: React.FC = () => {
             }`}
             disabled={isPendingJobTitle}
           >
-            {isPendingJobTitle
-              ? jobTitleData
-                ? t("Updating...")
-                : t("Creating...")
-              : jobTitleData
-              ? t("Update Job Title")
-              : t("Create Job Title")}
+            {
+              <PendingLogic
+                isPending={isPendingJobTitle}
+                normalText={
+                  jobTitleData ? "Update Job Title" : "Create Job Title"
+                }
+                pendingText={jobTitleData ? "Updating..." : "Creating..."}
+              />
+            }
           </button>
           {isErrorJobTitle && (
             <p className="text-red-500 mt-2 text-center">

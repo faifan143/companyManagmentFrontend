@@ -4,7 +4,7 @@
 
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useCustomTheme from "@/hooks/useCustomTheme";
@@ -25,6 +25,7 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useMokkBar } from "@/components/Providers/Mokkbar";
+import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 
 const AddEmp: React.FC = () => {
   const { setSnackbarConfig } = useMokkBar();
@@ -602,7 +603,7 @@ const AddEmp: React.FC = () => {
               <option value="">{t("Select a job title")}</option>
               {jobs &&
                 jobs
-                  .filter((job) => job.department_id == selectedDept)
+                  .filter((job) => job.department._id == selectedDept)
                   .map((job) => (
                     <option key={job.id} value={job.id}>
                       {job.title}
@@ -1018,13 +1019,15 @@ const AddEmp: React.FC = () => {
             ${isPendingEmployee ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={isPendingEmployee}
           >
-            {isPendingEmployee
-              ? employeeData
-                ? t("Updating...")
-                : t("Creating...")
-              : employeeData
-              ? t("Update Employee")
-              : t("Create Employee")}
+            {
+              <PendingLogic
+                isPending={isPendingEmployee}
+                normalText={
+                  employeeData ? "Update Employee" : "Create Employee"
+                }
+                pendingText={employeeData ? "Updating..." : "Creating..."}
+              />
+            }
           </button>
         </form>
       </div>

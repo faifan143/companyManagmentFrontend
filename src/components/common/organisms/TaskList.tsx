@@ -4,7 +4,7 @@ import { categorizeTasks } from "@/services/task.service";
 import { SectionType } from "@/types/Section.type";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { useEffect, useState } from "react";
-import AddSectionModal from "../atoms/AddSectionModal";
+import AddSectionModal from "../atoms/modals/AddSectionModal";
 import ListSection from "../molcules/ListSection";
 
 const ListTasks = ({

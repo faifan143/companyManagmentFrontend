@@ -1,4 +1,4 @@
-import { apiClient } from "@/utils/axios";
+import { apiClient } from "@/utils/axios/usage";
 import { useEffect, useRef, useState } from "react";
 
 export interface Comment {

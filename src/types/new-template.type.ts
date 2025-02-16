@@ -53,22 +53,22 @@ export interface templateType {
     unit: "days" | "hours" | "months";
     value: number;
   };
-  departments_approval_track: string[];
-  departments_execution_ids: string[];
+  departments_approval_track: { _id: string; name: string }[];
+  departments_execution_ids: { _id: string; name: string }[];
   needAdminApproval: boolean;
   transactionFields: TransactionField[];
 }
 
 export interface transactionType {
   _id: string;
-  template_id: templateType;
+  template: templateType;
   start_date: string;
   fields: {
     field_name: string;
     value: string | number | File;
   }[];
   departments_approval_track: {
-    department_id: string;
+    department: { _id: string; name: string };
     status: "PENDING" | "ONGOING" | "CHECKING" | "DONE";
   }[];
   status:
@@ -77,8 +77,9 @@ export interface transactionType {
     | "FULLY_APPROVED"
     | "ADMIN_APPROVED";
   logs: {
-    department_id: string;
+    department: { _id: string; name: string };
     finished_at: string;
+    action: "approve" | "reject" | "send_back";
     note: string;
   }[];
 }

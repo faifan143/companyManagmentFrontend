@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import { ConditionalSection } from "@/components/common/atoms/tasks/ConditionalSection";
 import { FixedSection } from "@/components/common/atoms/tasks/FixedSection";
 import { RecurringSection } from "@/components/common/atoms/tasks/RecurringSection";
@@ -14,6 +14,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { TaskFormInputs } from "@/types/Task.type";
 import React from "react";
+import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 
 const AddTask: React.FC = () => {
   const { t } = useLanguage();
@@ -124,7 +125,13 @@ const AddTask: React.FC = () => {
             }`}
             disabled={isPending}
           >
-            {isPending ? t("Creating...") : t("Create Task")}
+            {
+              <PendingLogic
+                isPending={isPending}
+                normalText={"Create Task"}
+                pendingText={"Creating..."}
+              />
+            }
           </button>
           {/* Feedback Message */}
           {feedbackMessage && (

@@ -1,5 +1,5 @@
-import HomeListRow from "@/components/common/atoms/HomeListRow";
-import ListRow from "@/components/common/atoms/ListRow";
+import HomeListRow from "@/components/common/atoms/tasks/HomeListRow";
+import ListRow from "@/components/common/atoms/tasks/ListRow";
 import { ExtendedReceiveTaskType, ReceiveTaskType } from "@/types/Task.type";
 import React from "react";
 

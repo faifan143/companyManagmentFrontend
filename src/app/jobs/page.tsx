@@ -1,8 +1,8 @@
 "use client";
 
-import GridContainer from "@/components/common/atoms/GridContainer";
+import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import JobTitleContent from "@/components/common/molcules/JobTitleContent";
-import RouteWrapper from "@/components/common/RouteWrapper";
+import RouteWrapper from "@/components/common/atoms/ui/RouteWrapper";
 import {
   usePermissions,
   useRolePermissions,
@@ -25,7 +25,7 @@ const JobTitlesView: React.FC = () => {
         <h1 className="text-3xl font-bold text-twhite text-center pb-4">
           {t("Job Titles")}
         </h1>
-        <div className="flex justify-center flex-wrap items-center gap-5">   
+        <div className="flex justify-center flex-wrap items-center gap-5">
           {showSelect && (
             <select
               className="bg-secondary outline-none border-none text-twhite rounded-lg px-4 py-2 focus:outline-none transition duration-200"

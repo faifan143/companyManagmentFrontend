@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useMokkBar } from "@/components/Providers/Mokkbar";
-import { apiClient } from "@/utils/axios";
+import { apiClient } from "@/utils/axios/usage";
 import {
   useMutation,
   UseMutationOptions,
@@ -20,8 +20,8 @@ interface UseCreateMutationParams<
   endpoint: string;
   onSuccessMessage?: string;
   invalidateQueryKeys?: string[];
-  onSuccessFn?: () => void;
-  requestType?: "post" | "put" | "delete";
+  onSuccessFn?: (data?: TResponse) => void;
+  requestType?: "post" | "put" | "delete" | "patch";
   options?: UseMutationOptions<TResponse, unknown, TInput, unknown>;
 }
 
@@ -52,6 +52,10 @@ export const useCreateMutation = <
     const response = await apiClient.put(endpoint, data);
     return response as TResponse;
   };
+  const mutationPatchFunction = async (data: TInput) => {
+    const response = await apiClient.patch(endpoint, data);
+    return response as TResponse;
+  };
   const mutationDeleteFunction = async () => {
     const response = await apiClient.delete(endpoint);
     return response as TResponse;
@@ -63,6 +67,8 @@ export const useCreateMutation = <
         ? mutationAddFunction
         : requestType == "put"
         ? mutationUpdateFunction
+        : requestType == "patch"
+        ? mutationPatchFunction
         : mutationDeleteFunction,
     onSuccess: (data: TResponse) => {
       if (onSuccessMessage) {
@@ -73,15 +79,15 @@ export const useCreateMutation = <
         message: onSuccessMessage || t("Successful"),
         severity: "success",
       });
-      onSuccessFn && onSuccessFn();
       invalidateQueryKeys.forEach((key) => {
         //@ts-ignore
         queryClient.invalidateQueries(key);
       });
+      onSuccessFn && onSuccessFn(data);
     },
     onError: (error: any) => {
       const errorMessage =
-        error?.response?.data?.error || t("An error occurred");
+        error?.response?.data?.message || t("An error occurred");
 
       console.error("Detailed Error:", errorMessage);
 
