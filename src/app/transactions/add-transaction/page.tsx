@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import GridContainer from "@/components/common/atoms/ui/GridContainer";
+import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useLanguage from "@/hooks/useLanguage";
-import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
 import useQueryData from "@/hooks/useQueryPageData";
-import { templateType } from "@/types/new-template.type";
+import { templateType, transactionType } from "@/types/new-template.type";
 import { addDurationToDate } from "@/utils/add_duration_to_date";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface FormFields {
@@ -21,14 +21,50 @@ const NewTransaction = () => {
   const { t, getDir } = useLanguage();
   const router = useRouter();
 
-  const { reset, register, handleSubmit, watch } = useForm<FormFields>();
+  const {
+    reset,
+    register,
+    handleSubmit,
+    watch,
+    formState: { isDirty },
+  } = useForm<FormFields>({
+    defaultValues: {
+      start_date: new Date().toISOString().split("T")[0],
+      fields: {},
+    },
+  });
+
   // @ts-ignore
-  const template = useQueryData<templateType>(reset);
+  const transaction = useQueryData<transactionType>(reset, "restartData");
+
+  // @ts-ignore
+  const templateData = useQueryData<templateType>(reset);
+
+  const template = useMemo(() => {
+    return transaction?.template || templateData;
+  }, [transaction, templateData]);
 
   const [endDate, setEndDate] = useState<string>("");
-
   const startDate = watch("start_date");
+
   const durationUnit = template?.duration?.unit;
+
+  // Initialize form data when transaction is available
+  useEffect(() => {
+    if (transaction?.fields && !isDirty) {
+      const fieldValues = transaction.fields.reduce((acc, field) => {
+        if (typeof field.value !== "undefined" && field.value !== null) {
+          acc[field.field_name] = field.value;
+        }
+        return acc;
+      }, {} as Record<string, string | number | File>);
+
+      reset({
+        start_date: transaction.start_date,
+        fields: fieldValues,
+      });
+    }
+  }, [transaction, isDirty, reset]);
 
   useEffect(() => {
     if (startDate && template?.duration) {
@@ -43,26 +79,36 @@ const NewTransaction = () => {
 
   const { mutateAsync: createTransaction, isPending } = useCreateMutation({
     endpoint: "/transactions",
-    invalidateQueryKeys: ["transactions"],
+    invalidateQueryKeys: ["my-transactions"],
     requestType: "post",
     onSuccessFn: () => {
       router.back();
     },
   });
+  const { mutateAsync: restartTransaction, isPending: isRestartPending } =
+    useCreateMutation({
+      endpoint: `/transactions/restart/${transaction?._id}`,
+      invalidateQueryKeys: ["my-transactions"],
+      onSuccessFn: () => {
+        router.back();
+      },
+    });
+
+  // Submit handler
   const onSubmit = (data: FormFields) => {
     if (!template) return;
 
     const formattedData = {
       template_id: template._id,
       start_date: data.start_date,
-      fields: Object.entries(data.fields).map(([key, value]) => ({
-        field_name: key,
-        value: value,
+      fields: Object.entries(data.fields).map(([field_name, value]) => ({
+        field_name,
+        value: value ?? "",
       })),
     };
 
-    console.log("Transaction Submitted:", formattedData);
-    createTransaction(formattedData);
+    if (transaction) restartTransaction(formattedData);
+    else createTransaction(formattedData);
   };
 
   const getStartDateInputType = () => {
@@ -84,7 +130,7 @@ const NewTransaction = () => {
     <GridContainer>
       <div className="col-span-full flex flex-col md:flex-row justify-between items-center gap-5 mb-5">
         <h1 className="text-3xl font-bold text-twhite text-center pb-4">
-          {t("New Transaction")}
+          {transaction ? t("Restart Transaction") : t("New Transaction")}
         </h1>
       </div>
 
@@ -195,8 +241,10 @@ const NewTransaction = () => {
           className="mt-8 w-full bg-dark hover:bg-dark/90 text-twhite px-6 py-3 rounded-lg transition duration-200 font-medium"
         >
           <PendingLogic
-            isPending={isPending}
-            normalText={"Create Transaction"}
+            isPending={isPending || isRestartPending}
+            normalText={
+              transaction ? "Restart Transaction" : "Create Transaction"
+            }
             pendingText={"Submitting . . ."}
           />
         </button>

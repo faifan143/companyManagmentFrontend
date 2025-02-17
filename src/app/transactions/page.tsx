@@ -1,22 +1,30 @@
+// Transactions.tsx
 "use client";
-import TransactionCard from "@/components/common/atoms/transactions/TransactionCard";
-import TransactionEmptyState from "@/components/common/atoms/transactions/TransactionEmptyState";
-import TransactionLoadingSkeleton from "@/components/common/atoms/transactions/TransactionLoadingSkeleton";
+import React, { useMemo, useState } from "react";
+import { Option, transactionType } from "@/types/new-template.type";
+import useLanguage from "@/hooks/useLanguage";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { SingleValue } from "react-select";
 import CustomReactSelect from "@/components/common/atoms/ui/CustomReactSelect";
 import ErrorState from "@/components/common/atoms/ui/ErrorState";
 import GridContainer from "@/components/common/atoms/ui/GridContainer";
-import useCustomQuery from "@/hooks/useCustomQuery";
-import useLanguage from "@/hooks/useLanguage";
-import { Option, transactionType } from "@/types/new-template.type";
-import { useMemo, useState } from "react";
-import { SingleValue } from "react-select";
+import TransactionCard from "@/components/common/atoms/transactions/TransactionCard";
+import TransactionEmptyState from "@/components/common/atoms/transactions/TransactionEmptyState";
+import TransactionLoadingSkeleton from "@/components/common/atoms/transactions/TransactionLoadingSkeleton";
 
 type ViewType = "my" | "admin" | "department" | "execution";
+
+interface StatusTab {
+  value: string;
+  label: string;
+}
 
 const Transactions = () => {
   const { t } = useLanguage();
   const [viewType, setViewType] = useState<ViewType>("my");
+  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
 
+  // View type options
   const viewOptions = useMemo(
     () => [
       { value: "my", label: t("My Transactions") },
@@ -27,12 +35,37 @@ const Transactions = () => {
     [t]
   );
 
-  const selectedOption = useMemo(
-    () => viewOptions.find((option) => option.value === viewType),
-    [viewType, viewOptions]
+  // Status tabs for each view type
+  const statusTabs = useMemo(
+    () => ({
+      my: [
+        { value: "ALL", label: "All" },
+        { value: "NOT_APPROVED", label: "Not Approved" },
+        { value: "PARTIALLY_APPROVED", label: "Partially Approved" },
+        { value: "FULLY_APPROVED", label: "Fully Approved" },
+        { value: "NEED_ADMIN_APPROVAL", label: "Need Admin Approval" },
+        { value: "ADMIN_APPROVED", label: "Admin Approved" },
+        { value: "ARCHIVE", label: "Archive" },
+      ],
+      department: [
+        { value: "ALL", label: "All" },
+        { value: "ONGOING", label: "Ongoing" },
+        { value: "CHECKING", label: "Checking" },
+      ],
+      execution: [
+        { value: "ALL", label: "All" },
+        { value: "NOT_SEEN", label: "Not Seen" },
+        { value: "SEEN", label: "Seen" },
+      ],
+      admin: [
+        { value: "ALL", label: "All" },
+        { value: "NEED_ADMIN_APPROVAL", label: "Need Admin Approval" },
+      ],
+    }),
+    []
   );
 
-  // Queries with proper enabling
+  // Queries
   const {
     data: deptTransactions,
     isLoading: isDeptLoading,
@@ -76,30 +109,158 @@ const Transactions = () => {
     enabled: viewType === "execution",
   });
 
-  const handleTypeChange = (newValue: SingleValue<Option>) => {
+  // Get filtered transactions based on selected status
+  const filteredTransactions = useMemo(() => {
+    if (selectedStatus === "ALL") {
+      switch (viewType) {
+        case "my":
+          return (myTransactions || []).filter((t) => !t.isArchive);
+        case "department":
+          return [
+            ...(deptTransactions?.checking || []),
+            ...(deptTransactions?.ongoing || []),
+          ];
+        case "execution":
+          return executionTransactions || [];
+        case "admin":
+          return adminTransactions || [];
+        default:
+          return [];
+      }
+    }
+
+    let transactions: transactionType[] = [];
+
+    switch (viewType) {
+      case "my":
+        transactions = myTransactions || [];
+        if (selectedStatus === "ARCHIVE") {
+          return transactions.filter((t) => t.isArchive);
+        }
+        if (selectedStatus === "NEED_ADMIN_APPROVAL") {
+          return transactions.filter(
+            (t) =>
+              t.status === "FULLY_APPROVED" &&
+              t.template.needAdminApproval &&
+              !t.isArchive
+          );
+        }
+        return transactions.filter(
+          (t) => t.status === selectedStatus && !t.isArchive
+        );
+
+      case "department":
+        if (selectedStatus === "CHECKING") {
+          return deptTransactions?.checking || [];
+        }
+        return deptTransactions?.ongoing || [];
+
+      case "execution":
+        transactions = executionTransactions || [];
+        return transactions.filter((t) =>
+          t.departments_execution.some((d) => d.status === selectedStatus)
+        );
+
+      case "admin":
+        transactions = adminTransactions || [];
+        if (selectedStatus === "NEED_ADMIN_APPROVAL") {
+          return transactions.filter(
+            (t) => t.status === "FULLY_APPROVED" && t.template.needAdminApproval
+          );
+        }
+        return transactions;
+
+      default:
+        return [];
+    }
+  }, [
+    viewType,
+    selectedStatus,
+    myTransactions,
+    deptTransactions,
+    executionTransactions,
+    adminTransactions,
+  ]);
+
+  // Calculate status counts
+  const getStatusCounts = () => {
+    const counts: Record<string, number> = {
+      ALL: 0,
+    };
+
+    switch (viewType) {
+      case "my":
+        if (!myTransactions) return counts;
+        const nonArchivedTransactions = myTransactions.filter(
+          (t) => !t.isArchive
+        );
+        counts.NOT_APPROVED = nonArchivedTransactions.filter(
+          (t) => t.status === "NOT_APPROVED"
+        ).length;
+        counts.PARTIALLY_APPROVED = nonArchivedTransactions.filter(
+          (t) => t.status === "PARTIALLY_APPROVED"
+        ).length;
+        counts.FULLY_APPROVED = nonArchivedTransactions.filter(
+          (t) => t.status === "FULLY_APPROVED" && !t.template.needAdminApproval
+        ).length;
+        counts.NEED_ADMIN_APPROVAL = nonArchivedTransactions.filter(
+          (t) => t.status === "FULLY_APPROVED" && t.template.needAdminApproval
+        ).length;
+        counts.ADMIN_APPROVED = nonArchivedTransactions.filter(
+          (t) => t.status === "ADMIN_APPROVED"
+        ).length;
+        counts.ARCHIVE = myTransactions.filter((t) => t.isArchive).length;
+
+        // Calculate ALL count by summing non-archive counts
+        counts.ALL =
+          counts.NOT_APPROVED +
+          counts.PARTIALLY_APPROVED +
+          counts.FULLY_APPROVED +
+          counts.NEED_ADMIN_APPROVAL +
+          counts.ADMIN_APPROVED;
+        break;
+
+      case "department":
+        if (!deptTransactions) return counts;
+        counts.CHECKING = deptTransactions.checking.length;
+        counts.ONGOING = deptTransactions.ongoing.length;
+        counts.ALL = counts.CHECKING + counts.ONGOING;
+        break;
+
+      case "execution":
+        if (!executionTransactions) return counts;
+        counts.NOT_SEEN = executionTransactions.filter((t) =>
+          t.departments_execution.some((d) => d.status === "NOT_SEEN")
+        ).length;
+        counts.SEEN = executionTransactions.filter((t) =>
+          t.departments_execution.some((d) => d.status === "SEEN")
+        ).length;
+        counts.ALL = counts.NOT_SEEN + counts.SEEN;
+        break;
+
+      case "admin":
+        if (!adminTransactions) return counts;
+        counts.NEED_ADMIN_APPROVAL = adminTransactions.filter(
+          (t) => t.status === "FULLY_APPROVED" && t.template.needAdminApproval
+        ).length;
+        counts.ALL = counts.NEED_ADMIN_APPROVAL;
+        break;
+    }
+
+    return counts;
+  };
+
+  const statusCounts = getStatusCounts();
+
+  const handleViewTypeChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
       setViewType(newValue.value as ViewType);
+      setSelectedStatus("ALL");
     }
   };
 
-  const renderTransactionGrid = (
-    data: transactionType[] = [],
-    isChecking: boolean
-  ) => {
-    if (data.length === 0) return <TransactionEmptyState t={t} />;
-
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {data.map((transaction) => (
-          <TransactionCard
-            key={transaction._id}
-            transaction={transaction}
-            showActions={!isChecking}
-            viewType={viewType}
-          />
-        ))}
-      </div>
-    );
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(status);
   };
 
   const isLoading =
@@ -120,145 +281,94 @@ const Transactions = () => {
       ? isAdminError
       : isExecutionError;
 
-  const getLoadingCount = () => {
-    switch (viewType) {
-      case "department":
-        return 4; // 2 each for checking and ongoing
-      default:
-        return 2;
-    }
+  const renderStatusTabs = () => {
+    const currentTabs = statusTabs[viewType];
+    return (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {currentTabs.map((tab: StatusTab) => (
+          <button
+            key={tab.value}
+            onClick={() => handleStatusChange(tab.value)}
+            className={`
+              px-4 py-2 rounded-lg transition-colors duration-200
+              ${
+                selectedStatus === tab.value
+                  ? "bg-secondary text-twhite"
+                  : "text-tmid hover:bg-secondary/50"
+              }
+              flex items-center gap-2 text-sm font-medium
+            `}
+          >
+            {t(tab.label)}
+            {tab.value !== "ALL" && statusCounts[tab.value] > 0 && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-tblack">
+                {statusCounts[tab.value]}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    );
   };
 
-  const renderContent = () => {
-    if (isError) {
-      return <ErrorState />;
-    }
+  const renderTransactions = () => {
+    if (isError) return <ErrorState />;
 
     if (isLoading) {
       return (
-        <div className="space-y-12">
-          <section>
-            <h2 className="text-xl font-semibold text-twhite mb-6">
-              {viewType === "department" ? t("Checking") : t("Transactions")}
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[...Array(getLoadingCount())].map((_, i) => (
-                <TransactionLoadingSkeleton key={`loading-${i}`} />
-              ))}
-            </div>
-          </section>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <TransactionLoadingSkeleton key={`loading-${i}`} />
+          ))}
         </div>
       );
     }
 
-    switch (viewType) {
-      case "department":
-        return (
-          <div className="space-y-12">
-            {deptTransactions?.checking &&
-              deptTransactions.checking.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6">
-                    <h2 className="text-xl font-semibold text-twhite">
-                      {t("Checking")}
-                    </h2>
-                    <span className="px-2 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-medium">
-                      {deptTransactions.checking.length}
-                    </span>
-                  </div>
-                  {renderTransactionGrid(deptTransactions.checking, true)}
-                </section>
-              )}
-            <section>
-              <div className="flex items-center gap-3 mb-6">
-                <h2 className="text-xl font-semibold text-twhite">
-                  {t("Ongoing")}
-                </h2>
-                {deptTransactions?.ongoing &&
-                  deptTransactions.ongoing.length > 0 && (
-                    <span className="px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-500 text-xs font-medium">
-                      {deptTransactions.ongoing.length}
-                    </span>
-                  )}
-              </div>
-              {renderTransactionGrid(deptTransactions?.ongoing, false)}
-            </section>
-          </div>
-        );
-
-      case "execution":
-        return (
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-xl font-semibold text-twhite">
-                {t("Execution Tasks")}
-              </h2>
-              {executionTransactions && executionTransactions.length > 0 && (
-                <span className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-500 text-xs font-medium">
-                  {executionTransactions.length}
-                </span>
-              )}
-            </div>
-            {renderTransactionGrid(executionTransactions, false)}
-          </section>
-        );
-
-      case "admin":
-        return (
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-xl font-semibold text-twhite">
-                {t("Admin Tasks")}
-              </h2>
-              {adminTransactions && adminTransactions.length > 0 && (
-                <span className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-500 text-xs font-medium">
-                  {adminTransactions.length}
-                </span>
-              )}
-            </div>
-            {renderTransactionGrid(adminTransactions, false)}
-          </section>
-        );
-
-      default: // "my" transactions
-        return (
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <h2 className="text-xl font-semibold text-twhite">
-                {t("My Transactions")}
-              </h2>
-              {myTransactions && myTransactions.length > 0 && (
-                <span className="px-2 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-medium">
-                  {myTransactions.length}
-                </span>
-              )}
-            </div>
-            {renderTransactionGrid(myTransactions, false)}
-          </section>
-        );
+    if (!filteredTransactions.length) {
+      return <TransactionEmptyState t={t} />;
     }
+
+    return (
+      <div className="space-y-4">
+        {filteredTransactions.map((transaction) => (
+          <TransactionCard
+            key={transaction._id}
+            transaction={transaction}
+            viewType={viewType}
+          />
+        ))}
+      </div>
+    );
   };
 
   return (
     <GridContainer>
-      <div className="col-span-full flex flex-col md:flex-row justify-between items-center gap-5 mb-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full">
-          <h1 className="text-3xl font-bold text-twhite">
+      <div className="col-span-full space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <h1 className="text-2xl font-bold text-twhite">
             {t("Transactions")}
           </h1>
           <div className="w-64">
             <CustomReactSelect
-              value={selectedOption}
+              value={viewOptions.find((opt) => opt.value === viewType)}
               options={viewOptions}
-              onChange={handleTypeChange}
+              onChange={handleViewTypeChange}
               isSearchable={false}
               menuPlacement="bottom"
               placeholder={t("Select view type")}
             />
           </div>
         </div>
+
+        {/* Status Tabs */}
+        {renderStatusTabs()}
+
+        {/* Transactions List */}
+        <div className="bg-main rounded-lg overflow-hidden">
+          {renderTransactions()}
+        </div>
       </div>
-      {renderContent()}
     </GridContainer>
   );
 };

@@ -22,8 +22,8 @@ const TransactionFields: React.FC<TransactionFieldsProps> = ({
     { value: "text", label: t("Text") },
     { value: "textarea", label: t("Textarea") },
     { value: "number", label: t("Number") },
-    { value: "file", label: t("File") },
-    { value: "select", label: t("Select Menu") },
+    // { value: "file", label: t("File") },
+    // { value: "select", label: t("Select Menu") },
   ];
 
   const handleAddField = () => {

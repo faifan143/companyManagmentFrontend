@@ -1,8 +1,7 @@
 import RouteWrapper from "@/components/common/atoms/ui/RouteWrapper";
 
-function useSetPageData<T>(path: string) {
+function useSetPageData<T>(path: string, key = "pageData") {
   const setPageData = (data: T) => {
-    const key = "pageData"; // Unique key for storage
     sessionStorage.setItem(key, JSON.stringify(data)); // Store the data
   };
 
@@ -16,7 +15,7 @@ function useSetPageData<T>(path: string) {
     className?: string;
   }) => (
     <RouteWrapper
-      href={`${path}?key=pageData`}
+      href={`${path}?${key}=${key}`}
       onClick={() => setPageData(data)}
       className={className}
     >

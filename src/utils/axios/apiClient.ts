@@ -28,12 +28,7 @@ export class ApiClient {
     });
 
     this.api.interceptors.response.use(
-      (response) => {
-        const isAuthEndpoint = ["/auth/login", "/auth/refresh-token"].includes(
-          response.config.url || ""
-        );
-        return isAuthEndpoint ? response.data : response.data;
-      },
+      (response) => response.data,
       async (error: AxiosError) => {
         if (
           error.response?.status === 401 &&

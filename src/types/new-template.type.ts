@@ -71,6 +71,10 @@ export interface transactionType {
     department: { _id: string; name: string };
     status: "PENDING" | "ONGOING" | "CHECKING" | "DONE";
   }[];
+  departments_execution: {
+    department_id: string;
+    status: "SEEN" | "NOT_SEEN";
+  }[];
   status:
     | "NOT_APPROVED"
     | "PARTIALLY_APPROVED"
@@ -82,4 +86,5 @@ export interface transactionType {
     action: "approve" | "reject" | "send_back";
     note: string;
   }[];
+  isArchive: boolean;
 }

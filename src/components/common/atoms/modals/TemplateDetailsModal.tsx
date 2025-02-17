@@ -29,7 +29,6 @@ const TemplateDetailsModal: React.FC<TemplateDetailsModalProps> = ({
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      // Prevent body scroll
       document.body.style.overflow = "hidden";
     }
 
@@ -59,122 +58,241 @@ const TemplateDetailsModal: React.FC<TemplateDetailsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 -top-4 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div
         ref={modalRef}
-        className="bg-secondary w-full max-w-2xl max-h-[90vh] rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-200"
+        className="bg-secondary w-full max-w-3xl max-h-[90vh] rounded-xl shadow-lg overflow-hidden animate-in fade-in duration-200"
       >
-        {/* Header with close button */}
-        <div className="flex justify-between items-start p-6 border-b border-gray-700/50">
-          <div>
-            <h2 className="text-2xl font-semibold text-twhite mb-2">
-              {template.name}
-            </h2>
-            <span className="px-3 py-1 text-xs rounded-full bg-main text-tmid border border-main">
-              {t(template.type)}
-            </span>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-dark rounded-lg transition-colors duration-200"
-          >
-            <svg
-              className="w-5 h-5 text-tmid"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        {/* Email-like Header */}
+        <div className="p-6 border-b border-gray-700/50">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex-1 ">
+              <h2 className="text-xl font-semibold text-twhite mb-4 ">
+                {template.name}
+              </h2>
+              <div className="flex flex-col xs:flex-row justify-start items-center gap-3 text-sm text-tmid">
+                <span className="flex items-center gap-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                  {t(template.type)}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  {template.duration.value} {t(template.duration.unit)}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                  {template.needAdminApproval
+                    ? t("Admin Approval Required")
+                    : t("No Admin Approval")}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-main rounded-lg transition-colors duration-200 text-tmid hover:text-twhite"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <p className="text-tmid text-sm">{template.description}</p>
         </div>
 
-        {/* Scrollable content */}
-        <div className="overflow-y-auto p-6 max-h-[calc(90vh-8rem)]">
-          <p className="text-tmid mb-6">{template.description}</p>
-
-          <div className="space-y-6">
-            {/* Duration & Admin Approval */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-dark rounded-lg p-4">
-                <h3 className="text-sm font-medium text-twhite mb-2">
-                  {t("Duration")}
-                </h3>
-                <p className="text-lg text-tmid">
-                  {template.duration.value} {t(template.duration.unit)}
-                </p>
-              </div>
-              <div className="bg-dark rounded-lg p-4">
-                <h3 className="text-sm font-medium text-twhite mb-2">
-                  {t("Admin Approval")}
-                </h3>
-                <p className="text-lg text-tmid">
-                  {template.needAdminApproval
-                    ? t("Required")
-                    : t("Not Required")}
-                </p>
-              </div>
-            </div>
-
-            {/* Approval Track */}
-            <div>
-              <h3 className="text-sm font-medium text-twhite mb-3">
-                {t("Approval Track")} (
-                {template.departments_approval_track.length} {t("steps")})
-              </h3>
-              <div className="bg-dark rounded-lg p-4">
-                <div className="flex flex-col gap-2">
-                  {template.departments_approval_track.map((dept, index) => (
-                    <div key={dept._id} className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-main text-tmid flex items-center justify-center text-sm">
-                        {index + 1}
-                      </span>
-                      <span className="text-tmid">{dept.name}</span>
+        {/* Content */}
+        <div className="p-6 pt-0 space-y-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
+          {/* Workflow Section */}
+          <div>
+            <h3 className="text-sm font-medium text-twhite mb-4 flex items-center gap-2">
+              <svg
+                className="w-4 h-4 text-tmid"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              {t("Workflow")}
+            </h3>
+            <div className="bg-main rounded-lg">
+              <div className="divide-y divide-gray-700/50">
+                {template.departments_approval_track.map((dept, index) => (
+                  <div key={dept._id} className="p-4 flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-tmid">
+                      {index + 1}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Execution Departments */}
-            <div>
-              <h3 className="text-sm font-medium text-twhite mb-3">
-                {t("Execution Departments")}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {template.departments_execution_ids.map((dept) => (
-                  <span
-                    key={dept._id}
-                    className="px-3 py-1.5 bg-main rounded-lg text-xs font-medium text-tmid"
-                  >
-                    {dept.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Required Fields */}
-            <div>
-              <h3 className="text-sm font-medium text-twhite mb-3">
-                {t("Required Fields")} ({template.transactionFields.length})
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {template.transactionFields.map((field) => (
-                  <div key={field.name} className="bg-dark p-3 rounded-lg">
-                    <p className="text-sm font-medium text-twhite">
-                      {field.name}
-                    </p>
-                    <p className="text-xs text-tmid capitalize">
-                      {t(field.type)}
-                    </p>
+                    <div>
+                      <p className="text-sm font-medium text-twhite">
+                        {dept.name}
+                      </p>
+                      <p className="text-xs text-tmid">
+                        {t("Approval Required")}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Required Fields */}
+          <div>
+            <h3 className="text-sm font-medium text-twhite mb-4 flex items-center gap-2">
+              <svg
+                className="w-4 h-4 text-tmid"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              {t("Required Fields")}
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {template.transactionFields.map((field) => (
+                <div key={field.name} className="bg-main p-4 rounded-lg">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-twhite mb-1">
+                        {field.name}
+                      </p>
+                      <p className="text-xs text-tmid capitalize flex items-center gap-1">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          {field.type === "file" ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                            />
+                          ) : field.type === "select" ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          )}
+                        </svg>
+                        {t(field.type)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Execution Departments */}
+          <div>
+            <h3 className="text-sm font-medium text-twhite mb-4 flex items-center gap-2">
+              <svg
+                className="w-4 h-4 text-tmid"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+              {t("Execution Departments")}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {template.departments_execution_ids.map((dept) => (
+                <span
+                  key={dept._id}
+                  className="px-3 py-1.5 bg-main rounded-lg text-sm text-tmid flex items-center gap-2"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                  {dept.name}
+                </span>
+              ))}
             </div>
           </div>
         </div>

@@ -31,7 +31,7 @@ import { FieldValues, UseFormReset } from "react-hook-form";
 
 function useQueryData<T extends FieldValues>(
   reset: UseFormReset<FieldValues>,
-  paramName: string = "key"
+  paramName: string = "pageData"
 ) {
   const searchParams = useSearchParams();
   const [queryData, setQueryData] = useState<T | null>(null);

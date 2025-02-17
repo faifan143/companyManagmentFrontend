@@ -1,14 +1,15 @@
 import { useCreateMutation } from "@/hooks/useCreateMutation";
 import useLanguage from "@/hooks/useLanguage";
-import { useRedux } from "@/hooks/useRedux";
-import { RootState } from "@/state/store";
 import { transactionType } from "@/types/new-template.type";
 import { addDurationToDate } from "@/utils/add_duration_to_date";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LogsModal from "../modals/LogsModal";
 import TemplateDetailsModal from "../modals/TemplateDetailsModal";
 import TransactionActionModal from "../modals/TransactionActionModal";
 import PageSpinner from "../ui/PageSpinner";
+import useSetPageData from "@/hooks/useSetPageData";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ViewType = "my" | "admin" | "department" | "execution";
 type ActionType =
@@ -17,32 +18,25 @@ type ActionType =
   | "send_back"
   | "restart"
   | "finish"
-  | "done";
+  | "seen";
 
 interface TransactionCardProps {
   transaction: transactionType;
-  showActions: boolean;
   viewType: ViewType;
 }
 
-const TransactionCard = ({
-  transaction,
-  showActions,
-  viewType,
-}: TransactionCardProps) => {
+const TransactionCard = ({ transaction, viewType }: TransactionCardProps) => {
   const { t, getDir } = useLanguage();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const queryClient = useQueryClient();
   const [showTemplateDetails, setShowTemplateDetails] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   const [showActionModal, setShowActionModal] = useState(false);
   const [currentAction, setCurrentAction] = useState<ActionType | null>(null);
-
-  const { selector: myDeptId } = useRedux(
-    (state: RootState) => state.user.userInfo?.department.id
+  const { NavigateButton } = useSetPageData(
+    "/transactions/add-transaction",
+    "restartData"
   );
-
-  const showSendBack =
-    viewType === "department" &&
-    myDeptId !== transaction.template.departments_approval_track[0]._id;
 
   const getStatusColor = (status: transactionType["status"]) => {
     switch (status) {
@@ -62,29 +56,100 @@ const TransactionCard = ({
       endpoint: "/transactions/departments-track",
       invalidateQueryKeys: [
         "my-transactions",
+
         "department-transactions",
         "admin-transactions",
         "execution-transactions",
       ],
     });
+  const { mutateAsync: makeAnExecutionSeen, isPending: isMakingSeenAction } =
+    useCreateMutation({
+      endpoint: `/transactions/execution-status/${transaction._id}`,
+      invalidateQueryKeys: [
+        "my-transactions",
+
+        "department-transactions",
+        "admin-transactions",
+        "execution-transactions",
+      ],
+      requestType: "patch",
+    });
+
+  const { mutateAsync: makeAnAdminAction, isPending: isMakingAdminAction } =
+    useCreateMutation({
+      endpoint: `/transactions/admin-approve`,
+      invalidateQueryKeys: [
+        "my-transactions",
+        "department-transactions",
+        "admin-transactions",
+        "execution-transactions",
+      ],
+      requestType: "patch",
+    });
+
+  const {
+    refetch: makeFinishAction,
+    isFetching: isMakingFinishAction,
+    isSuccess: isArchivingSuccessed,
+  } = useCustomQuery({
+    url: `/transactions/finish/${transaction._id}`,
+    queryKey: [
+      "my-transactions",
+      "department-transactions",
+      "admin-transactions",
+      "execution-transactions",
+    ],
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (isArchivingSuccessed) {
+      queryClient.invalidateQueries({
+        queryKey: [
+          "my-transactions",
+          "department-transactions",
+          "admin-transactions",
+          "execution-transactions",
+        ],
+      });
+    }
+  }, [isArchivingSuccessed, queryClient]);
 
   const handleAction = async (note: string) => {
     if (!currentAction) return;
 
     try {
-      await makeAnAction({
-        transaction_id: transaction._id,
-        action: currentAction,
-        note,
-      });
+      if (viewType == "admin") {
+        makeAnAdminAction({
+          transaction_id: transaction._id,
+          action: currentAction,
+          note,
+        });
+      } else {
+        if (
+          currentAction == "approve" ||
+          currentAction == "reject" ||
+          currentAction == "send_back"
+        ) {
+          await makeAnAction({
+            transaction_id: transaction._id,
+            action: currentAction,
+            note,
+          });
+        } else if (currentAction == "seen") {
+          await makeAnExecutionSeen({
+            newStatus: "SEEN",
+          });
+        } else if (currentAction == "finish") {
+          await makeFinishAction();
+        }
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   const renderActionButtons = () => {
-    if (!showActions) return null;
-
     const buttonClasses =
       "px-4 py-2 text-sm rounded-lg bg-main hover:bg-dark border border-gray-700/50 text-tmid hover:text-twhite transition-colors duration-200 flex items-center gap-2";
 
@@ -92,28 +157,25 @@ const TransactionCard = ({
       case "my":
         return (
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              className={buttonClasses}
-              onClick={() => {
-                setCurrentAction("restart");
-                setShowActionModal(true);
-              }}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              {t("Restart")}
-            </button>
+            <NavigateButton data={transaction} className={buttonClasses}>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                {t("Restart")}
+              </div>
+            </NavigateButton>
+
             <button
               className={buttonClasses}
               onClick={() => {
@@ -145,7 +207,7 @@ const TransactionCard = ({
             <button
               className={buttonClasses}
               onClick={() => {
-                setCurrentAction("done");
+                setCurrentAction("seen");
                 setShowActionModal(true);
               }}
             >
@@ -162,7 +224,7 @@ const TransactionCard = ({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              {t("Done")}
+              {t("Seen")}
             </button>
           </div>
         );
@@ -217,7 +279,7 @@ const TransactionCard = ({
               {t("Reject")}
             </button>
 
-            {showSendBack && (
+            {
               <button
                 className={buttonClasses}
                 onClick={() => {
@@ -240,7 +302,7 @@ const TransactionCard = ({
                 </svg>
                 {t("Send Back")}
               </button>
-            )}
+            }
           </div>
         );
 
@@ -250,13 +312,28 @@ const TransactionCard = ({
   };
 
   return (
-    <div className="bg-secondary rounded-xl overflow-hidden border border-gray-700/50 transition-all duration-300 hover:shadow-lg">
+    <div
+      // className="
+      className={`
+      bg-secondary rounded-xl overflow-hidden border border-gray-700/50 transition-all duration-300 hover:shadow-lg
+        ${
+          isExpanded
+            ? "rounded-xl shadow-lg"
+            : "border-b hover:bg-secondary/50 cursor-pointer"
+        }
+      `}
+      onClick={() => !isExpanded && setIsExpanded(true)}
+    >
       {/* Header with status bar */}
       <div className={`h-1 ${getStatusColor(transaction.status)} w-full`} />
 
       <div className="p-6">
         {/* Transaction Header */}
-        <div className="flex justify-between items-start gap-4 mb-6">
+        <div
+          className={`flex justify-between items-start gap-4  ${
+            isExpanded ? "mb-6" : "mb-0"
+          }`}
+        >
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <h2 className="text-xl font-semibold text-twhite">
@@ -316,221 +393,212 @@ const TransactionCard = ({
                 </span>
               )}
             </button>
-          </div>
-        </div>
-
-        {/* Dates Section */}
-        <div className="bg-main rounded-lg p-4 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-2 text-sm">
-              <svg
-                className="w-4 h-4 text-tmid"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            {isExpanded && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(false);
+                }}
+                className="p-2.5 border border-dark rounded-lg hover:bg-main text-tmid hover:text-twhite transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="text-tmid">{t("Start Date")}:</span>
-              <span className="text-twhite" dir={getDir()}>
-                {new Date(transaction.start_date).toISOString().split("T")[0]}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <svg
-                className="w-4 h-4 text-tmid"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span className="text-tmid">{t("End Date")}:</span>
-              <span className="text-twhite">
-                {addDurationToDate(
-                  transaction.start_date,
-                  transaction.template.duration,
-                  getDir
-                )}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Approval Track */}
-        {/* <div className="mb-6">
-          <h3 className="text-sm font-medium text-twhite mb-3 flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-tmid"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            {t("Approval Track")}
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {transaction.departments_approval_track.map((dept, index) => (
-              <div
-                key={index}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 
-                  ${
-                    dept.status === "DONE"
-                      ? "bg-green-500/10 text-green-500"
-                      : dept.status === "ONGOING"
-                      ? "bg-yellow-500/10 text-yellow-500"
-                      : dept.status === "CHECKING"
-                      ? "bg-blue-500/10 text-blue-500"
-                      : "bg-gray-500/10 text-tmid"
-                  }`}
-              >
-                {dept.department.name}
-                <span className="text-[10px] uppercase px-1.5 py-0.5 rounded-full bg-black/10">
-                  {t(dept.status)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div> */}
-        {/* Approval Track */}
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-twhite mb-3 flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-tmid"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            {t("Approval Track")}
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            {transaction.departments_approval_track.map((dept, index) => (
-              <div key={index} className="flex items-center gap-2">
-                {/* Arrow between steps */}
-                {index > 0 &&
-                  (getDir() == "rtl" ? (
-                    <svg
-                      className="w-4 h-4 text-tmid"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 5l-7 7 7 7"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-4 h-4 text-tmid"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  ))}
-
-                {/* Department status badge */}
-                <div
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2
-          ${
-            dept.status === "DONE"
-              ? "bg-green-500/10 text-green-500"
-              : dept.status === "ONGOING"
-              ? "bg-yellow-500/10 text-yellow-500"
-              : dept.status === "CHECKING"
-              ? "bg-blue-500/10 text-blue-500"
-              : "bg-gray-500/10 text-tmid"
-          }`}
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  {/* Step number circle */}
-                  <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px] font-medium">
-                    {index + 1}
-                  </span>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 15l7-7 7 7"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
 
-                  {/* Department name and status */}
-                  <div className="flex flex-col">
-                    <span className="font-medium">{dept.department.name}</span>
-                    <span className="text-[10px] uppercase opacity-75">
-                      {t(dept.status)}
-                    </span>
-                  </div>
+        {isExpanded && (
+          <>
+            {/* Dates Section */}
+            <div className="bg-main rounded-lg p-4 mb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <svg
+                    className="w-4 h-4 text-tmid"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span className="text-tmid">{t("Start Date")}:</span>
+                  <span className="text-twhite" dir={getDir()}>
+                    {
+                      new Date(transaction.start_date)
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <svg
+                    className="w-4 h-4 text-tmid"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span className="text-tmid">{t("End Date")}:</span>
+                  <span className="text-twhite">
+                    {addDurationToDate(
+                      transaction.start_date,
+                      transaction.template.duration,
+                      getDir
+                    )}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-        {/* Fields Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {transaction.fields.map((field, index) => (
-            <div
-              key={index}
-              className="bg-main rounded-lg p-4 hover:bg-dark/50 transition-colors duration-200"
-            >
-              <span className="text-xs text-tmid block mb-2 uppercase tracking-wider">
-                {field.field_name}
-              </span>
-              <span className="text-sm text-twhite font-medium">
-                {typeof field.value === "string" ||
-                typeof field.value === "number" ? (
-                  field.value.toString()
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    {t("File Uploaded")}
-                  </div>
-                )}
-              </span>
             </div>
-          ))}
-        </div>
 
-        {/* Action Buttons */}
-        <div className="mt-6">{renderActionButtons()}</div>
+            {/* Approval Track */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-twhite mb-3 flex items-center gap-2">
+                <svg
+                  className="w-4 h-4 text-tmid"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+                {t("Approval Track")}
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {transaction.departments_approval_track.map((dept, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    {/* Arrow between steps */}
+                    {index > 0 &&
+                      (getDir() == "rtl" ? (
+                        <svg
+                          className="w-4 h-4 text-tmid"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 5l-7 7 7 7"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-4 h-4 text-tmid"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      ))}
 
+                    {/* Department status badge */}
+                    <div
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2
+            ${
+              dept.status === "DONE"
+                ? "bg-green-500/10 text-green-500"
+                : dept.status === "ONGOING"
+                ? "bg-yellow-500/10 text-yellow-500"
+                : dept.status === "CHECKING"
+                ? "bg-blue-500/10 text-blue-500"
+                : "bg-gray-500/10 text-tmid"
+            }`}
+                    >
+                      {/* Step number circle */}
+                      <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px] font-medium">
+                        {index + 1}
+                      </span>
+
+                      {/* Department name and status */}
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {dept.department.name}
+                        </span>
+                        <span className="text-[10px] uppercase opacity-75">
+                          {t(dept.status)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Fields Grid */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {transaction.fields.map((field, index) => (
+                <div
+                  key={index}
+                  className="bg-main rounded-lg p-4 hover:bg-dark/50 transition-colors duration-200"
+                >
+                  <span className="text-xs text-tmid block mb-2 uppercase tracking-wider">
+                    {field.field_name}
+                  </span>
+                  <span className="text-sm text-twhite font-medium">
+                    {typeof field.value === "string" ||
+                    typeof field.value === "number" ? (
+                      field.value.toString()
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                        {t("File Uploaded")}
+                      </div>
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6">{renderActionButtons()}</div>
+          </>
+        )}
         {/* Modals */}
         <TemplateDetailsModal
           template={transaction.template}
@@ -556,7 +624,10 @@ const TransactionCard = ({
           />
         )}
 
-        {isMakingAction && <PageSpinner />}
+        {(isMakingAction ||
+          isMakingSeenAction ||
+          isMakingAdminAction ||
+          isMakingFinishAction) && <PageSpinner />}
       </div>
     </div>
   );
