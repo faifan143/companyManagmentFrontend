@@ -61,6 +61,7 @@ const Sidebar = ({
       setSelectedTab(validTab);
       localStorage.setItem("selectedTab", validTab);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPermissions, isAdmin]);
 
   useEffect(() => {

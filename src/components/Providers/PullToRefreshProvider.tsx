@@ -135,6 +135,7 @@ export const PullToRefreshProvider: React.FC<PullToRefreshProviderProps> = ({
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pullProgress, isRefreshing]);
 
   return (
