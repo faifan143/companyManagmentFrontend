@@ -23,9 +23,14 @@ type ActionType =
 interface TransactionCardProps {
   transaction: transactionType;
   viewType: ViewType;
+  showActions: boolean;
 }
 
-const TransactionCard = ({ transaction, viewType }: TransactionCardProps) => {
+const TransactionCard = ({
+  transaction,
+  viewType,
+  showActions,
+}: TransactionCardProps) => {
   const { t, getDir } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const queryClient = useQueryClient();
@@ -56,7 +61,6 @@ const TransactionCard = ({ transaction, viewType }: TransactionCardProps) => {
       endpoint: "/transactions/departments-track",
       invalidateQueryKeys: [
         "my-transactions",
-
         "department-transactions",
         "admin-transactions",
         "execution-transactions",
@@ -67,7 +71,6 @@ const TransactionCard = ({ transaction, viewType }: TransactionCardProps) => {
       endpoint: `/transactions/execution-status/${transaction._id}`,
       invalidateQueryKeys: [
         "my-transactions",
-
         "department-transactions",
         "admin-transactions",
         "execution-transactions",
@@ -150,6 +153,7 @@ const TransactionCard = ({ transaction, viewType }: TransactionCardProps) => {
   };
 
   const renderActionButtons = () => {
+    if (viewType == "department" && !showActions) return;
     const buttonClasses =
       "px-4 py-2 text-sm rounded-lg bg-main hover:bg-dark border border-gray-700/50 text-tmid hover:text-twhite transition-colors duration-200 flex items-center gap-2";
 

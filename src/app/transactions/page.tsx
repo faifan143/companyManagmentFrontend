@@ -11,6 +11,8 @@ import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import TransactionCard from "@/components/common/atoms/transactions/TransactionCard";
 import TransactionEmptyState from "@/components/common/atoms/transactions/TransactionEmptyState";
 import TransactionLoadingSkeleton from "@/components/common/atoms/transactions/TransactionLoadingSkeleton";
+import { useRedux } from "@/hooks/useRedux";
+import { RootState } from "@/state/store";
 
 type ViewType = "my" | "admin" | "department" | "execution";
 
@@ -23,7 +25,9 @@ const Transactions = () => {
   const { t } = useLanguage();
   const [viewType, setViewType] = useState<ViewType>("my");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
+  const { selector: myDept } = useRedux(
+    (state: RootState) => state.user.userInfo?.department
+  );
   // View type options
   const viewOptions = useMemo(
     () => [
@@ -330,13 +334,21 @@ const Transactions = () => {
 
     return (
       <div className="space-y-4">
-        {filteredTransactions.map((transaction) => (
-          <TransactionCard
-            key={transaction._id}
-            transaction={transaction}
-            viewType={viewType}
-          />
-        ))}
+        {filteredTransactions.map((transaction) => {
+          const isChecking =
+            viewType === "department" &&
+            transaction.departments_approval_track.find(
+              (dept) => dept.department._id === myDept?.id
+            )?.status == "CHECKING";
+          return (
+            <TransactionCard
+              key={transaction._id}
+              transaction={transaction}
+              viewType={viewType}
+              showActions={!isChecking}
+            />
+          );
+        })}
       </div>
     );
   };
