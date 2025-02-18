@@ -82,7 +82,7 @@ const ProfileProjectsReport = ({
               className="hover:bg-slate-700 transition-colors 
               px-2 sm:px-4 py-2 bg-dark rounded-md 
               flex flex-col sm:flex-row sm:items-center sm:justify-between 
-              group gap-3 sm:gap-0"
+              group gap-3 sm:gap-0  mt-1"
             >
               <div
                 className={`sm:w-[40%] text-center sm:text-left group-hover:${

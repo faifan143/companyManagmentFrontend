@@ -46,10 +46,7 @@ const TasksView: React.FC = () => {
 
   const { data: projects } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
-    url: `/projects/${
-      // isAdmin ? "get-all-projects" :
-      "get-manager-project"
-    }`,
+    url: `/projects/${isAdmin ? "get-all-projects" : "get-manager-project"}`,
   });
 
   const { data: deptTree } = useCustomQuery<{ tree: DeptTree[] }>({
@@ -193,12 +190,12 @@ const TasksView: React.FC = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
-        {activeTab === "list" && (
-          <TaskList tasksData={tasksData?.info} sections={sections} />
+        {activeTab === "list" && tasksData?.info && (
+          <TaskList tasksData={tasksData.info} sections={sections} />
         )}
-        {activeTab === "board" && (
+        {activeTab === "board" && tasksData?.info && (
           <GridContainer extraStyle=" !pl-0 ">
-            <TasksContent tasksData={tasksData?.info} sections={sections} />
+            <TasksContent tasksData={tasksData.info} sections={sections} />
           </GridContainer>
         )}
         {activeTab === "tree" && tasksData && (

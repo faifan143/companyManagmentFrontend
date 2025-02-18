@@ -119,7 +119,6 @@ export const ConditionalSection: React.FC<ConditionalSectionProps> = ({
                 value={selectedEmp}
                 onChange={(selected) => {
                   setSelectedEmp(selected);
-
                   register("emp").onChange({
                     target: {
                       value: selected?.value || null,

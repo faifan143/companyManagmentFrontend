@@ -270,19 +270,18 @@ const ListTaskDetails: React.FC<{
         >
           <span>{t("Priority")}</span>
           <span
-            className={`${getPriorityColor(selectedPriority!)}  
-            
-            ${isLightMode ? "text-twhite" : "text-tblackAF"}
-             px-2 py-1 rounded text-xs cursor-pointer`}
+            className={`${getPriorityColor(selectedPriority!)} ${
+              isLightMode ? "text-twhite" : "text-tblackAF"
+            } px-2 py-1 rounded text-xs cursor-pointer`}
             onClick={() => setPriorityMenuOpen(!isPriorityMenuOpen)}
           >
             {t(selectedPriority)}
           </span>
           {userId == task?.assignee._id && isPriorityMenuOpen && (
             <div
-              className={`absolute top-10 ${
-                currentLanguage == "en" ? "-right-20" : "right-20"
-              }  bg-dark  text-twhite rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
+              className={`absolute top-1/2 mt-1 ${
+                getDir() == "rtl" ? "left-10" : "right-10 "
+              } bg-dark text-twhite rounded-md shadow-lg p-2 z-10 backdrop-blur-sm min-w-[120px]`}
             >
               {priorityOptions.map((option) => (
                 <div
@@ -293,9 +292,9 @@ const ListTaskDetails: React.FC<{
                   }}
                   className={`px-4 py-2 rounded-md ${
                     isLightMode
-                      ? " hover:bg-darkest hover:text-tblackAF"
-                      : " hover:bg-gray-500"
-                  } cursor-pointer`}
+                      ? "hover:bg-darkest hover:text-tblackAF"
+                      : "hover:bg-gray-500"
+                  } cursor-pointer text-center`}
                 >
                   {t(option)}
                 </div>
@@ -322,8 +321,8 @@ const ListTaskDetails: React.FC<{
           </span>
           {isStatusMenuOpen && (
             <div
-              className={`absolute top-10 ${
-                currentLanguage == "en" ? "-right-20" : "right-20"
+              className={`absolute top-1/2 mt-1 ${
+                getDir() == "rtl" ? "left-10" : "right-10 "
               }  bg-dark  text-twhite w-40 rounded-md shadow-lg p-2 z-10 backdrop-blur-sm`}
             >
               {statusOptions.map((option) => (
@@ -364,7 +363,7 @@ const ListTaskDetails: React.FC<{
           setIsRatingOpen={setIsRatingOpen}
           onSubmit={(rating) =>
             updateTaskData(task?.id, {
-              rating,
+              rate: rating,
             }).then(() => {
               console.log("Rating updated");
               setSnackbarConfig({
