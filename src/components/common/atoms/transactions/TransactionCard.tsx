@@ -212,7 +212,9 @@ const TransactionCard = ({
               className={buttonClasses}
               onClick={() => {
                 setCurrentAction("seen");
-                setShowActionModal(true);
+                makeAnExecutionSeen({
+                  newStatus: "SEEN",
+                });
               }}
             >
               <svg
