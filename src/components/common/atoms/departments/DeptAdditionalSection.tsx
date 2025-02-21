@@ -7,7 +7,7 @@ import Image from "next/image";
 import { UseFormRegister } from "react-hook-form";
 
 interface DeptAdditionalSectionProps {
-  register: UseFormRegister<DepartmentFormInputs>; 
+  register: UseFormRegister<DepartmentFormInputs>;
   errors: Record<string, any>;
   numericOwnersFields: { id: string; category: string; count: number }[];
   availableCategories: string[];
@@ -80,7 +80,9 @@ const DeptAdditionalSection = ({
             )}
             <input
               type="number"
-              {...register(`numericOwners.${index}.count` as const)}
+              {...register(`numericOwners.${index}.count` as const, {
+                valueAsNumber: true,
+              })}
               placeholder={t("Count")}
               className={`    ${
                 isLightMode

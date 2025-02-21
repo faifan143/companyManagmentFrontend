@@ -10,15 +10,17 @@ import PageSpinner from "../ui/PageSpinner";
 import useSetPageData from "@/hooks/useSetPageData";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRedux } from "@/hooks/useRedux";
+import { RootState } from "@/state/store";
 
-type ViewType = "my" | "admin" | "department" | "execution";
+type ViewType = "my" | "admin" | "department" | "execution" | "archive";
 type ActionType =
   | "approve"
   | "reject"
   | "send_back"
   | "restart"
   | "finish"
-  | "seen";
+  | "done";
 
 interface TransactionCardProps {
   transaction: transactionType;
@@ -41,6 +43,9 @@ const TransactionCard = ({
   const { NavigateButton } = useSetPageData(
     "/transactions/add-transaction",
     "restartData"
+  );
+  const { selector: myDept } = useRedux(
+    (state: RootState) => state.user.userInfo?.department
   );
 
   const getStatusColor = (status: transactionType["status"]) => {
@@ -139,9 +144,10 @@ const TransactionCard = ({
             action: currentAction,
             note,
           });
-        } else if (currentAction == "seen") {
+        } else if (currentAction == "done") {
           await makeAnExecutionSeen({
-            newStatus: "SEEN",
+            newStatus: "DONE",
+            note,
           });
         } else if (currentAction == "finish") {
           await makeFinishAction();
@@ -206,15 +212,20 @@ const TransactionCard = ({
         );
 
       case "execution":
+        const isExecutionDone =
+          transaction.departments_execution.find(
+            (dept) => dept.department._id == myDept?.id
+          )?.status == "DONE";
+
+        if (isExecutionDone) return;
+        if (!showActions) return;
         return (
           <div className="flex flex-wrap items-center gap-2">
             <button
               className={buttonClasses}
               onClick={() => {
-                setCurrentAction("seen");
-                makeAnExecutionSeen({
-                  newStatus: "SEEN",
-                });
+                setCurrentAction("done");
+                setShowActionModal(true);
               }}
             >
               <svg
@@ -230,7 +241,7 @@ const TransactionCard = ({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              {t("Seen")}
+              {t("DONE")}
             </button>
           </div>
         );

@@ -3,8 +3,9 @@ export interface FormData {
   name: string;
   type: string;
   description: string;
-  departments_approval_track: string[];
-  departments_execution_ids: string[];
+  departments_approval_track: { department: string; employee?: string }[];
+  departments_execution_ids: { department: string; employee?: string }[];
+  departments_archive: { department: string; employee?: string }[];
   needAdminApproval: boolean;
   duration: {
     unit: "days" | "hours" | "months";
@@ -53,8 +54,39 @@ export interface templateType {
     unit: "days" | "hours" | "months";
     value: number;
   };
-  departments_approval_track: { _id: string; name: string }[];
-  departments_execution_ids: { _id: string; name: string }[];
+  departments_approval_track: {
+    department: { _id: string; name: string };
+    employee?: {
+      _id: string;
+      name: string;
+      job_id: {
+        _id: string;
+        title: string;
+      };
+    };
+  }[];
+  departments_execution_ids: {
+    department: { _id: string; name: string };
+    employee?: {
+      _id: string;
+      name: string;
+      job_id: {
+        _id: string;
+        title: string;
+      };
+    };
+  }[];
+  departments_archive: {
+    department: { _id: string; name: string };
+    employee?: {
+      _id: string;
+      name: string;
+      job_id: {
+        _id: string;
+        title: string;
+      };
+    };
+  }[];
   needAdminApproval: boolean;
   transactionFields: TransactionField[];
 }
@@ -69,11 +101,13 @@ export interface transactionType {
   }[];
   departments_approval_track: {
     department: { _id: string; name: string };
+    employee?: { _id: string; name: string };
     status: "PENDING" | "ONGOING" | "CHECKING" | "DONE";
   }[];
   departments_execution: {
-    department_id: string;
-    status: "SEEN" | "NOT_SEEN";
+    department: { _id: string; name: string };
+    employee?: { _id: string; name: string };
+    status: "DONE" | "NOT_DONE";
   }[];
   status:
     | "NOT_APPROVED"

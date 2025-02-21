@@ -5,11 +5,12 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
+import { Eye } from "lucide-react"; // Import the eye icon
 import Image from "next/image";
 import { useState } from "react";
 import AddProjectModal from "../atoms/modals/AddProjectModal";
-import RouteWrapper from "../atoms/ui/RouteWrapper";
 import PageSpinner from "../atoms/ui/PageSpinner";
+import RouteWrapper from "../atoms/ui/RouteWrapper";
 
 export const collabColors = [
   "border-2  border-blue-500 ",
@@ -37,7 +38,8 @@ const ProjectsContent = () => {
     }`,
   });
 
-  const handleEditClick = (project: ProjectType) => {
+  const handleEditClick = (project: ProjectType, e: React.MouseEvent) => {
+    e.stopPropagation();
     setCurrentProject(project);
     setIsModalOpen(true);
   };
@@ -63,9 +65,9 @@ const ProjectsContent = () => {
       <div className="overflow-x-auto rounded-lg shadow-md">
         <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
           <thead
-            className={` ${
+            className={`${
               isLightMode ? "bg-darkest text-tblackAF" : "bg-tblack text-twhite"
-            }  `}
+            }`}
           >
             <tr>
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
@@ -77,182 +79,120 @@ const ProjectsContent = () => {
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Departments")}
               </th>
-
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("Start Date")}
               </th>
               <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
                 {t("End Date")}
               </th>
-              {(isAdmin || isPrimary) && (
-                <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                  {t("Actions")}
-                </th>
-              )}
+              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                {t("Actions")}
+              </th>
             </tr>
           </thead>
           <tbody>
             {projects &&
-              projects.map((project) => (
+              projects.map((project, index) => (
                 <tr
-                  key={project._id}
-                  className={` ${
+                  key={index}
+                  className={`${
                     isLightMode
                       ? "hover:bg-darker text-blackAF"
                       : "hover:bg-slate-700 text-twhite"
-                  }  group transition-colors  cursor-pointer`}
+                  } group transition-colors`}
                 >
                   <td
                     className={`py-3 px-4 text-center ${
                       isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
                   >
-                    <RouteWrapper href={"/projects/details/" + project._id}>
-                      {project.name}
-                    </RouteWrapper>
+                    {project.name}
                   </td>
                   <td
-                    className={` py-3 px-4 text-center ${
+                    className={`py-3 px-4 text-center ${
                       isLightMode ? "group-hover:text-tblackAF" : ""
                     }`}
                   >
-                    <RouteWrapper href={"/projects/details/" + project._id}>
-                      {project.description}
-                    </RouteWrapper>
+                    {project.description}
                   </td>
-                  <td className="py-3 px-4 text-center ">
-                    <RouteWrapper href={"/projects/details/" + project._id}>
-                      {project.departments.length === 1 ? (
-                        <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
-                          {project.departments[0].name}
-                        </div>
-                      ) : (
-                        <div
-                          className="flex justify-center -space-x-4"
-                          dir="ltr"
-                        >
-                          {project.departments
-                            .slice(0, 3)
-                            .map((dept, index) => (
-                              <div
-                                key={dept.id}
-                                className={`   ${
-                                  collabColors[index % collabColors.length]
-                                } cursor-pointer  rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
-                                title={dept.name}
-                              >
-                                {dept.name
-                                  .split(" ")
-                                  .map((word) => word[0])
-                                  .join("")
-                                  .toUpperCase()}
-                              </div>
-                            ))}
-                          {project.departments.length > 3 && (
-                            <div
-                              className="     cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
-                              title={project.departments
-                                .slice(3)
-                                .map((dept) => dept.name)
-                                .join(", ")}
-                            >
-                              +{project.departments.length - 3}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </RouteWrapper>
-                  </td>
-                  {/* <td className="py-3 px-4 text-center">
-                    {project.members.length === 1 ? (
-                      <div className="border-2 border-blue-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
-                        {project.members[0].name}
+                  <td className="py-3 px-4 text-center">
+                    {project.departments.length === 1 ? (
+                      <div className="border-2 border-blue-500/30 bg-dark py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
+                        {project.departments[0].name}
                       </div>
                     ) : (
                       <div className="flex justify-center -space-x-4" dir="ltr">
-                        {project.members.slice(0, 3).map((member, index) => (
+                        {project.departments.slice(0, 3).map((dept, index) => (
                           <div
-                            key={member.id}
-                            className={`relative ${
+                            key={index}
+                            className={`${
                               collabColors[index % collabColors.length]
-                            } cursor-pointer  rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold shadow-lg`}
-                            title={member.name}
+                            } cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-bold`}
+                            title={dept.name}
                           >
-                            {member.name
+                            {dept.name
                               .split(" ")
                               .map((word) => word[0])
                               .join("")
                               .toUpperCase()}
                           </div>
                         ))}
-                        {project.members.length > 3 && (
+                        {project.departments.length > 3 && (
                           <div
-                            className="relative   cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold shadow-lg"
-                            title={project.members
+                            className="cursor-pointer rounded-full bg-dark px-4 py-2 flex items-center justify-center text-sm font-semibold"
+                            title={project.departments
                               .slice(3)
-                              .map((member) => member.name)
+                              .map((dept) => dept.name)
                               .join(", ")}
                           >
-                            +{project.members.length - 3}
+                            +{project.departments.length - 3}
                           </div>
                         )}
                       </div>
                     )}
-                  </td> */}
-
-                  <td>
-                    <RouteWrapper href={"/projects/details/" + project._id}>
-                      <div
-                        className={`  border-2  border-purple-500/30  bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold`}
-                      >
-                        {formatDate(
-                          project.startDate,
-                          currentLanguage as "en" | "ar"
-                        )}
-                      </div>
-                    </RouteWrapper>
                   </td>
                   <td>
-                    <RouteWrapper href={"/projects/details/" + project._id}>
-                      <div
-                        className={`border-2  border-yellow-500/30 bg-dark  py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold  ${
-                          isDueSoon(project.endDate) ? "flash" : ""
-                        }`}
-                      >
-                        {formatDate(
-                          project.endDate,
-                          currentLanguage as "en" | "ar"
-                        )}
-                      </div>
-                    </RouteWrapper>
+                    <div className="border-2 border-purple-500/30 bg-dark py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold">
+                      {formatDate(
+                        project.startDate,
+                        currentLanguage as "en" | "ar"
+                      )}
+                    </div>
                   </td>
-                  {(isAdmin || isPrimary) && (
-                    <td className="py-3 px-4 flex gap-2 justify-center">
-                      <div
-                        onClick={() => handleEditClick(project)}
+                  <td>
+                    <div
+                      className={`border-2 border-yellow-500/30 bg-dark py-1 px-3 w-fit mx-auto rounded-lg text-sm font-bold ${
+                        isDueSoon(project.endDate) ? "flash" : ""
+                      }`}
+                    >
+                      {formatDate(
+                        project.endDate,
+                        currentLanguage as "en" | "ar"
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 flex gap-2 justify-center">
+                    <RouteWrapper
+                      href={"/projects/details/" + project._id}
+                      className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-blue-500/40 hover:bg-blue-500 hover:text-blue-100 border-2 border-blue-500/30 text-white"
+                    >
+                      <Eye size={20} />
+                    </RouteWrapper>
+                    {(isAdmin || isPrimary) && (
+                      <button
+                        onClick={(e) => handleEditClick(project, e)}
                         className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                        title={t("Edit")}
                       >
-                        {/* {t("Edit")} */}
                         <Image
                           src={PencilIcon}
                           alt="edit icon"
                           height={20}
                           width={20}
                         />
-                      </div>
-                      {
-                        // <div className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-red-500/40 border-2 border-red-500/30 hover:text-red-100 hover:bg-red-500">
-                        //           {/* {t("Delete")} */}
-                        //           <Image
-                        //             src={TrashIcon}
-                        //             alt="delete icon"
-                        //             height={20}
-                        //             width={20}
-                        //           />
-                        //         </div>
-                      }
-                    </td>
-                  )}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
           </tbody>

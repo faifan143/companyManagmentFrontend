@@ -66,8 +66,12 @@ const AddTask: React.FC = () => {
       ...target,
     };
 
-    console.log(payload);
-    addTask(payload);
+    const filteredPayload = Object.fromEntries(
+      Object.entries(payload).filter(([, value]) => value !== "")
+    );
+
+    console.log(filteredPayload);
+    addTask(filteredPayload);
   };
   return (
     <GridContainer>

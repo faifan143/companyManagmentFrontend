@@ -187,7 +187,9 @@ export const FormInput = <TFieldValues extends FieldValues>({
           <textarea
             {...register(name, {
               setValueAs: (value) =>
-                value && value.toString().length>0 ? value.split(",").map((skill:string) => skill.trim()) : [],
+                value && value.toString().length > 0
+                  ? value.split(",").map((skill: string) => skill.trim())
+                  : [],
             })}
             className={`${baseClasses} ${errorClasses} ${additionalClassName}`}
             placeholder={placeholder}

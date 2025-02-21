@@ -274,6 +274,7 @@
     "ONGOING": "جارٍ التنفيذ",
     "ON_TEST": "تحت الاختبار",
     "DONE": "تم الإنجاز",
+    "NOT_DONE": "تحتاج الى إنجاز",
     "Projects": "المشاريع",
     "Add Project": "إضافة مشروع",
     "No Projects": "لا توجد مشاريع",
@@ -502,6 +503,24 @@
     "Archive": "الأرشيف",
     "Send_back": "إرجاع",
     "Approval Required": "تحتاج موافقة الإدارة",
-    "Workflow": "سير العمل"
+    "Workflow": "سير العمل",
+    "Enter responsibility here": "أدخل المسؤولية هنا",
+    "Add Responsibility": "إضافة مسؤولية",
+    "Select Departments": "اختر الأقسام",
+    "Select Employees": "اختر الموظفين",
+    "Select in approval order": "حدد بترتيب الموافقة",
+    "No more options available": "لا توجد خيارات إضافية",
+    "toggle between departments and employees for approval track": "التبديل بين الأقسام والموظفين لمسار الموافقة",
+    "Execution Employees": "موظفو التنفيذ",
+    "Select employees": "اختر الموظفين",
+    "Archive Departments": "أقسام الأرشفة",
+    "Select archive departments": "اختر أقسام الأرشفة",
+    "Optional Employee Selection": "اختيار موظف (اختياري)",
+    "Employee": "موظف",
+    "Default to Department Manager": "المدير الافتراضي للقسم",
+    "No employees in this department": "لا يوجد موظفين في هذا القسم",
+    "Enter skill here": "أكتب المهارة هنا",
+    "Add Skill": "إضافة مهارة",
+    "Archived Transactions": "المعاملات المؤرشفة"
   }
 }

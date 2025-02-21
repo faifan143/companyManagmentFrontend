@@ -88,7 +88,7 @@ const JobCategoryContent = () => {
     "/categories/add-category"
   );
 
-  if (isLoading) {
+  if (isLoading || !categories) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
         <PageSpinner />

@@ -74,7 +74,7 @@ export const CustomReactSelect = <IsMulti extends boolean = false>({
     }),
     multiValueLabel: (base) => ({
       ...base,
-      color: isLightMode ? "#111827" : "#fff",
+      color: "#fff",
       padding: "2px 6px",
     }),
     multiValueRemove: (base) => ({

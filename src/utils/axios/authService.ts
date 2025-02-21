@@ -3,6 +3,7 @@
 import { LoginResponse } from "@/types/LoginResponse.type";
 import { ApiClient } from "./apiClient";
 import { tokenService } from "./tokenService";
+import axios from "axios";
 
 interface LoginCredentials {
   email: string;
@@ -21,7 +22,12 @@ export class AuthService {
       tokenService.setTokens(response);
       return response;
     } catch (error) {
-      throw new Error("Failed to login");
+      if (axios.isAxiosError(error)) {
+        console.log("source error : ", error.response?.data);
+        // Throw an object with a 'message' property
+        throw { message: error.response?.data?.message || "Failed to login" };
+      }
+      throw { message: "Failed to login" }; // Ensure non-Axios errors also have a message
     }
   }
 

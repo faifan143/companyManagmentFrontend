@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-
 "use client";
-
 import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import ConditionalDropdowns from "@/components/common/atoms/job-title/ConditionalDropdowns";
 import IsManagerToggle from "@/components/common/atoms/job-title/IsManagerToggle";
@@ -20,6 +18,7 @@ import getErrorMessages from "@/utils/handleErrorMessages";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
+import DynamicResponsibilities from "@/components/common/atoms/job-title/DynamicResponsibilities";
 
 const AddJobTitle: React.FC = () => {
   const [permissionsMode, setPermissionsMode] = useState("default");
@@ -65,7 +64,7 @@ const AddJobTitle: React.FC = () => {
       console.log("job title data : ", jobTitleData);
 
       reset(jobTitleData);
-      setResponsibilities(jobTitleData.responsibilities);
+      setResponsibilities(jobTitleData.responsibilities || []);
       setValue("department_id", jobTitleData.department._id);
       setValue("category", jobTitleData.category.id);
       setSelectedCategory(jobTitleData.category.id);
@@ -80,6 +79,7 @@ const AddJobTitle: React.FC = () => {
       );
     } else {
       reset();
+      setResponsibilities([]);
     }
   }, [
     jobTitleData,
@@ -112,6 +112,7 @@ const AddJobTitle: React.FC = () => {
               accessibleDepartments: specificDept,
               accessibleEmps: specificEmp,
               accessibleJobTitles: specificJobTitle,
+              responsibilities,
             });
 
             addJobTitle({
@@ -139,90 +140,13 @@ const AddJobTitle: React.FC = () => {
             errors={errors}
             register={register}
           />
-          <TitleFormInput
-            name="responsibilities"
-            label={t("Responsibilities")}
-            placeholder={t("Enter responsibilities (comma-separated)")}
-            type="textarea"
-            errors={errors}
+          <DynamicResponsibilities
+            responsibilities={responsibilities}
+            setResponsibilities={setResponsibilities}
             register={register}
-            value={responsibilities}
-            onChange={setResponsibilities}
             setValue={setValue}
+            errors={errors}
           />
-          {/* Permissions Toggle */}
-          {/* <div>
-            <label className="block text-sm font-medium">
-              {t("Permissions Mode")}
-            </label>
-            <div className="flex gap-4">
-              <label>
-                <input
-                  type="radio"
-                  value="default"
-                  checked={permissionsMode === "default"}
-                  onChange={() => {
-                    setPermissionsMode("default");
-                    setPermissionsSelected([]);
-                    setSpecificDept([]);
-                    setSpecificEmp([]);
-                    setSpecificJobTitle([]);
-                  }}
-                />
-                {t("Default")}
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="custom"
-                  checked={permissionsMode === "custom"}
-                  onChange={() => setPermissionsMode("custom")}
-                />
-                {t("Custom")}
-              </label>
-            </div>
-          </div> */}
-
-          {/* Custom Permissions Multi-select */}
-          {/* {permissionsMode === "custom" && (
-            <div>
-              <label className="block text-sm font-medium">
-                {t("Select Permissions")}
-              </label>
-              <Select
-                isMulti
-                value={permissionsOptions.filter((option) =>
-                  permissionsSelected.includes(option.value)
-                )}
-                options={permissionsOptions}
-                onChange={(selectedOptions) =>
-                  handlePermissionsChange({
-                    selectedOptions: selectedOptions as {
-                      value: string;
-                      label: string;
-                    }[],
-                    setPermissionsSelected,
-                    setSpecificDept,
-                    setSpecificJobTitle,
-                    setSpecificEmp,
-                    specificDept,
-                    specificEmp,
-                    specificJobTitle,
-                  })
-                }
-                className={`mt-1 text-tblackAF  
-                
-                ${
-                  isLightMode
-                    ? "bg-dark  placeholder:text-tdark "
-                    : "bg-secondary"
-                }
-                outline-none border-none`}
-                placeholder={t("Select Permissions...")}
-                styles={selectStyle}
-              />
-            </div>
-          )} */}
           <PermissionsSection
             permissionsMode={permissionsMode}
             setPermissionsMode={setPermissionsMode}

@@ -603,7 +603,10 @@ const AddEmp: React.FC = () => {
               <option value="">{t("Select a job title")}</option>
               {jobs &&
                 jobs
-                  .filter((job) => job.department._id == selectedDept)
+                  .filter(
+                    (job) =>
+                      job.department && job.department._id == selectedDept
+                  )
                   .map((job) => (
                     <option key={job.id} value={job.id}>
                       {job.title}

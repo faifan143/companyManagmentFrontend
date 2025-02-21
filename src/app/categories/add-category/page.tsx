@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import DynamicSkills from "@/components/common/atoms/job-title/DynamicSkills";
 import { FormInput } from "@/components/common/atoms/ui/FormInput";
 import GridContainer from "@/components/common/atoms/ui/GridContainer";
 import PendingLogic from "@/components/common/atoms/ui/PendingLogic";
@@ -19,7 +20,7 @@ import {
 import { JobCategoryFormInputs } from "@/types/JobCategory.type";
 import getErrorMessages from "@/utils/handleErrorMessages";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const AddJobCategory: React.FC = () => {
@@ -32,7 +33,6 @@ const AddJobCategory: React.FC = () => {
     formState: { errors },
     reset,
     setValue,
-    getValues,
   } = useForm<JobCategoryFormInputs>({
     resolver: yupResolver(addCategorySchema) as any,
     defaultValues: {
@@ -46,6 +46,34 @@ const AddJobCategory: React.FC = () => {
   });
   // @ts-ignore
   const jobCategoryData = useQueryPageData<JobCategoryFormInputs>(reset);
+  const [skills, setSkills] = useState<string[]>(
+    jobCategoryData?.required_skills || [""]
+  );
+
+  useEffect(() => {
+    if (jobCategoryData) {
+      if (jobCategoryData.required_education) {
+        setValue("required_education", jobCategoryData.required_education);
+      }
+
+      if (jobCategoryData.required_experience) {
+        setValue("required_experience", jobCategoryData.required_experience);
+      }
+
+      if (jobCategoryData.name) {
+        setValue("name", jobCategoryData.name);
+      }
+
+      if (jobCategoryData.description) {
+        setValue("description", jobCategoryData.description);
+      }
+
+      if (jobCategoryData.required_skills?.length) {
+        setSkills(jobCategoryData.required_skills);
+        setValue("required_skills", jobCategoryData.required_skills);
+      }
+    }
+  }, [jobCategoryData, setValue]);
   const {
     requiredEducationOptions,
     requiredExperienceOptions,
@@ -71,11 +99,6 @@ const AddJobCategory: React.FC = () => {
   });
 
   useEffect(() => {
-    const s = getValues("required_skills");
-    console.log("required skills  :  ", s);
-  }, [getValues, setValue]);
-
-  useEffect(() => {
     if (Object.keys(errors).length > 0) {
       getErrorMessages({ errors, setSnackbarConfig });
     }
@@ -97,8 +120,8 @@ const AddJobCategory: React.FC = () => {
         >
           {/* Name Field */}
           <FormInput
-            label="Category Name"
-            placeholder="Category Name"
+            label={t("Category Name")}
+            placeholder={t("Category Name")}
             name="name"
             register={register}
             errors={errors}
@@ -108,9 +131,9 @@ const AddJobCategory: React.FC = () => {
 
           {/* Description Field */}
           <FormInput
-            label="Description"
             name="description"
-            placeholder="Description"
+            label={t("Description")}
+            placeholder={t("Description")}
             type="textarea"
             register={register}
             errors={errors}
@@ -122,7 +145,8 @@ const AddJobCategory: React.FC = () => {
 
           {/* Required Education Field */}
           <FormInput
-            label="Required Education"
+            label={t("Required Education")}
+            placeholder={t("Select Required Education")}
             name="required_education"
             type="select"
             register={register}
@@ -130,10 +154,6 @@ const AddJobCategory: React.FC = () => {
             setValue={setValue}
             isLightMode={isLightMode}
             t={t}
-            placeholder="Select Required Education"
-            defaultValue={
-              jobCategoryData ? jobCategoryData.required_education : ""
-            }
             options={requiredEducationOptions}
             onAddOption={(newEducation) =>
               addEducationService({
@@ -146,7 +166,7 @@ const AddJobCategory: React.FC = () => {
 
           {/* Required Experience Field */}
           <FormInput
-            label="Required Experience"
+            label={t("Required Experience")}
             name="required_experience"
             type="select"
             register={register}
@@ -165,16 +185,12 @@ const AddJobCategory: React.FC = () => {
           />
 
           {/* Required Skills Field */}
-          <FormInput
-            label="Required Skills"
-            name="required_skills"
-            type="skills"
+          <DynamicSkills
+            skills={skills}
+            setSkills={setSkills}
             register={register}
-            errors={errors}
-            isLightMode={isLightMode}
-            t={t}
             setValue={setValue}
-            placeholder={t("Enter skills (comma-separated)")}
+            errors={errors}
           />
 
           {/* Submit Button */}
@@ -192,11 +208,13 @@ const AddJobCategory: React.FC = () => {
             {
               <PendingLogic
                 isPending={isPendingJobCategory}
-                pendingText={jobCategoryData ? "Updating..." : "Creating..."}
+                pendingText={
+                  jobCategoryData ? t("Updating...") : t("Creating...")
+                }
                 normalText={
                   jobCategoryData
-                    ? "Update Job Category"
-                    : "Create Job Category"
+                    ? t("Update Job Category")
+                    : t("Create Job Category")
                 }
               />
             }

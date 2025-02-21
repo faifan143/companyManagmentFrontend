@@ -38,6 +38,12 @@ const NewHeader = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   useEffect(() => {
+    if (!user) {
+      dispatch(logout());
+      queryClient.clear();
+    }
+  }, [dispatch, queryClient, user]);
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&

@@ -14,7 +14,7 @@ import TransactionLoadingSkeleton from "@/components/common/atoms/transactions/T
 import { useRedux } from "@/hooks/useRedux";
 import { RootState } from "@/state/store";
 
-type ViewType = "my" | "admin" | "department" | "execution";
+type ViewType = "my" | "admin" | "department" | "execution" | "archive";
 
 interface StatusTab {
   value: string;
@@ -35,6 +35,7 @@ const Transactions = () => {
       { value: "department", label: t("Department Transactions") },
       { value: "execution", label: t("Department Executions") },
       { value: "admin", label: t("Admin Approvals") },
+      { value: "archive", label: t("Archived Transactions") },
     ],
     [t]
   );
@@ -58,13 +59,14 @@ const Transactions = () => {
       ],
       execution: [
         { value: "ALL", label: "All" },
-        { value: "NOT_SEEN", label: "Not Seen" },
-        { value: "SEEN", label: "Seen" },
+        { value: "NOT_DONE", label: "NOT_DONE" },
+        { value: "DONE", label: "DONE" },
       ],
       admin: [
         { value: "ALL", label: "All" },
         { value: "NEED_ADMIN_APPROVAL", label: "Need Admin Approval" },
       ],
+      archive: [{ value: "ALL", label: "All" }],
     }),
     []
   );
@@ -113,6 +115,16 @@ const Transactions = () => {
     enabled: viewType === "execution",
   });
 
+  const {
+    data: archiveTransactions,
+    isLoading: isArchiveLoading,
+    isError: isArchiveError,
+  } = useCustomQuery<transactionType[]>({
+    url: "/transactions/archived-transactions",
+    queryKey: ["archived-transactions"],
+    enabled: viewType === "archive",
+  });
+
   // Get filtered transactions based on selected status
   const filteredTransactions = useMemo(() => {
     if (selectedStatus === "ALL") {
@@ -128,6 +140,8 @@ const Transactions = () => {
           return executionTransactions || [];
         case "admin":
           return adminTransactions || [];
+        case "archive":
+          return archiveTransactions || [];
         default:
           return [];
       }
@@ -173,17 +187,22 @@ const Transactions = () => {
           );
         }
         return transactions;
+      case "archive":
+        transactions = archiveTransactions || [];
+        return transactions;
 
       default:
         return [];
     }
   }, [
-    viewType,
     selectedStatus,
+    viewType,
     myTransactions,
-    deptTransactions,
+    deptTransactions?.checking,
+    deptTransactions?.ongoing,
     executionTransactions,
     adminTransactions,
+    archiveTransactions,
   ]);
 
   // Calculate status counts
@@ -233,13 +252,13 @@ const Transactions = () => {
 
       case "execution":
         if (!executionTransactions) return counts;
-        counts.NOT_SEEN = executionTransactions.filter((t) =>
-          t.departments_execution.some((d) => d.status === "NOT_SEEN")
+        counts.NOT_DONE = executionTransactions.filter((t) =>
+          t.departments_execution.some((d) => d.status === "NOT_DONE")
         ).length;
-        counts.SEEN = executionTransactions.filter((t) =>
-          t.departments_execution.some((d) => d.status === "SEEN")
+        counts.DONE = executionTransactions.filter((t) =>
+          t.departments_execution.some((d) => d.status === "DONE")
         ).length;
-        counts.ALL = counts.NOT_SEEN + counts.SEEN;
+        counts.ALL = counts.NOT_DONE + counts.DONE;
         break;
 
       case "admin":
@@ -248,6 +267,10 @@ const Transactions = () => {
           (t) => t.status === "FULLY_APPROVED" && t.template.needAdminApproval
         ).length;
         counts.ALL = counts.NEED_ADMIN_APPROVAL;
+        break;
+      case "archive":
+        if (!archiveTransactions) return counts;
+        counts.All = archiveTransactions.length;
         break;
     }
 
@@ -274,6 +297,8 @@ const Transactions = () => {
       ? isDeptLoading
       : viewType === "admin"
       ? isAdminLoading
+      : viewType === "archive"
+      ? isArchiveLoading
       : isExecutionLoading;
 
   const isError =
@@ -283,6 +308,8 @@ const Transactions = () => {
       ? isDeptError
       : viewType === "admin"
       ? isAdminError
+      : viewType === "archive"
+      ? isArchiveError
       : isExecutionError;
 
   const renderStatusTabs = () => {
@@ -336,10 +363,12 @@ const Transactions = () => {
       <div className="space-y-4">
         {filteredTransactions.map((transaction) => {
           const isChecking =
-            viewType === "department" &&
-            transaction.departments_approval_track.find(
-              (dept) => dept.department._id === myDept?.id
-            )?.status == "CHECKING";
+            viewType === "archive" ||
+            (viewType === "department" &&
+              transaction.departments_approval_track.find(
+                (dept) => dept.department._id === myDept?.id
+              )?.status === "CHECKING");
+
           return (
             <TransactionCard
               key={transaction._id}

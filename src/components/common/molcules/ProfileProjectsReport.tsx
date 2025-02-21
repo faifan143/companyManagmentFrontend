@@ -75,7 +75,7 @@ const ProfileProjectsReport = ({
         {t("My Projects")}
       </div>
 
-      <div className="w-full space-y-3">
+      <div className="w-full space-y-3 ">
         {projects?.map((project, index) => (
           <RouteWrapper key={index} href={"/projects/details/" + project._id}>
             <div
@@ -85,7 +85,7 @@ const ProfileProjectsReport = ({
               group gap-3 sm:gap-0  mt-1"
             >
               <div
-                className={`sm:w-[40%] text-center sm:text-left group-hover:${
+                className={`sm:w-[40%] text-center sm:text-start group-hover:${
                   isLightMode ? "text-tblackAF" : "text-twhite"
                 }
                 text-sm sm:text-base font-medium py-1 sm:py-3 px-2 sm:px-4`}

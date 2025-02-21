@@ -1,25 +1,14 @@
-import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import useSetPageData from "@/hooks/useSetPageData";
-import { DepartmentType } from "@/types/DepartmentType.type";
 import { templateType } from "@/types/new-template.type";
-import { DeptTree } from "@/types/trees/Department.tree.type";
-import { getDeptNameById } from "@/utils/get_dept_name_by_id";
 import { useState } from "react";
 
 const TemplateCard: React.FC<{
   template: templateType;
 }> = ({ template }) => {
-  const { t } = useLanguage();
+  const { t, getDir } = useLanguage();
   const { NavigateButton } = useSetPageData("/transactions/add-transaction");
   const [isExpanded, setIsExpanded] = useState(false);
-  const { data: departments } = useCustomQuery<{
-    info: DepartmentType[];
-    tree: DeptTree[];
-  }>({
-    queryKey: ["departments"],
-    url: `/department/tree`,
-  });
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -32,9 +21,39 @@ const TemplateCard: React.FC<{
     }
   };
 
+  const renderTrackItem = (track: {
+    department: { name: string };
+    employee?: {
+      name: string;
+      job_id: {
+        title: string;
+      };
+    };
+  }) => (
+    <div className="flex items-center gap-2 flex-1">
+      <span className="text-sm text-tmid">{track.department.name}</span>
+      {track.employee ? (
+        <>
+          <span className="text-xs text-tmid">
+            {getDir() == "ltr" ? "→" : "←"}
+          </span>
+          <span className="text-sm  text-twhite">
+            {`${track.employee.name} (${track.employee.job_id.title})`}
+          </span>
+        </>
+      ) : (
+        <>
+          {/* <span className="text-xs text-tmid">
+            {getDir() == "ltr" ? "→" : "←"}
+          </span>
+          <span className="text-sm text-tmid">{t("Department Head")}</span> */}
+        </>
+      )}
+    </div>
+  );
+
   return (
     <div className="bg-secondary rounded-xl overflow-hidden border border-gray-700/50 transition-all duration-300 hover:shadow-lg">
-      {/* Header with type indicator */}
       <div className={`h-1 ${getTypeColor(template.type)} w-full`} />
 
       <div className="p-6">
@@ -78,7 +97,7 @@ const TemplateCard: React.FC<{
           </button>
         </div>
 
-        {/* Quick Info (Always Visible) */}
+        {/* Quick Info */}
         <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-tmid">
           <div className="flex items-center gap-2">
             <svg
@@ -183,7 +202,7 @@ const TemplateCard: React.FC<{
               </span>
             </div>
             <div className="bg-main rounded-lg p-4">
-              {template.departments_approval_track.map((dept, index) => (
+              {template.departments_approval_track.map((track, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 mb-3 last:mb-0"
@@ -191,11 +210,7 @@ const TemplateCard: React.FC<{
                   <span className="w-6 h-6 shrink-0 rounded-full bg-dark flex items-center justify-center text-xs text-tmid font-medium">
                     {index + 1}
                   </span>
-                  <span className="text-sm text-tmid">
-                    {departments &&
-                      departments.tree &&
-                      getDeptNameById(dept._id, departments.tree)}
-                  </span>
+                  {renderTrackItem(track)}
                 </div>
               ))}
             </div>
@@ -225,15 +240,46 @@ const TemplateCard: React.FC<{
                   {template.departments_execution_ids.length} {t("departments")}
                 </span>
               </div>
-              <div className="bg-main rounded-lg p-4 grid grid-cols-2 gap-4">
-                {template.departments_execution_ids.map((dept, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-dark" />
-                    <span className="text-sm text-tmid">
-                      {departments &&
-                        departments.tree &&
-                        getDeptNameById(dept._id, departments.tree)}
-                    </span>
+              <div className="bg-main rounded-lg p-4 grid grid-cols-1 gap-4">
+                {template.departments_execution_ids.map((exec, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-dark shrink-0 mt-1.5" />
+                    {renderTrackItem(exec)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Archive Departments */}
+          {template.departments_archive.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-twhite flex items-center gap-2">
+                  <svg
+                    className="w-4 h-4 text-tmid"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                    />
+                  </svg>
+                  {t("Archive Departments")}
+                </h3>
+                <span className="text-xs text-tmid bg-main px-2 py-1 rounded-lg">
+                  {template.departments_archive.length} {t("departments")}
+                </span>
+              </div>
+              <div className="bg-main rounded-lg p-4 grid grid-cols-1 gap-4">
+                {template.departments_archive.map((archive, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-dark shrink-0 mt-1.5" />
+                    {renderTrackItem(archive)}
                   </div>
                 ))}
               </div>

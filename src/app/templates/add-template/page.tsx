@@ -21,6 +21,7 @@ const NewTemplate: React.FC = () => {
     description: "",
     departments_approval_track: [],
     departments_execution_ids: [],
+    departments_archive: [],
     needAdminApproval: false,
     duration: {
       unit: "hours",
@@ -40,6 +41,7 @@ const NewTemplate: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     console.log(formData);
     createTemplate(formData);
   };

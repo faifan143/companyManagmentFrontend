@@ -52,5 +52,17 @@ export const handleManualSubmit = ({
 }: HandleManualSubmitOptions) => {
   const data = getValues();
   data.supportingFiles = selectedFiles.map((file) => file.name);
-  addDepartment(data);
+
+  const formattedNumericOwners =
+    data.numericOwners?.map((owner) => ({
+      ...owner,
+      count: parseInt(owner.count + "", 10),
+    })) || [];
+
+  const formData = {
+    ...data,
+    numericOwners: formattedNumericOwners,
+  };
+
+  addDepartment(formData);
 };

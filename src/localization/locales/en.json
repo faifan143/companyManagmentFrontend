@@ -495,6 +495,24 @@
     "external": "External",
     "minutes": "minutes",
     "Initiate Transaction": "Initiate Transaction",
-    "Archive": "Archive"
+    "Archive": "Archive",
+    "Select Departments": "Select Departments",
+    "Select Employees": "Select Employees",
+    "toggle between departments and employees for approval track": "Toggle between departments and employees for approval track",
+
+    "Execution Employees": "Execution Employees",
+    "Select employees": "Select employees",
+
+    "Select in approval order": "Select in approval order",
+    "No more options available": "No more options available",
+    "Optional Employee Selection": "Optional Employee Selection",
+    "Employee": "Employee",
+    "Default to Department Manager": "Default to Department Manager",
+    "No employees in this department": "No employees in this department",
+
+    "Archive Departments": "Archive Departments",
+    "Select archive departments": "Select archive departments",
+
+    "NOT_DONE": "Not Done"
   }
 }

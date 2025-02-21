@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import useCustomQuery from "@/hooks/useCustomQuery";
 import useLanguage from "@/hooks/useLanguage";
 import { DepartmentType } from "@/types/DepartmentType.type";
@@ -10,6 +9,61 @@ import { CustomInput } from "../ui/CustomInput";
 import CustomReactSelect from "../ui/CustomReactSelect";
 import { CustomTextarea } from "../ui/CustomTextarea";
 import DynamicToggle from "../ui/DynamicToggle";
+
+// Helper function to get department employees
+const getDepartmentEmployees = (
+  departments: { tree: DeptTree[] } | undefined,
+  departmentId: string
+) => {
+  const department = departments?.tree?.find(
+    (dept) => dept.id === departmentId
+  );
+  return (
+    department?.emps?.map((emp) => ({
+      value: emp.id,
+      label: `${emp.name} (${emp.title})`,
+    })) || []
+  );
+};
+
+// Optional Employee Selection Component
+const OptionalEmployeeSelect = ({
+  departmentName,
+  employees,
+  value,
+  onChange,
+}: {
+  departmentName: string;
+  employees: Option[];
+  value: Option | undefined;
+  onChange: (newValue: SingleValue<Option>) => void;
+}) => {
+  const { t, getDir } = useLanguage();
+  if (employees.length === 0) return null;
+  return (
+    <div className="ml-6 mt-4 p-4 border-l-2 border-dashed border-slate-600 bg-main rounded-lg">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-xs text-slate-400 italic">
+          {t("Optional Employee Selection")}
+        </span>
+      </div>
+
+      <CustomReactSelect
+        label={
+          getDir() == "rtl"
+            ? `${t("Employee")} ${departmentName}`
+            : `${departmentName} ${t("Employee")}`
+        }
+        options={employees}
+        value={value}
+        onChange={onChange}
+        placeholder={t("Default to Department Manager")}
+        isClearable={true}
+        noOptionsMessage={() => t("No employees in this department")}
+      />
+    </div>
+  );
+};
 
 const BasicFields: React.FC<{
   formData: FormData;
@@ -45,16 +99,45 @@ const BasicFields: React.FC<{
   };
 
   const handleApprovalTrackChange = (newValue: MultiValue<Option>) => {
-    setFormData((prev) => ({
-      ...prev,
-      departments_approval_track: newValue.map((opt) => opt.value),
-    }));
+    setFormData((prev) => {
+      const newTrack = newValue.map((opt) => {
+        // If department already exists, keep its employee assignment
+        const existingTrack = prev.departments_approval_track.find(
+          (track) => track.department === opt.value
+        );
+        return existingTrack || { department: opt.value };
+      });
+
+      return {
+        ...prev,
+        departments_approval_track: newTrack,
+      };
+    });
   };
 
-  const handleExecutionDeptChange = (newValue: MultiValue<Option>) => {
+  const handleExecutionDepartmentsChange = (newValue: MultiValue<Option>) => {
+    setFormData((prev) => {
+      const newExecution = newValue.map((opt) => {
+        // If department already exists, keep its employee assignment
+        const existingExec = prev.departments_execution_ids.find(
+          (exec) => exec.department === opt.value
+        );
+        return existingExec || { department: opt.value };
+      });
+
+      return {
+        ...prev,
+        departments_execution_ids: newExecution,
+      };
+    });
+  };
+
+  const handleArchiveDeptChange = (newValue: MultiValue<Option>) => {
     setFormData((prev) => ({
       ...prev,
-      departments_execution_ids: newValue.map((opt) => opt.value),
+      departments_archive: newValue.map((opt) => ({
+        department: opt.value,
+      })),
     }));
   };
 
@@ -79,6 +162,44 @@ const BasicFields: React.FC<{
     }));
   };
 
+  const handleApprovalEmployeeChange = (
+    index: number,
+    newValue: SingleValue<Option>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      departments_approval_track: prev.departments_approval_track.map(
+        (item, i) => {
+          if (i === index) {
+            return newValue
+              ? { department: item.department, employee: newValue.value }
+              : { department: item.department };
+          }
+          return item;
+        }
+      ),
+    }));
+  };
+
+  const handleExecutionEmployeeChange = (
+    index: number,
+    newValue: SingleValue<Option>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      departments_execution_ids: prev.departments_execution_ids.map(
+        (item, i) => {
+          if (i === index) {
+            return newValue
+              ? { department: item.department, employee: newValue.value }
+              : { department: item.department };
+          }
+          return item;
+        }
+      ),
+    }));
+  };
+
   const transactionTypes: Option[] = [
     { value: "internal", label: t("Internal") },
     { value: "external", label: t("External") },
@@ -97,7 +218,7 @@ const BasicFields: React.FC<{
     })) || [];
 
   return (
-    <div>
+    <div className="space-y-6">
       <div className="space-y-4">
         <CustomInput
           label={t("Transaction Name")}
@@ -107,6 +228,7 @@ const BasicFields: React.FC<{
           placeholder={t("Set Transaction Name")}
           required
         />
+
         <CustomReactSelect
           label={t("Transaction Type")}
           options={transactionTypes}
@@ -115,6 +237,7 @@ const BasicFields: React.FC<{
           placeholder={t("Set Transaction Type")}
           isSearchable={false}
         />
+
         <CustomTextarea
           label={t("Description")}
           name="description"
@@ -124,28 +247,119 @@ const BasicFields: React.FC<{
           placeholder={t("Enter transaction description")}
         />
 
+        {/* Approval Track Section */}
+        <div className="space-y-4">
+          <div className="p-4 bg-dark rounded-lg">
+            <CustomReactSelect
+              label={t("Select Approval Track Departments")}
+              isMulti
+              options={departmentOptions}
+              value={
+                formData.departments_approval_track
+                  .map((track) =>
+                    departmentOptions.find(
+                      (opt) => opt.value === track.department
+                    )
+                  )
+                  .filter(Boolean) as Option[]
+              }
+              onChange={handleApprovalTrackChange}
+              placeholder={t("Select in approval order")}
+              noOptionsMessage={() => t("No more options available")}
+              isClearable={false}
+            />
+
+            {formData.departments_approval_track.map((track, index) => {
+              const currentDept = departments?.tree?.find(
+                (d) => d.id === track.department
+              );
+              const departmentEmployees = getDepartmentEmployees(
+                departments,
+                track.department
+              );
+
+              return (
+                <OptionalEmployeeSelect
+                  key={`${track.department}-${index}`}
+                  departmentName={currentDept?.name || ""}
+                  employees={departmentEmployees}
+                  value={departmentEmployees.find(
+                    (opt) => opt.value === track.employee
+                  )}
+                  onChange={(newValue) =>
+                    handleApprovalEmployeeChange(index, newValue)
+                  }
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Execution Section */}
+        <div className="space-y-4">
+          <div className="p-4 bg-dark rounded-lg">
+            <CustomReactSelect
+              label={t("Execution Departments")}
+              isMulti
+              options={departmentOptions}
+              value={
+                formData.departments_execution_ids
+                  .map((exec) =>
+                    departmentOptions.find(
+                      (opt) => opt.value === exec.department
+                    )
+                  )
+                  .filter(Boolean) as Option[]
+              }
+              onChange={handleExecutionDepartmentsChange}
+              placeholder={t("Select departments")}
+            />
+
+            {formData.departments_execution_ids.map((dept, index) => {
+              const currentDept = departments?.tree?.find(
+                (d) => d.id === dept.department
+              );
+              const departmentEmployees = getDepartmentEmployees(
+                departments,
+                dept.department
+              );
+
+              return (
+                <OptionalEmployeeSelect
+                  key={`${dept.department}-${index}`}
+                  departmentName={currentDept?.name || ""}
+                  employees={departmentEmployees}
+                  value={departmentEmployees.find(
+                    (opt) => opt.value === dept.employee
+                  )}
+                  onChange={(newValue) =>
+                    handleExecutionEmployeeChange(index, newValue)
+                  }
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Archive Departments */}
         <CustomReactSelect
-          label={t("Select Approval Track Departments")}
+          label={t("Archive Departments")}
           isMulti
           options={departmentOptions}
-          value={departmentOptions.filter((opt) =>
-            formData.departments_approval_track.includes(opt.value)
-          )}
-          onChange={handleApprovalTrackChange}
-          placeholder={t("Select departments in approval order")}
-          noOptionsMessage={() => t("No more departments available")}
-          isClearable={false}
+          value={
+            formData.departments_archive
+              .map((archive) =>
+                departmentOptions.find(
+                  (opt) => opt.value === archive.department
+                )
+              )
+              .filter(Boolean) as Option[]
+          }
+          onChange={handleArchiveDeptChange}
+          placeholder={t("Select archive departments")}
         />
-        <CustomReactSelect
-          label={t("Select Execution Department")}
-          isMulti
-          options={departmentOptions}
-          value={departmentOptions.filter((opt) =>
-            formData.departments_execution_ids.includes(opt.value)
-          )}
-          onChange={handleExecutionDeptChange}
-          placeholder={t("Select departments")}
-        />
+
+        {/* Duration Section */}
         <div>
           <label className="text-sm font-medium text-twhite">
             {t("Duration")}
@@ -171,9 +385,10 @@ const BasicFields: React.FC<{
             </div>
           </div>
         </div>
+
         <DynamicToggle
-          label="Need Admin Approval?"
-          description="Enable this option if admin approval is required"
+          label={t("Need Admin Approval?")}
+          description={t("Enable this option if admin approval is required")}
           value={formData.needAdminApproval}
           setValue={(value) =>
             setFormData({ ...formData, needAdminApproval: value })

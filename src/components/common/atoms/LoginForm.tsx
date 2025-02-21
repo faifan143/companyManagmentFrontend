@@ -55,7 +55,7 @@ const LoginForm = ({ setIsModalOpen, setEmpId }: LoginFormProps) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage = error?.message || error;
-
+      console.log("new  error message is : ", errorMessage);
       if (
         errorMessage?.startsWith(
           "You must change your password on the first login"

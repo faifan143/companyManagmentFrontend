@@ -7,7 +7,7 @@ type ActionType =
   | "send_back"
   | "restart"
   | "finish"
-  | "seen";
+  | "done";
 
 interface TransactionActionModalProps {
   isOpen: boolean;
@@ -54,7 +54,7 @@ const TransactionActionModal = ({
   const getActionColor = () => {
     switch (actionType) {
       case "approve":
-      case "seen":
+      case "done":
       case "finish":
         return "bg-green-500/10 text-green-500";
       case "reject":
@@ -71,7 +71,7 @@ const TransactionActionModal = ({
   const getActionIcon = () => {
     switch (actionType) {
       case "approve":
-      case "seen":
+      case "done":
       case "finish":
         return (
           <svg

@@ -32,7 +32,9 @@ export const loginUser = createAsyncThunk<
   try {
     return await authService.login(userData);
   } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || "Failed to login");
+    console.log("Failed to login with error : ", error);
+
+    return rejectWithValue(error.message || "Failed to login");
   }
 });
 

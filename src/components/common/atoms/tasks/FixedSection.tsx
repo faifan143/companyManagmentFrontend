@@ -72,7 +72,7 @@ export const FixedSection: React.FC<FixedSectionProps> = ({
           <option className="" value="">
             {t("Select a priority ")}
           </option>
-          {["HIGH", "MEDIUM", "LOW"].map((priority, index) => (
+          {[t("HIGH"), t("MEDIUM"), t("LOW")].map((priority, index) => (
             <option className="text-tmid" key={index} value={priority}>
               {priority}
             </option>
