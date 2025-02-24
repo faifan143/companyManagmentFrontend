@@ -12,13 +12,15 @@ import PullToRefreshWrapper from "../common/molcules/ui/PullToRefreshWrapper";
 import { tokenService } from "@/utils/axios/tokenService";
 import { useDispatch } from "react-redux";
 import { logout } from "@/state/slices/userSlice";
+import { setLaoding } from "@/state/slices/wrapper.slice";
 
 const Content = ({ children }: { children: ReactNode }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   // const { loading, isAuthenticated } = useAuth(); // not used temporarily for testing the refreshtoken validation
   const {
-    selector: { loading },
-  } = useRedux((state: RootState) => state.user);
+    selector: { isLoading },
+    dispatchAction,
+  } = useRedux((state: RootState) => state.wrapper);
   const accessTokenCookie = tokenService.getAccessToken();
   const dispatch = useDispatch<AppDispatch>();
   const { getDir, t } = useLanguage();
@@ -26,14 +28,14 @@ const Content = ({ children }: { children: ReactNode }) => {
   useCustomTheme();
 
   useEffect(() => {
-    console.log("AccessToken Cookie: ", accessTokenCookie);
-
     if (!accessTokenCookie) {
       dispatch(logout());
+      dispatchAction(setLaoding, false);
     }
-  }, [accessTokenCookie, dispatch]);
+  }, [accessTokenCookie, dispatch, dispatchAction]);
 
-  if (loading) return <PageSpinner title={t("Loading")} />;
+  if (isLoading && accessTokenCookie != undefined)
+    return <PageSpinner title={t("Loading")} />;
   return (
     <div className="min-h-[100dvh] w-full bg-main">
       <div className="flex h-full w-full">
