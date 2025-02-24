@@ -37,31 +37,14 @@ const DepartmentsView: React.FC = () => {
 
   const showSelect = isAdmin || (canViewSpecificDepartments && isPrimary);
 
-  if (isLoading) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <PageSpinner />
-      </div>
-    );
-  }
-
-  if (
-    !departments ||
-    !departments.info ||
-    !departments.tree ||
-    departments.info.length == 0 ||
-    departments.tree.length == 0
-  ) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        {t("No Departments")}
-      </div>
-    );
-  }
-
   return (
     <GridContainer>
       <div className="col-span-full flex flex-col md:flex-row justify-between items-center mb-5 gap-5">
+        {isLoading && (
+          <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+            <PageSpinner />
+          </div>
+        )}
         <h1 className="text-3xl font-bold text-twhite text-center">
           {t("Departments")}
         </h1>
@@ -99,12 +82,12 @@ const DepartmentsView: React.FC = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
-        {activeTab == "table" && (
+        {activeTab == "table" && departments && departments.info && (
           <DepartmentsContent departmentsData={departments.info} />
         )}
         {activeTab == "tree" && (
           <>
-            {departments.tree && (
+            {departments && departments.tree && (
               <DepartmentHierarchyTree data={departments.tree} width="100%" />
             )}
           </>

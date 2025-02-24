@@ -49,6 +49,7 @@ const ProjectDetails = ({ params: { id } }: { params: { id: string } }) => {
         >
           {t("Project Details")}
         </h1>
+
         {project && (
           <>
             <InfoCard

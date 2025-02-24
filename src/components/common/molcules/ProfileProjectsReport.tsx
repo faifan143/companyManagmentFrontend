@@ -4,6 +4,7 @@ import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { formatDate, isDueSoon } from "@/services/task.service";
 import { ProjectType } from "@/types/Project.type";
+import PageSpinner from "../atoms/ui/PageSpinner";
 import RouteWrapper from "../atoms/ui/RouteWrapper";
 import { collabColors } from "./ProjectsContent";
 
@@ -16,7 +17,7 @@ const ProfileProjectsReport = ({
   const isAdmin = useRolePermissions("admin");
   const { isLightMode } = useCustomTheme();
 
-  const { data: projects } = useCustomQuery<ProjectType[]>({
+  const { data: projects, isLoading } = useCustomQuery<ProjectType[]>({
     queryKey: ["projects"],
     url: `/projects/${isAdmin ? "get-all-projects" : "get-manager-project"}`,
   });
@@ -120,6 +121,7 @@ const ProfileProjectsReport = ({
                   </div>
                 </div>
               </div>
+              {isLoading && <PageSpinner />}
             </div>
           </RouteWrapper>
         ))}

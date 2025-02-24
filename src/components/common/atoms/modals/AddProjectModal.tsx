@@ -68,7 +68,13 @@ const AddProjectModal: React.FC<{
         endDate: projectData.endDate ? projectData.endDate.slice(0, 10) : "",
       });
 
-      setSelectedDepartments(projectData.departments.map((dept) => dept._id));
+      if (
+        projectData &&
+        projectData.departments &&
+        projectData.departments.length > 0
+      ) {
+        setSelectedDepartments(projectData.departments.map((dept) => dept._id));
+      }
     }
   }, [projectData, reset]);
 
@@ -190,7 +196,7 @@ const AddProjectModal: React.FC<{
                         departments?.find((dept) => dept.id === id)?.name || "",
                     }))}
                     options={
-                      departments
+                      departments && departments.length > 0
                         ? departments.map((dept) => ({
                             value: dept.id,
                             label: dept.name,

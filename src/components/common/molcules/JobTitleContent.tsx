@@ -94,51 +94,53 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
     return <PageSpinner />;
   }
 
-  if (!jobs || jobs.length === 0) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        {t("No Job Titles Found")}
-      </div>
-    );
-  }
-
   return (
     <div className="bg-secondary rounded-xl shadow-md p-4 flex flex-col space-y-4 col-span-12">
       <div className="overflow-x-auto rounded-lg shadow-md">
-        <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
-          <thead
-            className={
-              isLightMode ? "bg-darkest text-tblackAF" : "bg-tblack text-twhite"
-            }
-          >
-            <tr>
-              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                {t("Title")}
-              </th>
-              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                {t("Description")}
-              </th>
-              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                {t("Responsibilities")}
-              </th>
-              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                {t("Permissions")}
-              </th>
-              <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                {t("Department")}
-              </th>
-              {(isAdmin || hasEditPermission) && (
-                <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
-                  {t("Actions")}
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {jobs.map((jobTitle) => (
-              <tr
-                key={jobTitle.id}
-                className={`
+        {!jobs || jobs.length === 0 ? (
+          <>
+            <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+              {t("No Job Titles Found")}
+            </div>
+          </>
+        ) : (
+          <>
+            <table className="min-w-full bg-main text-twhite rounded-lg shadow-md">
+              <thead
+                className={
+                  isLightMode
+                    ? "bg-darkest text-tblackAF"
+                    : "bg-tblack text-twhite"
+                }
+              >
+                <tr>
+                  <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                    {t("Title")}
+                  </th>
+                  <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                    {t("Description")}
+                  </th>
+                  <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                    {t("Responsibilities")}
+                  </th>
+                  <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                    {t("Permissions")}
+                  </th>
+                  <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                    {t("Department")}
+                  </th>
+                  {(isAdmin || hasEditPermission) && (
+                    <th className="text-center py-3 px-4 uppercase font-semibold text-sm">
+                      {t("Actions")}
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {jobs.map((jobTitle) => (
+                  <tr
+                    key={jobTitle.id}
+                    className={`
                   ${
                     isLightMode
                       ? "hover:bg-darker text-blackAF hover:text-tblackAF"
@@ -146,61 +148,63 @@ const JobTitleContent = ({ selectedOption }: { selectedOption: string }) => {
                   }
                   group transition-colors
                 `}
-              >
-                <td className="py-3 px-4 text-center">
-                  <TruncatedText text={jobTitle.title} />
-                </td>
-                <td className="py-3 px-4 text-center">
-                  <TruncatedText text={jobTitle.description} />
-                </td>
-                <td className="py-3 px-4">
-                  <ShowMoreList
-                    items={jobTitle.responsibilities}
-                    onShowMore={() =>
-                      handleShowMore(
-                        "responsibilities",
-                        t("Responsibilities"),
-                        jobTitle.responsibilities
-                      )
-                    }
-                    isLightMode={isLightMode}
-                  />
-                </td>
-                <td className="py-3 px-4">
-                  <ShowMoreList
-                    items={jobTitle.permissions}
-                    onShowMore={() =>
-                      handleShowMore(
-                        "permissions",
-                        t("Permissions"),
-                        jobTitle.permissions
-                      )
-                    }
-                    isLightMode={isLightMode}
-                  />
-                </td>
-                <td className="py-3 px-4 text-center">
-                  <TruncatedText text={jobTitle.department?.name} />
-                </td>
-                {(isAdmin || hasEditPermission) && (
-                  <td className="py-3 px-4 flex justify-center">
-                    <NavigateButton
-                      data={jobTitle}
-                      className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
-                    >
-                      <Image
-                        src={PencilIcon}
-                        alt="edit icon"
-                        height={20}
-                        width={20}
+                  >
+                    <td className="py-3 px-4 text-center">
+                      <TruncatedText text={jobTitle.title} />
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <TruncatedText text={jobTitle.description} />
+                    </td>
+                    <td className="py-3 px-4">
+                      <ShowMoreList
+                        items={jobTitle.responsibilities}
+                        onShowMore={() =>
+                          handleShowMore(
+                            "responsibilities",
+                            t("Responsibilities"),
+                            jobTitle.responsibilities
+                          )
+                        }
+                        isLightMode={isLightMode}
                       />
-                    </NavigateButton>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    </td>
+                    <td className="py-3 px-4">
+                      <ShowMoreList
+                        items={jobTitle.permissions}
+                        onShowMore={() =>
+                          handleShowMore(
+                            "permissions",
+                            t("Permissions"),
+                            jobTitle.permissions
+                          )
+                        }
+                        isLightMode={isLightMode}
+                      />
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <TruncatedText text={jobTitle.department?.name} />
+                    </td>
+                    {(isAdmin || hasEditPermission) && (
+                      <td className="py-3 px-4 flex justify-center">
+                        <NavigateButton
+                          data={jobTitle}
+                          className="cursor-pointer p-2 w-16 text-xs flex justify-center font-bold rounded-full bg-green-500/40 hover:bg-green-500 hover:text-green-100 border-2 border-green-500/30"
+                        >
+                          <Image
+                            src={PencilIcon}
+                            alt="edit icon"
+                            height={20}
+                            width={20}
+                          />
+                        </NavigateButton>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
 
       {modalContent && (

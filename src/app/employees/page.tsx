@@ -36,21 +36,6 @@ const EmployeesView: React.FC = () => {
     queryKey: ["employees"],
     url: `/emp/tree`,
   });
-  if (isLoading) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        <PageSpinner />
-      </div>
-    );
-  }
-
-  if (!employees || employees.info.length === 0) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
-        {t("No Employees")}
-      </div>
-    );
-  }
 
   return (
     <GridContainer>
@@ -90,19 +75,36 @@ const EmployeesView: React.FC = () => {
         </div>
       </div>
       <div className="col-span-full">
-        <TasksTab
-          tabs={[
-            { id: "table", label: "Table", icon: TableIcon },
-            { id: "tree", label: "Tree", icon: TreeIcon },
-          ]}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-        {activeTab == "table" && (
-          <EmployeesContent employeesData={employees.info} />
-        )}
-        {activeTab == "tree" && employees && (
-          <EmployeeHierarchyTree data={employees.tree} width="100%" />
+        {isLoading ? (
+          <>
+            <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+              <PageSpinner />
+            </div>
+          </>
+        ) : !employees || employees.info.length === 0 ? (
+          <>
+            {" "}
+            <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center justify-center gap-5">
+              {t("No Employees")}
+            </div>
+          </>
+        ) : (
+          <>
+            <TasksTab
+              tabs={[
+                { id: "table", label: "Table", icon: TableIcon },
+                { id: "tree", label: "Tree", icon: TreeIcon },
+              ]}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+            {activeTab == "table" && (
+              <EmployeesContent employeesData={employees.info} />
+            )}
+            {activeTab == "tree" && employees && (
+              <EmployeeHierarchyTree data={employees.tree} width="100%" />
+            )}
+          </>
         )}
       </div>
     </GridContainer>

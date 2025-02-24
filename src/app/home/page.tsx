@@ -14,13 +14,12 @@ import { useState } from "react";
 const Home = () => {
   const [scope, setScope] = useState<"weekly" | "monthly">("weekly");
   const isSecondary = useRolePermissions("secondary_user");
+
   const { data: tasksData, isLoading } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks", scope == "weekly" ? "weekly-tasks" : "monthly-tasks"],
     url: `/tasks/${scope == "weekly" ? "weekly-tasks" : "monthly-tasks"}`,
     nestedData: true,
   });
-
-  if (isLoading) return <PageSpinner />;
 
   return (
     <GridContainer>
@@ -32,6 +31,7 @@ const Home = () => {
             tasksData?.filter((task) => task.status == "DONE").length || 0
           }
         />
+        {isLoading && <PageSpinner />}
 
         <HomeTasksReport tasksData={tasksData} />
         {!isSecondary && <ProfileProjectsReport isCentered={true} />}
