@@ -25,3 +25,4 @@ export const tokenService = {
   getAccessToken: () => Cookies.get(AUTH_CONSTANTS.ACCESS_TOKEN),
   getRefreshToken: () => Cookies.get(AUTH_CONSTANTS.REFRESH_TOKEN),
 };
+

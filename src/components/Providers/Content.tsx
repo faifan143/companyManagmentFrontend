@@ -2,13 +2,16 @@
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
 import { useRedux } from "@/hooks/useRedux";
-import { RootState } from "@/state/store";
+import { AppDispatch, RootState } from "@/state/store";
 import { usePathname } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import NewHeader from "../common/atoms/NewHeader";
 import PageSpinner from "../common/atoms/ui/PageSpinner";
 import Sidebar from "../common/molcules/Sidebar/Sidebar";
 import PullToRefreshWrapper from "../common/molcules/ui/PullToRefreshWrapper";
+import { tokenService } from "@/utils/axios/tokenService";
+import { useDispatch } from "react-redux";
+import { logout } from "@/state/slices/userSlice";
 
 const Content = ({ children }: { children: ReactNode }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -16,10 +19,19 @@ const Content = ({ children }: { children: ReactNode }) => {
   const {
     selector: { loading },
   } = useRedux((state: RootState) => state.user);
-
+  const accessTokenCookie = tokenService.getAccessToken();
+  const dispatch = useDispatch<AppDispatch>();
   const { getDir, t } = useLanguage();
   const pathname = usePathname();
   useCustomTheme();
+
+  useEffect(() => {
+    console.log("AccessToken Cookie: ", accessTokenCookie);
+
+    if (!accessTokenCookie) {
+      dispatch(logout());
+    }
+  }, [accessTokenCookie, dispatch]);
 
   if (loading) return <PageSpinner title={t("Loading")} />;
   return (
