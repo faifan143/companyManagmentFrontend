@@ -56,6 +56,7 @@ export const PermissionsSection = ({
           {["default", "custom"].map((mode) => (
             <button
               key={mode}
+              type="button"
               onClick={() => {
                 setPermissionsMode(mode as "default" | "custom");
                 if (mode === "default") {

@@ -1,41 +1,31 @@
 // components/layouts/Content.tsx
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useLanguage from "@/hooks/useLanguage";
-import { useRedux } from "@/hooks/useRedux";
-import { AppDispatch, RootState } from "@/state/store";
+import { logout } from "@/state/slices/userSlice";
+import { AppDispatch } from "@/state/store";
+import { tokenService } from "@/utils/axios/tokenService";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import NewHeader from "../common/atoms/NewHeader";
-import PageSpinner from "../common/atoms/ui/PageSpinner";
 import Sidebar from "../common/molcules/Sidebar/Sidebar";
 import PullToRefreshWrapper from "../common/molcules/ui/PullToRefreshWrapper";
-import { tokenService } from "@/utils/axios/tokenService";
-import { useDispatch } from "react-redux";
-import { logout } from "@/state/slices/userSlice";
-import { setLaoding } from "@/state/slices/wrapper.slice";
 
 const Content = ({ children }: { children: ReactNode }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   // const { loading, isAuthenticated } = useAuth(); // not used temporarily for testing the refreshtoken validation
-  const {
-    selector: { isLoading },
-    dispatchAction,
-  } = useRedux((state: RootState) => state.wrapper);
   const accessTokenCookie = tokenService.getAccessToken();
   const dispatch = useDispatch<AppDispatch>();
-  const { getDir, t } = useLanguage();
+  const { getDir } = useLanguage();
   const pathname = usePathname();
   useCustomTheme();
 
   useEffect(() => {
     if (!accessTokenCookie) {
       dispatch(logout());
-      dispatchAction(setLaoding, false);
     }
-  }, [accessTokenCookie, dispatch, dispatchAction]);
+  }, [accessTokenCookie, dispatch]);
 
-  if (isLoading && accessTokenCookie != undefined)
-    return <PageSpinner title={t("Loading")} />;
   return (
     <div className="min-h-[100dvh] w-full bg-main">
       <div className="flex h-full w-full">
