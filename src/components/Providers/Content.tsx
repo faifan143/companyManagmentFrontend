@@ -15,16 +15,17 @@ const Content = ({ children }: { children: ReactNode }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   // const { loading, isAuthenticated } = useAuth(); // not used temporarily for testing the refreshtoken validation
   const accessTokenCookie = tokenService.getAccessToken();
+  const refreshTokenCookie = tokenService.getRefreshToken();
   const dispatch = useDispatch<AppDispatch>();
   const { getDir } = useLanguage();
   const pathname = usePathname();
   useCustomTheme();
 
   useEffect(() => {
-    if (!accessTokenCookie) {
+    if (!accessTokenCookie || !refreshTokenCookie) {
       dispatch(logout());
     }
-  }, [accessTokenCookie, dispatch]);
+  }, [accessTokenCookie, dispatch, refreshTokenCookie]);
 
   return (
     <div className="min-h-[100dvh] w-full bg-main">
