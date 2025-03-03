@@ -25,6 +25,7 @@ const TasksContent = ({
   const [tasks, setTasks] = useState<{
     [key: string]: ReceiveTaskType[];
   }>({});
+
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   useEffect(() => {

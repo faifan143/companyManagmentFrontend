@@ -32,10 +32,10 @@ import { RootState } from "@/state/store";
 import { ReceiveTaskType } from "@/types/Task.type";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import AddSubTaskModal from "../modals/AddSubTaskModal";
 import PageSpinner from "../ui/PageSpinner";
-
+import { TimeLogSection } from "@/components/common/atoms/tasks/TimeLogSection";
 export const formatTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -82,16 +82,29 @@ const ListTaskDetails: React.FC<{
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(
     task?.status
   );
-
-  const { isLightMode } = useCustomTheme();
-
   const {
     startTaskTicker,
     pauseTaskTicker,
     elapsedTime,
+
     isTaskRunning,
     isMakingAPICall,
   } = useTimeTicker(task!.id, task?.timeLogs);
+
+  // Add a new state to track display time
+  const [displayTime, setDisplayTime] = useState(
+    task?.status === "DONE" ? task?.totalTimeSpent || 0 : elapsedTime
+  );
+
+  useEffect(() => {
+    if (selectedStatus === "DONE") {
+      setDisplayTime(task?.totalTimeSpent || 0);
+    } else {
+      setDisplayTime(elapsedTime);
+    }
+  }, [selectedStatus, elapsedTime, task?.totalTimeSpent]);
+
+  const { isLightMode } = useCustomTheme();
 
   const { t, currentLanguage, getDir } = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -141,6 +154,31 @@ const ListTaskDetails: React.FC<{
     await pauseTaskTicker();
   };
 
+  // In the status option selection handler, add state updates
+  const handleStatusChange = (option) => {
+    if (option == "DONE") {
+      if (userId == task?.assignee._id) {
+        setSelectedStatus(option);
+        setStatusMenuOpen(false);
+        setIsRatingOpen(true);
+
+        // Immediately update UI to reflect completed state
+        if (isTaskRunning) {
+          // Stop the timer if it's running
+          pauseTaskTicker();
+        }
+      } else {
+        setSnackbarConfig({
+          open: true,
+          message: t("You can't change the status to DONE"),
+          type: "warning",
+        });
+      }
+    } else {
+      setSelectedStatus(option);
+      setStatusMenuOpen(false);
+    }
+  };
   const { data: allTasks } = useCustomQuery<ReceiveTaskType[]>({
     queryKey: ["tasks"],
     url: `/tasks/get-all-tasks`,
@@ -328,25 +366,7 @@ const ListTaskDetails: React.FC<{
               {statusOptions.map((option) => (
                 <div
                   key={option}
-                  onClick={() => {
-                    if (option == "DONE") {
-                      if (userId == task?.assignee._id) {
-                        setSelectedStatus(option);
-
-                        setStatusMenuOpen(false);
-                        setIsRatingOpen(true);
-                      } else {
-                        setSnackbarConfig({
-                          open: true,
-                          message: t("You can't change the status to DONE"),
-                          type: "warning",
-                        });
-                      }
-                    } else {
-                      setSelectedStatus(option);
-                      setStatusMenuOpen(false);
-                    }
-                  }}
+                  onClick={() => handleStatusChange(option)}
                   className="px-4 py-2 rounded-md hover:bg-gray-500 cursor-pointer"
                 >
                   {t(option)}
@@ -382,11 +402,9 @@ const ListTaskDetails: React.FC<{
             isLightMode ? "bg-darker text-tblackAF" : "bg-tblack"
           } rounded px-3 py-2`}
         >
-          <span>{t("Total Time")}</span>
+          <span>{t("Session Time")}</span>
           <span className="bg-dark text-twhite px-2 py-1 rounded text-xs cursor-pointer">
-            {task?.status == "DONE"
-              ? formatTime(task?.totalTimeSpent || 0)
-              : formatTime(elapsedTime)}
+            {formatTime(displayTime)}
           </span>
         </div>
         {userId == task?.emp.id && (
@@ -398,7 +416,7 @@ const ListTaskDetails: React.FC<{
           >
             <span>{t("Time Actions")}</span>
 
-            {task?.status == "DONE" ? (
+            {selectedStatus === "DONE" ? (
               <span className="bg-dark text-twhite px-2 py-1 rounded text-xs cursor-not-allowed flex items-center gap-1">
                 <Image
                   src={CheckIcon}
@@ -443,6 +461,15 @@ const ListTaskDetails: React.FC<{
             )}
           </div>
         )}
+        {/* Time Log Section */}
+        <div className="mt-4 mb-2">
+          <TimeLogSection
+            timeLogs={task?.timeLogs || []}
+            totalTime={task?.totalTimeSpent || 0}
+            currentLanguage={currentLanguage as string}
+            isLightMode={isLightMode}
+          />
+        </div>
         {/* Description */}
         <div>
           <p className="text-tbright text-sm">{t("Description")}</p>

@@ -521,6 +521,13 @@
     "No employees in this department": "لا يوجد موظفين في هذا القسم",
     "Enter skill here": "أكتب المهارة هنا",
     "Add Skill": "إضافة مهارة",
-    "Archived Transactions": "المعاملات المؤرشفة"
+    "Archived Transactions": "المعاملات المؤرشفة",
+    "Time Logs": "سجلات الوقت",
+    "Total Time Spent": "إجمالي الوقت المستغرق",
+    "Start Time": "وقت البدء",
+    "End Time": "وقت الانتهاء",
+    "Session": "جلسة",
+    "No time logs recorded": "لم يتم تسجيل أي سجلات وقت",
+    "Session Time": "وقت الجلسة"
   }
 }

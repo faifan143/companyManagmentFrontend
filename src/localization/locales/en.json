@@ -513,6 +513,13 @@
     "Archive Departments": "Archive Departments",
     "Select archive departments": "Select archive departments",
 
-    "NOT_DONE": "Not Done"
+    "NOT_DONE": "Not Done",
+    "Time Logs": "Time Logs",
+    "Total Time Spent": "Total Time Spent",
+    "Start Time": "Start Time",
+    "End Time": "End Time",
+    "Session": "Session",
+    "No time logs recorded": "No time logs recorded",
+    "Session Time": "Session Time"
   }
 }
